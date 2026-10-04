@@ -1,0 +1,3854 @@
+{
+  "19982": {
+    "name": "Magma Armor",
+    "skillLine": "Earthen Heart",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "23716": {
+    "name": "Focused Charge",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23726": {
+    "name": "Explosive Charge",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23744": {
+    "name": "Chains of Flame",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23778": {
+    "name": "Chains of Dominance",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23784": {
+    "name": "Radial Sweep",
+    "skillLine": "Aedric Spear",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "23788": {
+    "name": "Crescent Sweep",
+    "skillLine": "Aedric Spear",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "23794": {
+    "name": "Everlasting Sweep",
+    "skillLine": "Aedric Spear",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "23811": {
+    "name": "Lava Whip",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23819": {
+    "name": "Molten Whip",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23828": {
+    "name": "Earthspike Mantle",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23842": {
+    "name": "Shatterspike Mantle",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23856": {
+    "name": "Earthshield Mantle",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23870": {
+    "name": "Toppling Charge",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23886": {
+    "name": "Searing Strike",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23898": {
+    "name": "Burning Embers",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23915": {
+    "name": "Searing Claw",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23924": {
+    "name": "Flame Lash",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23970": {
+    "name": "Rune Focus",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23985": {
+    "name": "Restoring Focus",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "23998": {
+    "name": "Channeled Focus",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "24063": {
+    "name": "Nova",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "24110": {
+    "name": "Solar Flare",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "24147": {
+    "name": "Dark Flare",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "24157": {
+    "name": "Solar Barrage",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "24171": {
+    "name": "Sun Fire",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "24180": {
+    "name": "Vampire's Bane",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "24195": {
+    "name": "Reflective Light",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "24204": {
+    "name": "Rushed Ceremony",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "24213": {
+    "name": "Honor the Dead",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "24222": {
+    "name": "Breath of Life",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "24301": {
+    "name": "Solar Prison",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "24320": {
+    "name": "Solar Disturbance",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "26975": {
+    "name": "Piercing Javelin",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "26983": {
+    "name": "Aurora Javelin",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "26992": {
+    "name": "Binding Javelin",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27007": {
+    "name": "Restoring Aura",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27030": {
+    "name": "Radiant Aura",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27043": {
+    "name": "Repentance",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27090": {
+    "name": "Spear Shards",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27122": {
+    "name": "Luminous Shards",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27167": {
+    "name": "Blazing Spear",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27186": {
+    "name": "Puncturing Strikes",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27197": {
+    "name": "Biting Jabs",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27207": {
+    "name": "Puncturing Sweep",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27227": {
+    "name": "Backlash",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27255": {
+    "name": "Cleansing Ritual",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27275": {
+    "name": "Ritual of Retribution",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27295": {
+    "name": "Extended Ritual",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27306": {
+    "name": "Eclipse",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27311": {
+    "name": "Unstable Core",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27324": {
+    "name": "Living Dark",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27342": {
+    "name": "Healing Ritual",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27352": {
+    "name": "Ritual of Rebirth",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27376": {
+    "name": "Hasty Prayer",
+    "skillLine": "Restoring Light",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27396": {
+    "name": "Rite of Passage",
+    "skillLine": "Restoring Light",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "27413": {
+    "name": "Remembrance",
+    "skillLine": "Restoring Light",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "27427": {
+    "name": "Practiced Incantation",
+    "skillLine": "Restoring Light",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "27501": {
+    "name": "Sun Shield",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27514": {
+    "name": "Radiant Ward",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27530": {
+    "name": "Blazing Shield",
+    "skillLine": "Aedric Spear",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27558": {
+    "name": "Purifying Light",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "27587": {
+    "name": "Power of the Light",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "29844": {
+    "name": "Negate Magic",
+    "skillLine": "Dark Magic",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "29861": {
+    "name": "Suppression Field",
+    "skillLine": "Dark Magic",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "29881": {
+    "name": "Absorption Field",
+    "skillLine": "Dark Magic",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "29909": {
+    "name": "Daedric Mines",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "29939": {
+    "name": "Daedric Tomb",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "29973": {
+    "name": "Daedric Refuge",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30012": {
+    "name": "Dark Exchange",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30043": {
+    "name": "Dark Deal",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30072": {
+    "name": "Dark Conversion",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30087": {
+    "name": "Encase",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30095": {
+    "name": "Shattering Spines",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30107": {
+    "name": "Vibrant Shroud",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30162": {
+    "name": "Rune Prison",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30177": {
+    "name": "Rune Cage",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30194": {
+    "name": "Defensive Rune",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30205": {
+    "name": "Bolt Escape",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30215": {
+    "name": "Streak",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30224": {
+    "name": "Ball of Lightning",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30235": {
+    "name": "Lightning Form",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30244": {
+    "name": "Hurricane",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30255": {
+    "name": "Boundless Storm",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30269": {
+    "name": "Lightning Splash",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30286": {
+    "name": "Liquid Lightning",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30302": {
+    "name": "Lightning Flood",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30319": {
+    "name": "Mages' Fury",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30331": {
+    "name": "Mages' Wrath",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30343": {
+    "name": "Endless Fury",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30354": {
+    "name": "Overload",
+    "skillLine": "Storm Calling",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "30366": {
+    "name": "Power Overload",
+    "skillLine": "Storm Calling",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "30381": {
+    "name": "Energy Overload",
+    "skillLine": "Storm Calling",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "30390": {
+    "name": "Surge",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30396": {
+    "name": "Power Surge",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30406": {
+    "name": "Critical Surge",
+    "skillLine": "Storm Calling",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30418": {
+    "name": "Bound Armor",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30432": {
+    "name": "Bound Armaments",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30445": {
+    "name": "Bound Aegis",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30463": {
+    "name": "Conjured Ward",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30474": {
+    "name": "Hardened Ward",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30486": {
+    "name": "Regenerative Ward",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30499": {
+    "name": "Daedric Curse",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30511": {
+    "name": "Daedric Prey",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30523": {
+    "name": "Haunting Curse",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30538": {
+    "name": "Summon Storm Atronach",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "30553": {
+    "name": "Summon Charged Atronach",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "30575": {
+    "name": "Greater Storm Atronach",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "30587": {
+    "name": "Summon Winged Twilight",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30598": {
+    "name": "Summon Twilight Tormentor",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30626": {
+    "name": "Summon Twilight Matriarch",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30641": {
+    "name": "Summon Unstable Familiar",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30657": {
+    "name": "Summon Unstable Clannfear",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "30674": {
+    "name": "Summon Volatile Familiar",
+    "skillLine": "Daedric Summoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "32111": {
+    "name": "Dark Talons",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "32123": {
+    "name": "Burning Talons",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "32135": {
+    "name": "Choking Talons",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "32156": {
+    "name": "Molten Weapons",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "32166": {
+    "name": "Igneous Weapons",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "32173": {
+    "name": "Molten Armaments",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "32194": {
+    "name": "Superheated Ward",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "32199": {
+    "name": "Volcanic Ward",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "32205": {
+    "name": "Magma Fist",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "32229": {
+    "name": "Chains of Devastation",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33619": {
+    "name": "Dragon Blood",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33632": {
+    "name": "Blood of the Green Dragon",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33646": {
+    "name": "Blood of the Elder Dragon",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33658": {
+    "name": "Dragon Leap",
+    "skillLine": "Draconic Power",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "33668": {
+    "name": "Take Flight",
+    "skillLine": "Draconic Power",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "33679": {
+    "name": "Ferocious Leap",
+    "skillLine": "Draconic Power",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "33697": {
+    "name": "Core of Flame",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33715": {
+    "name": "Soul of Flame",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33732": {
+    "name": "Heart of Flame",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33743": {
+    "name": "Wing Buffet",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33749": {
+    "name": "Fleetstep Wings",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33759": {
+    "name": "Protect the Brood",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33778": {
+    "name": "Hearthfire",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33797": {
+    "name": "Fire Keeper",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33816": {
+    "name": "Hearth and Home",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33841": {
+    "name": "Magma Shell",
+    "skillLine": "Earthen Heart",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "33852": {
+    "name": "Corrosive Armor",
+    "skillLine": "Earthen Heart",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "33866": {
+    "name": "Obsidian Shield",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33872": {
+    "name": "Igneous Shield",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33881": {
+    "name": "Fragmented Shield",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33898": {
+    "name": "Petrify",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33921": {
+    "name": "Fossilize",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33944": {
+    "name": "Shattering Rocks",
+    "skillLine": "Earthen Heart",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "33963": {
+    "name": "Dragonknight Standard",
+    "skillLine": "Ardent Flame",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "33987": {
+    "name": "Shifting Standard",
+    "skillLine": "Ardent Flame",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "34021": {
+    "name": "Standard of Might",
+    "skillLine": "Ardent Flame",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "34031": {
+    "name": "Dragonfire Breath",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "34039": {
+    "name": "Disintegrating Dragonfire",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "34048": {
+    "name": "Engulfing Dragonfire",
+    "skillLine": "Draconic Power",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "34061": {
+    "name": "Inferno",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "34080": {
+    "name": "Incinerate",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "34100": {
+    "name": "Cauterize",
+    "skillLine": "Ardent Flame",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "35584": {
+    "name": "Assassin's Blade",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "35590": {
+    "name": "Killer's Blade",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "35596": {
+    "name": "Impale",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "35871": {
+    "name": "Teleport Strike",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "35882": {
+    "name": "Lotus Fan",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "35898": {
+    "name": "Ambush",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "35909": {
+    "name": "Blur",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "35916": {
+    "name": "Mirage",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "35924": {
+    "name": "Phantasmal Escape",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "35931": {
+    "name": "Strife",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "35941": {
+    "name": "Funnel Health",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "35949": {
+    "name": "Swallow Soul",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "36109": {
+    "name": "Malevolent Offering",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "36129": {
+    "name": "Shrewd Offering",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "36144": {
+    "name": "Healthy Offering",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "36166": {
+    "name": "Soul Shred",
+    "skillLine": "Siphoning",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "36186": {
+    "name": "Soul Siphon",
+    "skillLine": "Siphoning",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "36207": {
+    "name": "Soul Tether",
+    "skillLine": "Siphoning",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "36223": {
+    "name": "Veiled Strike",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "36234": {
+    "name": "Surprise Attack",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "36244": {
+    "name": "Concealed Weapon",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "36283": {
+    "name": "Dark Shade",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "36298": {
+    "name": "Shadow Image",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "36313": {
+    "name": "Summon Shade",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "36337": {
+    "name": "Shadow Cloak",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "36351": {
+    "name": "Dark Cloak",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "36368": {
+    "name": "Shadowy Disguise",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "37518": {
+    "name": "Death Stroke",
+    "skillLine": "Assassination",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "37532": {
+    "name": "Incapacitating Strike",
+    "skillLine": "Assassination",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "37545": {
+    "name": "Soul Harvest",
+    "skillLine": "Assassination",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "37603": {
+    "name": "Mark Target",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "37631": {
+    "name": "Piercing Mark",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "37658": {
+    "name": "Reaper's Mark",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "37696": {
+    "name": "Consuming Darkness",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "37713": {
+    "name": "Veil of Blades",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "37744": {
+    "name": "Bolstering Darkness",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "37764": {
+    "name": "Path of Darkness",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "37796": {
+    "name": "Twisting Path",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "37816": {
+    "name": "Refreshing Path",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "37864": {
+    "name": "Cripple",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "37887": {
+    "name": "Debilitate",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "37913": {
+    "name": "Crippling Grasp",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "37928": {
+    "name": "Drain Power",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "37937": {
+    "name": "Power Extraction",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "37950": {
+    "name": "Sap Essence",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "37977": {
+    "name": "Siphoning Strikes",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "38015": {
+    "name": "Leeching Strikes",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "38050": {
+    "name": "Siphoning Attacks",
+    "skillLine": "Siphoning",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "38065": {
+    "name": "Aspect of Terror",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "38075": {
+    "name": "Mass Hysteria",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "38096": {
+    "name": "Manifestation of Terror",
+    "skillLine": "Shadowy Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39746": {
+    "name": "Cleave",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39754": {
+    "name": "Carve",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39769": {
+    "name": "Brawler",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39793": {
+    "name": "Critical Charge",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39807": {
+    "name": "Stampede",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39822": {
+    "name": "Critical Rush",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39881": {
+    "name": "Momentum",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39892": {
+    "name": "Forward Momentum",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39904": {
+    "name": "Rally",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39928": {
+    "name": "Reverse Slash",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39942": {
+    "name": "Reverse Slice",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39957": {
+    "name": "Executioner",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39968": {
+    "name": "Uppercut",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "39984": {
+    "name": "Dizzying Swing",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40008": {
+    "name": "Wrecking Blow",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40582": {
+    "name": "Flurry",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40590": {
+    "name": "Rapid Strikes",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40599": {
+    "name": "Bloodthirst",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40610": {
+    "name": "Hidden Blade",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40619": {
+    "name": "Shrouded Daggers",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40628": {
+    "name": "Flying Blade",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40633": {
+    "name": "Blade Cloak",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40642": {
+    "name": "Quick Cloak",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40651": {
+    "name": "Deadly Cloak",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40664": {
+    "name": "Twin Slashes",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40675": {
+    "name": "Rending Slashes",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40687": {
+    "name": "Blood Craze",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40714": {
+    "name": "Whirlwind",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40731": {
+    "name": "Whirling Blades",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40744": {
+    "name": "Steel Tornado",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40765": {
+    "name": "Arrow Spray",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40777": {
+    "name": "Bombard",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40789": {
+    "name": "Acid Spray",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40806": {
+    "name": "Poison Arrow",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40823": {
+    "name": "Venom Arrow",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40842": {
+    "name": "Poison Injection",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40858": {
+    "name": "Scatter Shot",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40869": {
+    "name": "Magnum Shot",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40883": {
+    "name": "Draining Shot",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40892": {
+    "name": "Snipe",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40897": {
+    "name": "Lethal Arrow",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40907": {
+    "name": "Focused Aim",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40917": {
+    "name": "Volley",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40932": {
+    "name": "Endless Hail",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40944": {
+    "name": "Arrow Barrage",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40964": {
+    "name": "Destructive Touch",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41006": {
+    "name": "Destructive Clench",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41047": {
+    "name": "Destructive Reach",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41082": {
+    "name": "Unstoppable",
+    "skillLine": "Armor",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41091": {
+    "name": "Unstoppable Brute",
+    "skillLine": "Armor",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41103": {
+    "name": "Immovable",
+    "skillLine": "Armor",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41108": {
+    "name": "Annulment",
+    "skillLine": "Armor",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41113": {
+    "name": "Dampen Magic",
+    "skillLine": "Armor",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41121": {
+    "name": "Harness Magicka",
+    "skillLine": "Armor",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41126": {
+    "name": "Evasion",
+    "skillLine": "Armor",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41131": {
+    "name": "Shuffle",
+    "skillLine": "Armor",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41137": {
+    "name": "Elude",
+    "skillLine": "Armor",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41151": {
+    "name": "Blessing of Protection",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41169": {
+    "name": "Blessing of Restoration",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41189": {
+    "name": "Combat Prayer",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41207": {
+    "name": "Force Siphon",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41225": {
+    "name": "Siphon Spirit",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41239": {
+    "name": "Quick Siphon",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41248": {
+    "name": "Grand Healing",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41255": {
+    "name": "Illustrious Healing",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41265": {
+    "name": "Healing Springs",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41271": {
+    "name": "Regeneration",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41276": {
+    "name": "Rapid Regeneration",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41288": {
+    "name": "Radiating Regeneration",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41302": {
+    "name": "Ward Ally",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41310": {
+    "name": "Steadfast Ward",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41320": {
+    "name": "Healing Ward",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41351": {
+    "name": "Defensive Posture",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41358": {
+    "name": "Defensive Stance",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41380": {
+    "name": "Absorb Missile",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41394": {
+    "name": "Low Slash",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41403": {
+    "name": "Deep Slash",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41414": {
+    "name": "Heroic Slash",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41435": {
+    "name": "Power Bash",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41448": {
+    "name": "Reverberating Bash",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41459": {
+    "name": "Power Slam",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41477": {
+    "name": "Puncture",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41487": {
+    "name": "Ransack",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41497": {
+    "name": "Pierce Armor",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41512": {
+    "name": "Shield Charge",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41526": {
+    "name": "Shielded Assault",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41538": {
+    "name": "Invasion",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41548": {
+    "name": "Weakness to Elements",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41556": {
+    "name": "Elemental Susceptibility",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41567": {
+    "name": "Elemental Drain",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41658": {
+    "name": "Wall of Elements",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41711": {
+    "name": "Unstable Wall of Elements",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41769": {
+    "name": "Elemental Blockade",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41809": {
+    "name": "Mist Form",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41815": {
+    "name": "Elusive Mist",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41824": {
+    "name": "Blood Mist",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41866": {
+    "name": "Eviscerate",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41881": {
+    "name": "Arterial Burst",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41902": {
+    "name": "Blood for Blood",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "41920": {
+    "name": "Blood Scion",
+    "skillLine": "Vampire",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "41926": {
+    "name": "Swarming Scion",
+    "skillLine": "Vampire",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "41937": {
+    "name": "Perfect Scion",
+    "skillLine": "Vampire",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "42110": {
+    "name": "Pounce",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42119": {
+    "name": "Brutal Pounce",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42128": {
+    "name": "Feral Pounce",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42145": {
+    "name": "Roar",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42157": {
+    "name": "Ferocious Roar",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42179": {
+    "name": "Deafening Roar",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42207": {
+    "name": "Entropy",
+    "skillLine": "Mage's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42224": {
+    "name": "Degeneration",
+    "skillLine": "Mage's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42240": {
+    "name": "Structured Entropy",
+    "skillLine": "Mage's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42251": {
+    "name": "Equilibrium",
+    "skillLine": "Mage's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42263": {
+    "name": "Spell Symmetry",
+    "skillLine": "Mage's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42278": {
+    "name": "Balance",
+    "skillLine": "Mage's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42305": {
+    "name": "Fire Rune",
+    "skillLine": "Mage's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42327": {
+    "name": "Volcanic Rune",
+    "skillLine": "Mage's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42349": {
+    "name": "Scalding Rune",
+    "skillLine": "Mage's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42358": {
+    "name": "Werewolf Transformation",
+    "skillLine": "Werewolf",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "42367": {
+    "name": "Pack Leader",
+    "skillLine": "Werewolf",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "42379": {
+    "name": "Werewolf Berserker",
+    "skillLine": "Werewolf",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "42418": {
+    "name": "Magelight",
+    "skillLine": "Mage's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42430": {
+    "name": "Inner Light",
+    "skillLine": "Mage's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42455": {
+    "name": "Radiant Magelight",
+    "skillLine": "Mage's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42467": {
+    "name": "Meteor",
+    "skillLine": "Mage's Guild",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "42478": {
+    "name": "Ice Comet",
+    "skillLine": "Mage's Guild",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "42492": {
+    "name": "Shooting Star",
+    "skillLine": "Mage's Guild",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "42509": {
+    "name": "Circle of Protection",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42529": {
+    "name": "Turn Evil",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42548": {
+    "name": "Ring of Preservation",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42566": {
+    "name": "Dawnbreaker",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "42586": {
+    "name": "Flawless Dawnbreaker",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "42598": {
+    "name": "Dawnbreaker of Smiting",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "42610": {
+    "name": "Expert Hunter",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42624": {
+    "name": "Evil Hunter",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42641": {
+    "name": "Camouflaged Hunter",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42655": {
+    "name": "Silver Bolts",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42671": {
+    "name": "Silver Shards",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42696": {
+    "name": "Silver Leash",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42720": {
+    "name": "Trap Beast",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42747": {
+    "name": "Barbed Trap",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42771": {
+    "name": "Lightweight Beast Trap",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42957": {
+    "name": "Impulse",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42975": {
+    "name": "Elemental Ring",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "42996": {
+    "name": "Pulsar",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43056": {
+    "name": "Soul Trap",
+    "skillLine": "Soul Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43067": {
+    "name": "Soul Splitting Trap",
+    "skillLine": "Soul Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43083": {
+    "name": "Consuming Trap",
+    "skillLine": "Soul Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43093": {
+    "name": "Soul Strike",
+    "skillLine": "Soul Magic",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "43099": {
+    "name": "Soul Assault",
+    "skillLine": "Soul Magic",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "43109": {
+    "name": "Shatter Soul",
+    "skillLine": "Soul Magic",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "43251": {
+    "name": "Blood Altar",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43266": {
+    "name": "Sanguine Altar",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43287": {
+    "name": "Overflowing Altar",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43310": {
+    "name": "Bone Shield",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43323": {
+    "name": "Spiked Bone Shield",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43334": {
+    "name": "Bone Surge",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43363": {
+    "name": "Inner Fire",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43378": {
+    "name": "Inner Rage",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43393": {
+    "name": "Inner Beast",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43406": {
+    "name": "Necrotic Orb",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43415": {
+    "name": "Mystic Orb",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43447": {
+    "name": "Energy Orb",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43477": {
+    "name": "Tangling Webs",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43489": {
+    "name": "Shadow Silk",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "43541": {
+    "name": "Trapping Webs",
+    "skillLine": "Undaunted",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "46385": {
+    "name": "Caltrops",
+    "skillLine": "Assault",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "46420": {
+    "name": "Anti-Cavalry Caltrops",
+    "skillLine": "Assault",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "46466": {
+    "name": "Razor Caltrops",
+    "skillLine": "Assault",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "46492": {
+    "name": "Rapid Maneuver",
+    "skillLine": "Assault",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "46505": {
+    "name": "Retreating Maneuver",
+    "skillLine": "Assault",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "46519": {
+    "name": "Charging Maneuver",
+    "skillLine": "Assault",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "46529": {
+    "name": "War Horn",
+    "skillLine": "Assault",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "46537": {
+    "name": "Aggressive Horn",
+    "skillLine": "Assault",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "46546": {
+    "name": "Sturdy Horn",
+    "skillLine": "Assault",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "46609": {
+    "name": "Barrier",
+    "skillLine": "Support",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "46614": {
+    "name": "Reviving Barrier",
+    "skillLine": "Support",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "46622": {
+    "name": "Replenishing Barrier",
+    "skillLine": "Support",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "46630": {
+    "name": "Purge",
+    "skillLine": "Support",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "46636": {
+    "name": "Efficient Purge",
+    "skillLine": "Support",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "46644": {
+    "name": "Cleanse",
+    "skillLine": "Support",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "46653": {
+    "name": "Siege Shield",
+    "skillLine": "Support",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "46661": {
+    "name": "Siege Weapon Shield",
+    "skillLine": "Support",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "46670": {
+    "name": "Propelling Shield",
+    "skillLine": "Support",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "47552": {
+    "name": "Crystal Shard",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "47560": {
+    "name": "Crystal Weapon",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "47569": {
+    "name": "Crystal Fragments",
+    "skillLine": "Dark Magic",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "48956": {
+    "name": "Force Shock",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "48971": {
+    "name": "Crushing Shock",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "48991": {
+    "name": "Force Pulse",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "58316": {
+    "name": "Hircine's Bounty",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "58323": {
+    "name": "Hircine's Rage",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "58334": {
+    "name": "Hircine's Fortitude",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "58740": {
+    "name": "Gnash",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "58794": {
+    "name": "Rip and Tear",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "58808": {
+    "name": "Bloody Gnash",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "58862": {
+    "name": "Rending Claws",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "58876": {
+    "name": "Claw Fury",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "58907": {
+    "name": "Bloodclaws",
+    "skillLine": "Werewolf",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "62096": {
+    "name": "Grim Focus",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "62107": {
+    "name": "Relentless Focus",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "62117": {
+    "name": "Merciless Resolve",
+    "skillLine": "Assassination",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63058": {
+    "name": "Radiant Destruction",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63066": {
+    "name": "Radiant Glory",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63075": {
+    "name": "Radiant Oppression",
+    "skillLine": "Dawn's Wrath",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63240": {
+    "name": "Vigor",
+    "skillLine": "Assault",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63247": {
+    "name": "Echoing Vigor",
+    "skillLine": "Assault",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63255": {
+    "name": "Resolving Vigor",
+    "skillLine": "Assault",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63284": {
+    "name": "Magicka Detonation",
+    "skillLine": "Assault",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63293": {
+    "name": "Inevitable Detonation",
+    "skillLine": "Assault",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63302": {
+    "name": "Proximity Detonation",
+    "skillLine": "Assault",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63318": {
+    "name": "Guard",
+    "skillLine": "Support",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63335": {
+    "name": "Mystic Guard",
+    "skillLine": "Support",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63351": {
+    "name": "Stalwart Guard",
+    "skillLine": "Support",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63370": {
+    "name": "Revealing Flare",
+    "skillLine": "Support",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63391": {
+    "name": "Lingering Flare",
+    "skillLine": "Support",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "63415": {
+    "name": "Blinding Flare",
+    "skillLine": "Support",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "85985": {
+    "name": "Feral Guardian",
+    "skillLine": "Animal Companions",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "85989": {
+    "name": "Eternal Guardian",
+    "skillLine": "Animal Companions",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "85993": {
+    "name": "Wild Guardian",
+    "skillLine": "Animal Companions",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "85998": {
+    "name": "Dive",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86002": {
+    "name": "Cutting Dive",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86006": {
+    "name": "Screaming Cliff Racer",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86026": {
+    "name": "Swarm",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86030": {
+    "name": "Fetcher Infection",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86034": {
+    "name": "Growing Swarm",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86040": {
+    "name": "Falcon's Swiftness",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86044": {
+    "name": "Deceptive Predator",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86048": {
+    "name": "Bird of Prey",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86053": {
+    "name": "Betty Netch",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86057": {
+    "name": "Blue Betty",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86061": {
+    "name": "Bull Netch",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86112": {
+    "name": "Sleet Storm",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86116": {
+    "name": "Northern Storm",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86120": {
+    "name": "Permafrost",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86125": {
+    "name": "Frost Cloak",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86129": {
+    "name": "Expansive Frost Cloak",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86133": {
+    "name": "Ice Fortress",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86138": {
+    "name": "Crystallized Shield",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86142": {
+    "name": "Crystallized Slab",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86146": {
+    "name": "Shimmering Shield",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86151": {
+    "name": "Arctic Wind",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86155": {
+    "name": "Polar Wind",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86159": {
+    "name": "Arctic Blast",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86164": {
+    "name": "Impaling Shards",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86168": {
+    "name": "Gripping Shards",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86172": {
+    "name": "Winter's Revenge",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86178": {
+    "name": "Frozen Gate",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86182": {
+    "name": "Frozen Device",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86186": {
+    "name": "Frozen Retreat",
+    "skillLine": "Winter's Embrace",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "86275": {
+    "name": "Berserker Strike",
+    "skillLine": "Two Handed",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86284": {
+    "name": "Onslaught",
+    "skillLine": "Two Handed",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86295": {
+    "name": "Berserker Rage",
+    "skillLine": "Two Handed",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86322": {
+    "name": "Shield Wall",
+    "skillLine": "One Handed",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86333": {
+    "name": "Spell Wall",
+    "skillLine": "One Handed",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86345": {
+    "name": "Shield Discipline",
+    "skillLine": "One Handed",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86370": {
+    "name": "Lacerate",
+    "skillLine": "Dual Wield",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86393": {
+    "name": "Rend",
+    "skillLine": "Dual Wield",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86410": {
+    "name": "Thrive in Chaos",
+    "skillLine": "Dual Wield",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86425": {
+    "name": "Panacea",
+    "skillLine": "Restoration Staff",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86454": {
+    "name": "Life Giver",
+    "skillLine": "Restoration Staff",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86475": {
+    "name": "Light's Champion",
+    "skillLine": "Restoration Staff",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86485": {
+    "name": "Elemental Storm",
+    "skillLine": "Destruction Staff",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86510": {
+    "name": "Elemental Rage",
+    "skillLine": "Destruction Staff",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86534": {
+    "name": "Eye of the Storm",
+    "skillLine": "Destruction Staff",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86586": {
+    "name": "Rapid Fire",
+    "skillLine": "Bow",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86603": {
+    "name": "Toxic Barrage",
+    "skillLine": "Bow",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "86620": {
+    "name": "Ballista",
+    "skillLine": "Bow",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "93593": {
+    "name": "Scorch",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93771": {
+    "name": "Fungal Growth",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93774": {
+    "name": "Enchanted Growth",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93777": {
+    "name": "Soothing Spores",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93778": {
+    "name": "Deep Fissure",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93791": {
+    "name": "Subterranean Assault",
+    "skillLine": "Animal Companions",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93804": {
+    "name": "Healing Seed",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93807": {
+    "name": "Budding Seeds",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93810": {
+    "name": "Corrupting Pollen",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93877": {
+    "name": "Living Vines",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93880": {
+    "name": "Leeching Vines",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93883": {
+    "name": "Living Trellis",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93908": {
+    "name": "Lotus Flower",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93911": {
+    "name": "Green Lotus",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93914": {
+    "name": "Lotus Blossom",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93934": {
+    "name": "Nature's Grasp",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93937": {
+    "name": "Bursting Vines",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93940": {
+    "name": "Nature's Embrace",
+    "skillLine": "Green Balance",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "93968": {
+    "name": "Secluded Grove",
+    "skillLine": "Green Balance",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "93971": {
+    "name": "Enchanted Forest",
+    "skillLine": "Green Balance",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "93974": {
+    "name": "Healing Thicket",
+    "skillLine": "Green Balance",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "214960": {
+    "name": "Vault",
+    "skillLine": "Bow",
+    "isUltimate": false,
+    "isCrafted": true
+  },
+  "215731": {
+    "name": "Wield Soul",
+    "skillLine": "Soul Magic",
+    "isUltimate": false,
+    "isCrafted": true
+  },
+  "217061": {
+    "name": "Shield Throw",
+    "skillLine": "One Handed",
+    "isUltimate": false,
+    "isCrafted": true
+  },
+  "217184": {
+    "name": "Smash",
+    "skillLine": "Two Handed",
+    "isUltimate": false,
+    "isCrafted": true
+  },
+  "217228": {
+    "name": "Elemental Explosion",
+    "skillLine": "Destruction Staff",
+    "isUltimate": false,
+    "isCrafted": true
+  },
+  "217462": {
+    "name": "Soul Burst",
+    "skillLine": "Soul Magic",
+    "isUltimate": false,
+    "isCrafted": true
+  },
+  "217630": {
+    "name": "Torchbearer",
+    "skillLine": "Fighter's Guild",
+    "isUltimate": false,
+    "isCrafted": true
+  },
+  "217699": {
+    "name": "Banner Bearer",
+    "skillLine": "Support",
+    "isUltimate": false,
+    "isCrafted": true
+  },
+  "217872": {
+    "name": "Traveling Knife",
+    "skillLine": "Dual Wield",
+    "isUltimate": false,
+    "isCrafted": true
+  },
+  "220541": {
+    "name": "Trample",
+    "skillLine": "Assault",
+    "isUltimate": false,
+    "isCrafted": true
+  },
+  "220549": {
+    "name": "Mender's Bond",
+    "skillLine": "Restoration Staff",
+    "isUltimate": false,
+    "isCrafted": true
+  },
+  "222678": {
+    "name": "Ulfsild's Contingency",
+    "skillLine": "Mage's Guild",
+    "isUltimate": false,
+    "isCrafted": true
+  },
+  "40103478": {
+    "name": "Undo",
+    "skillLine": "Psijic Order",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40103483": {
+    "name": "Imbue Weapon",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40103488": {
+    "name": "Time Stop",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40103492": {
+    "name": "Meditate",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40103503": {
+    "name": "Accelerate",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40103543": {
+    "name": "Mend Wounds",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40103557": {
+    "name": "Precognition",
+    "skillLine": "Psijic Order",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40103564": {
+    "name": "Temporal Guard",
+    "skillLine": "Psijic Order",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40103571": {
+    "name": "Elemental Weapon",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40103623": {
+    "name": "Crushing Weapon",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40103652": {
+    "name": "Deep Thoughts",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40103665": {
+    "name": "Introspection",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40103706": {
+    "name": "Channeled Acceleration",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40103710": {
+    "name": "Race Against Time",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40103747": {
+    "name": "Mend Spirit",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40103755": {
+    "name": "Symbiosis",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40104059": {
+    "name": "Borrowed Time",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40104079": {
+    "name": "Time Freeze",
+    "skillLine": "Psijic Order",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40114108": {
+    "name": "Flame Skull",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40114196": {
+    "name": "Render Flesh",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40114317": {
+    "name": "Skeletal Mage",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40114860": {
+    "name": "Sacrificial Bones",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40115001": {
+    "name": "Bone Goliath Transformation",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40115093": {
+    "name": "Bone Totem",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40115115": {
+    "name": "Death Scythe",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40115177": {
+    "name": "Grave Grasp",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40115206": {
+    "name": "Bone Armor",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40115238": {
+    "name": "Bitter Harvest",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40115252": {
+    "name": "Boneyard",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40115307": {
+    "name": "Expunge",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40115315": {
+    "name": "Life amid Death",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40115410": {
+    "name": "Reanimate",
+    "skillLine": "Living Death",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40115710": {
+    "name": "Spirit Mender",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40115924": {
+    "name": "Shocking Siphon",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40115926": {
+    "name": "Restoring Tether",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40117624": {
+    "name": "Venom Skull",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40117637": {
+    "name": "Ricochet Skull",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40117690": {
+    "name": "Blighted Blastbones",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40117749": {
+    "name": "Grave Lord's Sacrifice",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40117805": {
+    "name": "Unnerving Boneyard",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40117850": {
+    "name": "Avid Boneyard",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40117883": {
+    "name": "Resistant Flesh",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40117888": {
+    "name": "Blood Sacrifice",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40117919": {
+    "name": "Hexproof",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40117940": {
+    "name": "Expunge and Modify",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118008": {
+    "name": "Mystic Siphon",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118017": {
+    "name": "Renewing Undeath",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118070": {
+    "name": "Braided Tether",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118122": {
+    "name": "Mortal Coil",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118223": {
+    "name": "Hungry Scythe",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118226": {
+    "name": "Ruinous Scythe",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118237": {
+    "name": "Beckoning Armor",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118244": {
+    "name": "Summoner's Armor",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118279": {
+    "name": "Ravenous Goliath",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40118308": {
+    "name": "Ghostly Embrace",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118352": {
+    "name": "Empowering Grasp",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118367": {
+    "name": "Renewing Animation",
+    "skillLine": "Living Death",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40118379": {
+    "name": "Animate Blastbones",
+    "skillLine": "Living Death",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40118380": {
+    "name": "Remote Totem",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118404": {
+    "name": "Agony Totem",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118623": {
+    "name": "Deaden Pain",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118639": {
+    "name": "Necrotic Potency",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118664": {
+    "name": "Pummeling Goliath",
+    "skillLine": "Bone Tyrant",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40118680": {
+    "name": "Skeletal Archer",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118726": {
+    "name": "Skeletal Arcanist",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118763": {
+    "name": "Detonating Siphon",
+    "skillLine": "Grave Lord",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118809": {
+    "name": "Enduring Undeath",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118840": {
+    "name": "Intensive Mender",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40118912": {
+    "name": "Spirit Guardian",
+    "skillLine": "Living Death",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40122174": {
+    "name": "Frozen Colossus",
+    "skillLine": "Grave Lord",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40122388": {
+    "name": "Glacial Colossus",
+    "skillLine": "Grave Lord",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40122395": {
+    "name": "Pestilent Colossus",
+    "skillLine": "Grave Lord",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40128709": {
+    "name": "Mesmerize",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40132141": {
+    "name": "Blood Frenzy",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40134160": {
+    "name": "Simmering Frenzy",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40134583": {
+    "name": "Vampiric Drain",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40135841": {
+    "name": "Sated Fury",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40135905": {
+    "name": "Drain Vigor",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40137259": {
+    "name": "Exhilarating Drain",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40137861": {
+    "name": "Hypnosis",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40138097": {
+    "name": "Stupefy",
+    "skillLine": "Vampire",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40182977": {
+    "name": "Escalating Runeblades",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40182988": {
+    "name": "Fulminating Rune",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183006": {
+    "name": "Cephaliarch's Flail",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183047": {
+    "name": "Recuperative Treatise",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183122": {
+    "name": "Exhausting Fatecarver",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183165": {
+    "name": "Runic Jolt",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183241": {
+    "name": "Impervious Runeward",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183261": {
+    "name": "Runemend",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183267": {
+    "name": "Rune of the Colorless Pool",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183401": {
+    "name": "Runeguard of Still Waters",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183430": {
+    "name": "Runic Sunder",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183447": {
+    "name": "Chakram Shields",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183537": {
+    "name": "Remedy Cascade",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183542": {
+    "name": "Apocryphal Gate",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183555": {
+    "name": "Arcanist's Domain",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183648": {
+    "name": "Fatewoven Armor",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40183676": {
+    "name": "Gibbering Shield",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40183709": {
+    "name": "Vitalizing Glyphic",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40185794": {
+    "name": "Runeblades",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40185803": {
+    "name": "Writhing Runeblades",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40185805": {
+    "name": "Fatecarver",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40185817": {
+    "name": "Abyssal Impact",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40185823": {
+    "name": "Tentacular Dread",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40185836": {
+    "name": "The Imperfect Ring",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40185839": {
+    "name": "Rune of Displacement",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40185842": {
+    "name": "Inspired Scholarship",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40185894": {
+    "name": "Runespite Ward",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40185901": {
+    "name": "Spiteward of the Lucid Mind",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40185908": {
+    "name": "Cruxweaver Armor",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40185912": {
+    "name": "Runic Defense",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40185918": {
+    "name": "Rune of Eldritch Horror",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40185921": {
+    "name": "Rune of Uncanny Adoration",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186189": {
+    "name": "Evolving Runemend",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186191": {
+    "name": "Audacious Runemend",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186193": {
+    "name": "Cascading Fortune",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186200": {
+    "name": "Curative Surge",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186207": {
+    "name": "Chakram of Destiny",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186209": {
+    "name": "Tidal Chakram",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186211": {
+    "name": "Fleet-Footed Gate",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186220": {
+    "name": "Passage Between Worlds",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186229": {
+    "name": "Zenas' Empowering Disc",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186234": {
+    "name": "Reconstructive Domain",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186366": {
+    "name": "Pragmatic Fatecarver",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186452": {
+    "name": "Tome-Bearer's Inspiration",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186477": {
+    "name": "Unbreakable Fate",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186489": {
+    "name": "Runeguard of Freedom",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40186531": {
+    "name": "Runic Embrace",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": false,
+    "isCrafted": false
+  },
+  "40189791": {
+    "name": "The Unblinking Eye",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40189837": {
+    "name": "The Tide King's Gaze",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40189867": {
+    "name": "The Languid Eye",
+    "skillLine": "Herald of the Tomes",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40192372": {
+    "name": "Sanctum of the Abyssal Sea",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40192380": {
+    "name": "Gibbering Shelter",
+    "skillLine": "Soldier of Apocrypha",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40193558": {
+    "name": "Resonating Glyphic",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": true,
+    "isCrafted": false
+  },
+  "40193794": {
+    "name": "Glyphic of the Tides",
+    "skillLine": "Curative Runeforms",
+    "isUltimate": true,
+    "isCrafted": false
+  }
+}
