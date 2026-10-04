@@ -1,0 +1,3006 @@
+{
+  "raid": {
+    "groupName": "ESO Raid Team",
+    "selectedRaid": "Sunspire",
+    "players": [
+      {
+        "id": 1,
+        "name": "Player 1",
+        "role": "Tank",
+        "skillClasses": {
+          "MainSkillClass": "",
+          "SecondSkillClass": "",
+          "ThirdSkillClass": ""
+        },
+        "classMasteries": {
+          "firstClassMastery": "",
+          "secondClassMastery": ""
+        },
+        "mundus": "",
+        "race": null
+      },
+      {
+        "id": 4,
+        "name": "Player 2",
+        "role": "Tank",
+        "skillClasses": {
+          "MainSkillClass": "",
+          "SecondSkillClass": "",
+          "ThirdSkillClass": ""
+        },
+        "classMasteries": {
+          "firstClassMastery": "",
+          "secondClassMastery": ""
+        },
+        "mundus": "",
+        "race": null
+      },
+      {
+        "id": 3,
+        "name": "Player 3",
+        "role": "Heal",
+        "skillClasses": {
+          "MainSkillClass": "",
+          "SecondSkillClass": "",
+          "ThirdSkillClass": ""
+        },
+        "classMasteries": {
+          "firstClassMastery": "",
+          "secondClassMastery": ""
+        },
+        "mundus": "",
+        "race": null
+      },
+      {
+        "id": 6,
+        "name": "Player 4",
+        "role": "Heal",
+        "skillClasses": {
+          "MainSkillClass": "",
+          "SecondSkillClass": "",
+          "ThirdSkillClass": ""
+        },
+        "classMasteries": {
+          "firstClassMastery": "",
+          "secondClassMastery": ""
+        },
+        "mundus": "",
+        "race": null
+      },
+      {
+        "id": 2,
+        "name": "Player 5",
+        "role": "DPS",
+        "skillClasses": {
+          "MainSkillClass": "",
+          "SecondSkillClass": "",
+          "ThirdSkillClass": ""
+        },
+        "classMasteries": {
+          "firstClassMastery": "",
+          "secondClassMastery": ""
+        },
+        "mundus": "",
+        "race": null
+      },
+      {
+        "id": 5,
+        "name": "Player 6",
+        "role": "DPS",
+        "skillClasses": {
+          "MainSkillClass": "",
+          "SecondSkillClass": "",
+          "ThirdSkillClass": ""
+        },
+        "classMasteries": {
+          "firstClassMastery": "",
+          "secondClassMastery": ""
+        },
+        "mundus": "",
+        "race": null
+      },
+      {
+        "id": 7,
+        "name": "Player 7",
+        "role": "DPS",
+        "skillClasses": {
+          "MainSkillClass": "",
+          "SecondSkillClass": "",
+          "ThirdSkillClass": ""
+        },
+        "classMasteries": {
+          "firstClassMastery": "",
+          "secondClassMastery": ""
+        },
+        "mundus": "",
+        "race": null
+      },
+      {
+        "id": 8,
+        "name": "Player 8",
+        "role": "DPS",
+        "skillClasses": {
+          "MainSkillClass": "",
+          "SecondSkillClass": "",
+          "ThirdSkillClass": ""
+        },
+        "classMasteries": {
+          "firstClassMastery": "",
+          "secondClassMastery": ""
+        },
+        "mundus": "",
+        "race": null
+      },
+      {
+        "id": 9,
+        "name": "Player 9",
+        "role": "DPS",
+        "skillClasses": {
+          "MainSkillClass": "",
+          "SecondSkillClass": "",
+          "ThirdSkillClass": ""
+        },
+        "classMasteries": {
+          "firstClassMastery": "",
+          "secondClassMastery": ""
+        },
+        "mundus": "",
+        "race": null
+      },
+      {
+        "id": 10,
+        "name": "Player 10",
+        "role": "DPS",
+        "skillClasses": {
+          "MainSkillClass": "",
+          "SecondSkillClass": "",
+          "ThirdSkillClass": ""
+        },
+        "classMasteries": {
+          "firstClassMastery": "",
+          "secondClassMastery": ""
+        },
+        "mundus": "",
+        "race": null
+      },
+      {
+        "id": 11,
+        "name": "Player 11",
+        "role": "DPS",
+        "skillClasses": {
+          "MainSkillClass": "",
+          "SecondSkillClass": "",
+          "ThirdSkillClass": ""
+        },
+        "classMasteries": {
+          "firstClassMastery": "",
+          "secondClassMastery": ""
+        },
+        "mundus": "",
+        "race": null
+      },
+      {
+        "id": 12,
+        "name": "Player 12",
+        "role": "DPS",
+        "skillClasses": {
+          "MainSkillClass": "",
+          "SecondSkillClass": "",
+          "ThirdSkillClass": ""
+        },
+        "classMasteries": {
+          "firstClassMastery": "",
+          "secondClassMastery": ""
+        },
+        "mundus": "",
+        "race": null
+      }
+    ]
+  },
+  "fights": [
+    {
+      "name": "Trashs",
+      "playersStuff": [
+        {
+          "id": 1,
+          "name": "Player 1",
+          "role": "Tank",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 4,
+          "name": "Player 2",
+          "role": "Tank",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 3,
+          "name": "Player 3",
+          "role": "Heal",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 6,
+          "name": "Player 4",
+          "role": "Heal",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 2,
+          "name": "Player 5",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 5,
+          "name": "Player 6",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 7,
+          "name": "Player 7",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 8,
+          "name": "Player 8",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 9,
+          "name": "Player 9",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 10,
+          "name": "Player 10",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 11,
+          "name": "Player 11",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 12,
+          "name": "Player 12",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "Lokkestiiz",
+      "playersStuff": [
+        {
+          "id": 1,
+          "name": "Player 1",
+          "role": "Tank",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 4,
+          "name": "Player 2",
+          "role": "Tank",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 3,
+          "name": "Player 3",
+          "role": "Heal",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 6,
+          "name": "Player 4",
+          "role": "Heal",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 2,
+          "name": "Player 5",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 5,
+          "name": "Player 6",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 7,
+          "name": "Player 7",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 8,
+          "name": "Player 8",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 9,
+          "name": "Player 9",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 10,
+          "name": "Player 10",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 11,
+          "name": "Player 11",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 12,
+          "name": "Player 12",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "Yolnahkriin",
+      "playersStuff": [
+        {
+          "id": 1,
+          "name": "Player 1",
+          "role": "Tank",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 4,
+          "name": "Player 2",
+          "role": "Tank",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 3,
+          "name": "Player 3",
+          "role": "Heal",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 6,
+          "name": "Player 4",
+          "role": "Heal",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 2,
+          "name": "Player 5",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 5,
+          "name": "Player 6",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 7,
+          "name": "Player 7",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 8,
+          "name": "Player 8",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 9,
+          "name": "Player 9",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 10,
+          "name": "Player 10",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 11,
+          "name": "Player 11",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 12,
+          "name": "Player 12",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "Nahviintaas",
+      "playersStuff": [
+        {
+          "id": 1,
+          "name": "Player 1",
+          "role": "Tank",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 4,
+          "name": "Player 2",
+          "role": "Tank",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 3,
+          "name": "Player 3",
+          "role": "Heal",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 6,
+          "name": "Player 4",
+          "role": "Heal",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 2,
+          "name": "Player 5",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 5,
+          "name": "Player 6",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 7,
+          "name": "Player 7",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 8,
+          "name": "Player 8",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 9,
+          "name": "Player 9",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 10,
+          "name": "Player 10",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 11,
+          "name": "Player 11",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        },
+        {
+          "id": 12,
+          "name": "Player 12",
+          "role": "DPS",
+          "sets": {
+            "mainBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "mainBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon1": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            },
+            "backBarWeapon2": {
+              "itemId": null,
+              "enchantment": "",
+              "poison": ""
+            }
+          },
+          "competencies": {
+            "MainBar1": "",
+            "MainBar2": "",
+            "MainBar3": "",
+            "MainBar4": "",
+            "MainBar5": "",
+            "MainBarUlt": "",
+            "BackBar1": "",
+            "BackBar2": "",
+            "BackBar3": "",
+            "BackBar4": "",
+            "BackBar5": "",
+            "BackBarUlt": ""
+          },
+          "championPoints": {
+            "Blue1": "",
+            "Blue2": "",
+            "Blue3": "",
+            "Blue4": "",
+            "Red1": "",
+            "Red2": "",
+            "Red3": "",
+            "Red4": "",
+            "Green1": "",
+            "Green2": "",
+            "Green3": "",
+            "Green4": ""
+          },
+          "food": "",
+          "potion": "",
+          "description": ""
+        }
+      ]
+    }
+  ]
+}

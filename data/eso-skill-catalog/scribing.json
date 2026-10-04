@@ -1,0 +1,1362 @@
+{
+  "214960": {
+    "focus": [
+      {
+        "id": 1,
+        "name": "Physical Damage"
+      },
+      {
+        "id": 2,
+        "name": "Poison Damage"
+      },
+      {
+        "id": 3,
+        "name": "Disease Damage"
+      },
+      {
+        "id": 8,
+        "name": "Flame Damage"
+      },
+      {
+        "id": 12,
+        "name": "Taunt"
+      },
+      {
+        "id": 15,
+        "name": "Immobilize"
+      },
+      {
+        "id": 18,
+        "name": "Healing"
+      },
+      {
+        "id": 4,
+        "name": "Bleed Damage"
+      }
+    ],
+    "signature": [
+      {
+        "id": 24,
+        "name": "Lingering Torment"
+      },
+      {
+        "id": 25,
+        "name": "Hunter's Snare"
+      },
+      {
+        "id": 31,
+        "name": "Class Flourish"
+      },
+      {
+        "id": 32,
+        "name": "Sage's Remedy"
+      },
+      {
+        "id": 34,
+        "name": "Druid's Resurgence"
+      },
+      {
+        "id": 35,
+        "name": "Thief's Swiftness"
+      },
+      {
+        "id": 36,
+        "name": "Crusader's Defiance"
+      },
+      {
+        "id": 40,
+        "name": "Wayfarer's Mastery"
+      }
+    ],
+    "affix": [
+      {
+        "id": 44,
+        "name": "Off Balance"
+      },
+      {
+        "id": 59,
+        "name": "Vulnerability"
+      },
+      {
+        "id": 60,
+        "name": "Maim"
+      },
+      {
+        "id": 65,
+        "name": "Lifesteal"
+      },
+      {
+        "id": 47,
+        "name": "Expedition"
+      },
+      {
+        "id": 58,
+        "name": "Force"
+      },
+      {
+        "id": 46,
+        "name": "Savagery"
+      },
+      {
+        "id": 49,
+        "name": "Evasion"
+      },
+      {
+        "id": 51,
+        "name": "Berserk"
+      },
+      {
+        "id": 52,
+        "name": "Brutality"
+      },
+      {
+        "id": 57,
+        "name": "Intellect and Endurance"
+      }
+    ]
+  },
+  "215731": {
+    "focus": [
+      {
+        "id": 1,
+        "name": "Physical Damage"
+      },
+      {
+        "id": 5,
+        "name": "Magic Damage"
+      },
+      {
+        "id": 6,
+        "name": "Shock Damage"
+      },
+      {
+        "id": 14,
+        "name": "Pull"
+      },
+      {
+        "id": 16,
+        "name": "Stun"
+      },
+      {
+        "id": 18,
+        "name": "Healing"
+      },
+      {
+        "id": 20,
+        "name": "Damage Shield"
+      },
+      {
+        "id": 7,
+        "name": "Frost Damage"
+      },
+      {
+        "id": 8,
+        "name": "Flame Damage"
+      },
+      {
+        "id": 3,
+        "name": "Disease Damage"
+      },
+      {
+        "id": 4,
+        "name": "Bleed Damage"
+      }
+    ],
+    "signature": [
+      {
+        "id": 24,
+        "name": "Lingering Torment"
+      },
+      {
+        "id": 30,
+        "name": "Anchorite's Cruelty"
+      },
+      {
+        "id": 31,
+        "name": "Class Flourish"
+      },
+      {
+        "id": 32,
+        "name": "Sage's Remedy"
+      },
+      {
+        "id": 34,
+        "name": "Druid's Resurgence"
+      },
+      {
+        "id": 39,
+        "name": "Anchorite's Potency"
+      }
+    ],
+    "affix": [
+      {
+        "id": 64,
+        "name": "Breach"
+      },
+      {
+        "id": 66,
+        "name": "Defile"
+      },
+      {
+        "id": 61,
+        "name": "Cowardice"
+      },
+      {
+        "id": 48,
+        "name": "Resolve"
+      },
+      {
+        "id": 52,
+        "name": "Brutality"
+      },
+      {
+        "id": 57,
+        "name": "Intellect and Endurance"
+      },
+      {
+        "id": 53,
+        "name": "Empower"
+      },
+      {
+        "id": 50,
+        "name": "Vitality"
+      },
+      {
+        "id": 46,
+        "name": "Savagery"
+      },
+      {
+        "id": 60,
+        "name": "Maim"
+      }
+    ]
+  },
+  "217061": {
+    "focus": [
+      {
+        "id": 1,
+        "name": "Physical Damage"
+      },
+      {
+        "id": 5,
+        "name": "Magic Damage"
+      },
+      {
+        "id": 10,
+        "name": "Multi-Target"
+      },
+      {
+        "id": 12,
+        "name": "Taunt"
+      },
+      {
+        "id": 13,
+        "name": "Knockback"
+      },
+      {
+        "id": 14,
+        "name": "Pull"
+      },
+      {
+        "id": 15,
+        "name": "Immobilize"
+      },
+      {
+        "id": 7,
+        "name": "Frost Damage"
+      }
+    ],
+    "signature": [
+      {
+        "id": 24,
+        "name": "Lingering Torment"
+      },
+      {
+        "id": 26,
+        "name": "Knight's Valor"
+      },
+      {
+        "id": 31,
+        "name": "Class Flourish"
+      },
+      {
+        "id": 32,
+        "name": "Sage's Remedy"
+      },
+      {
+        "id": 34,
+        "name": "Druid's Resurgence"
+      },
+      {
+        "id": 35,
+        "name": "Thief's Swiftness"
+      },
+      {
+        "id": 37,
+        "name": "Fencer's Parry"
+      },
+      {
+        "id": 40,
+        "name": "Wayfarer's Mastery"
+      }
+    ],
+    "affix": [
+      {
+        "id": 44,
+        "name": "Off Balance"
+      },
+      {
+        "id": 45,
+        "name": "Interrupt"
+      },
+      {
+        "id": 60,
+        "name": "Maim"
+      },
+      {
+        "id": 61,
+        "name": "Cowardice"
+      },
+      {
+        "id": 62,
+        "name": "Enervation"
+      },
+      {
+        "id": 48,
+        "name": "Resolve"
+      },
+      {
+        "id": 49,
+        "name": "Evasion"
+      },
+      {
+        "id": 50,
+        "name": "Vitality"
+      },
+      {
+        "id": 46,
+        "name": "Savagery"
+      },
+      {
+        "id": 52,
+        "name": "Brutality"
+      }
+    ]
+  },
+  "217184": {
+    "focus": [
+      {
+        "id": 1,
+        "name": "Physical Damage"
+      },
+      {
+        "id": 4,
+        "name": "Bleed Damage"
+      },
+      {
+        "id": 5,
+        "name": "Magic Damage"
+      },
+      {
+        "id": 12,
+        "name": "Taunt"
+      },
+      {
+        "id": 13,
+        "name": "Knockback"
+      },
+      {
+        "id": 16,
+        "name": "Stun"
+      },
+      {
+        "id": 18,
+        "name": "Healing"
+      },
+      {
+        "id": 20,
+        "name": "Damage Shield"
+      },
+      {
+        "id": 2,
+        "name": "Poison Damage"
+      }
+    ],
+    "signature": [
+      {
+        "id": 24,
+        "name": "Lingering Torment"
+      },
+      {
+        "id": 27,
+        "name": "Leeching Thirst"
+      },
+      {
+        "id": 28,
+        "name": "Immobilizing Strike"
+      },
+      {
+        "id": 31,
+        "name": "Class Flourish"
+      },
+      {
+        "id": 32,
+        "name": "Sage's Remedy"
+      },
+      {
+        "id": 34,
+        "name": "Druid's Resurgence"
+      },
+      {
+        "id": 36,
+        "name": "Crusader's Defiance"
+      },
+      {
+        "id": 37,
+        "name": "Fencer's Parry"
+      },
+      {
+        "id": 40,
+        "name": "Wayfarer's Mastery"
+      }
+    ],
+    "affix": [
+      {
+        "id": 47,
+        "name": "Expedition"
+      },
+      {
+        "id": 50,
+        "name": "Vitality"
+      },
+      {
+        "id": 51,
+        "name": "Berserk"
+      },
+      {
+        "id": 58,
+        "name": "Force"
+      },
+      {
+        "id": 60,
+        "name": "Maim"
+      },
+      {
+        "id": 63,
+        "name": "Mangle"
+      },
+      {
+        "id": 64,
+        "name": "Breach"
+      },
+      {
+        "id": 45,
+        "name": "Interrupt"
+      },
+      {
+        "id": 46,
+        "name": "Savagery"
+      },
+      {
+        "id": 52,
+        "name": "Brutality"
+      }
+    ]
+  },
+  "217228": {
+    "focus": [
+      {
+        "id": 5,
+        "name": "Magic Damage"
+      },
+      {
+        "id": 6,
+        "name": "Shock Damage"
+      },
+      {
+        "id": 7,
+        "name": "Frost Damage"
+      },
+      {
+        "id": 8,
+        "name": "Flame Damage"
+      },
+      {
+        "id": 9,
+        "name": "Trauma"
+      },
+      {
+        "id": 13,
+        "name": "Knockback"
+      },
+      {
+        "id": 16,
+        "name": "Stun"
+      },
+      {
+        "id": 17,
+        "name": "Dispel"
+      },
+      {
+        "id": 1,
+        "name": "Physical Damage"
+      }
+    ],
+    "signature": [
+      {
+        "id": 24,
+        "name": "Lingering Torment"
+      },
+      {
+        "id": 25,
+        "name": "Hunter's Snare"
+      },
+      {
+        "id": 28,
+        "name": "Immobilizing Strike"
+      },
+      {
+        "id": 29,
+        "name": "Assassin's Misery"
+      },
+      {
+        "id": 31,
+        "name": "Class Flourish"
+      },
+      {
+        "id": 33,
+        "name": "Warmage's Defense"
+      },
+      {
+        "id": 34,
+        "name": "Druid's Resurgence"
+      }
+    ],
+    "affix": [
+      {
+        "id": 44,
+        "name": "Off Balance"
+      },
+      {
+        "id": 52,
+        "name": "Brutality"
+      },
+      {
+        "id": 61,
+        "name": "Cowardice"
+      },
+      {
+        "id": 62,
+        "name": "Enervation"
+      },
+      {
+        "id": 65,
+        "name": "Lifesteal"
+      },
+      {
+        "id": 66,
+        "name": "Defile"
+      },
+      {
+        "id": 67,
+        "name": "Brittle"
+      },
+      {
+        "id": 69,
+        "name": "Magickasteal"
+      },
+      {
+        "id": 46,
+        "name": "Savagery"
+      }
+    ]
+  },
+  "217462": {
+    "focus": [
+      {
+        "id": 1,
+        "name": "Physical Damage"
+      },
+      {
+        "id": 5,
+        "name": "Magic Damage"
+      },
+      {
+        "id": 6,
+        "name": "Shock Damage"
+      },
+      {
+        "id": 14,
+        "name": "Pull"
+      },
+      {
+        "id": 15,
+        "name": "Immobilize"
+      },
+      {
+        "id": 18,
+        "name": "Healing"
+      },
+      {
+        "id": 20,
+        "name": "Damage Shield"
+      },
+      {
+        "id": 7,
+        "name": "Frost Damage"
+      },
+      {
+        "id": 8,
+        "name": "Flame Damage"
+      },
+      {
+        "id": 3,
+        "name": "Disease Damage"
+      },
+      {
+        "id": 4,
+        "name": "Bleed Damage"
+      }
+    ],
+    "signature": [
+      {
+        "id": 24,
+        "name": "Lingering Torment"
+      },
+      {
+        "id": 25,
+        "name": "Hunter's Snare"
+      },
+      {
+        "id": 30,
+        "name": "Anchorite's Cruelty"
+      },
+      {
+        "id": 31,
+        "name": "Class Flourish"
+      },
+      {
+        "id": 32,
+        "name": "Sage's Remedy"
+      },
+      {
+        "id": 36,
+        "name": "Crusader's Defiance"
+      },
+      {
+        "id": 39,
+        "name": "Anchorite's Potency"
+      }
+    ],
+    "affix": [
+      {
+        "id": 45,
+        "name": "Interrupt"
+      },
+      {
+        "id": 47,
+        "name": "Expedition"
+      },
+      {
+        "id": 48,
+        "name": "Resolve"
+      },
+      {
+        "id": 55,
+        "name": "Courage"
+      },
+      {
+        "id": 57,
+        "name": "Intellect and Endurance"
+      },
+      {
+        "id": 60,
+        "name": "Maim"
+      },
+      {
+        "id": 64,
+        "name": "Breach"
+      },
+      {
+        "id": 69,
+        "name": "Magickasteal"
+      },
+      {
+        "id": 46,
+        "name": "Savagery"
+      },
+      {
+        "id": 52,
+        "name": "Brutality"
+      }
+    ]
+  },
+  "217630": {
+    "focus": [
+      {
+        "id": 1,
+        "name": "Physical Damage"
+      },
+      {
+        "id": 4,
+        "name": "Bleed Damage"
+      },
+      {
+        "id": 8,
+        "name": "Flame Damage"
+      },
+      {
+        "id": 13,
+        "name": "Knockback"
+      },
+      {
+        "id": 16,
+        "name": "Stun"
+      },
+      {
+        "id": 18,
+        "name": "Healing"
+      },
+      {
+        "id": 22,
+        "name": "Generate Ultimate"
+      },
+      {
+        "id": 7,
+        "name": "Frost Damage"
+      }
+    ],
+    "signature": [
+      {
+        "id": 24,
+        "name": "Lingering Torment"
+      },
+      {
+        "id": 25,
+        "name": "Hunter's Snare"
+      },
+      {
+        "id": 31,
+        "name": "Class Flourish"
+      },
+      {
+        "id": 34,
+        "name": "Druid's Resurgence"
+      },
+      {
+        "id": 36,
+        "name": "Crusader's Defiance"
+      },
+      {
+        "id": 38,
+        "name": "Gladiator's Tenacity"
+      },
+      {
+        "id": 41,
+        "name": "Warrior's Opportunity"
+      }
+    ],
+    "affix": [
+      {
+        "id": 48,
+        "name": "Resolve"
+      },
+      {
+        "id": 49,
+        "name": "Evasion"
+      },
+      {
+        "id": 50,
+        "name": "Vitality"
+      },
+      {
+        "id": 56,
+        "name": "Heroism"
+      },
+      {
+        "id": 61,
+        "name": "Cowardice"
+      },
+      {
+        "id": 63,
+        "name": "Mangle"
+      },
+      {
+        "id": 64,
+        "name": "Breach"
+      },
+      {
+        "id": 68,
+        "name": "Uncertainty"
+      },
+      {
+        "id": 46,
+        "name": "Savagery"
+      },
+      {
+        "id": 52,
+        "name": "Brutality"
+      }
+    ]
+  },
+  "217699": {
+    "focus": [
+      {
+        "id": 1,
+        "name": "Physical Damage"
+      },
+      {
+        "id": 5,
+        "name": "Magic Damage"
+      },
+      {
+        "id": 6,
+        "name": "Shock Damage"
+      },
+      {
+        "id": 8,
+        "name": "Flame Damage"
+      },
+      {
+        "id": 10,
+        "name": "Multi-Target"
+      },
+      {
+        "id": 19,
+        "name": "Restore Resources"
+      },
+      {
+        "id": 23,
+        "name": "Mitigation"
+      },
+      {
+        "id": 15,
+        "name": "Immobilize"
+      }
+    ],
+    "signature": [
+      {
+        "id": 32,
+        "name": "Sage's Remedy"
+      },
+      {
+        "id": 34,
+        "name": "Druid's Resurgence"
+      },
+      {
+        "id": 33,
+        "name": "Warmage's Defense"
+      },
+      {
+        "id": 35,
+        "name": "Thief's Swiftness"
+      },
+      {
+        "id": 36,
+        "name": "Crusader's Defiance"
+      },
+      {
+        "id": 40,
+        "name": "Wayfarer's Mastery"
+      },
+      {
+        "id": 42,
+        "name": "Cavalier's Charge"
+      },
+      {
+        "id": 31,
+        "name": "Class Flourish"
+      }
+    ],
+    "affix": [
+      {
+        "id": 46,
+        "name": "Savagery"
+      },
+      {
+        "id": 52,
+        "name": "Brutality"
+      },
+      {
+        "id": 57,
+        "name": "Intellect and Endurance"
+      },
+      {
+        "id": 48,
+        "name": "Resolve"
+      },
+      {
+        "id": 54,
+        "name": "Protection"
+      },
+      {
+        "id": 55,
+        "name": "Courage"
+      },
+      {
+        "id": 51,
+        "name": "Berserk"
+      },
+      {
+        "id": 56,
+        "name": "Heroism"
+      }
+    ]
+  },
+  "217872": {
+    "focus": [
+      {
+        "id": 1,
+        "name": "Physical Damage"
+      },
+      {
+        "id": 2,
+        "name": "Poison Damage"
+      },
+      {
+        "id": 4,
+        "name": "Bleed Damage"
+      },
+      {
+        "id": 5,
+        "name": "Magic Damage"
+      },
+      {
+        "id": 10,
+        "name": "Multi-Target"
+      },
+      {
+        "id": 14,
+        "name": "Pull"
+      },
+      {
+        "id": 16,
+        "name": "Stun"
+      },
+      {
+        "id": 7,
+        "name": "Frost Damage"
+      }
+    ],
+    "signature": [
+      {
+        "id": 24,
+        "name": "Lingering Torment"
+      },
+      {
+        "id": 25,
+        "name": "Hunter's Snare"
+      },
+      {
+        "id": 27,
+        "name": "Leeching Thirst"
+      },
+      {
+        "id": 29,
+        "name": "Assassin's Misery"
+      },
+      {
+        "id": 31,
+        "name": "Class Flourish"
+      },
+      {
+        "id": 33,
+        "name": "Warmage's Defense"
+      },
+      {
+        "id": 37,
+        "name": "Fencer's Parry"
+      },
+      {
+        "id": 40,
+        "name": "Wayfarer's Mastery"
+      },
+      {
+        "id": 41,
+        "name": "Warrior's Opportunity"
+      }
+    ],
+    "affix": [
+      {
+        "id": 44,
+        "name": "Off Balance"
+      },
+      {
+        "id": 46,
+        "name": "Savagery"
+      },
+      {
+        "id": 47,
+        "name": "Expedition"
+      },
+      {
+        "id": 51,
+        "name": "Berserk"
+      },
+      {
+        "id": 59,
+        "name": "Vulnerability"
+      },
+      {
+        "id": 60,
+        "name": "Maim"
+      },
+      {
+        "id": 65,
+        "name": "Lifesteal"
+      },
+      {
+        "id": 68,
+        "name": "Uncertainty"
+      },
+      {
+        "id": 52,
+        "name": "Brutality"
+      },
+      {
+        "id": 58,
+        "name": "Force"
+      }
+    ]
+  },
+  "220541": {
+    "focus": [
+      {
+        "id": 1,
+        "name": "Physical Damage"
+      },
+      {
+        "id": 3,
+        "name": "Disease Damage"
+      },
+      {
+        "id": 5,
+        "name": "Magic Damage"
+      },
+      {
+        "id": 9,
+        "name": "Trauma"
+      },
+      {
+        "id": 13,
+        "name": "Knockback"
+      },
+      {
+        "id": 16,
+        "name": "Stun"
+      },
+      {
+        "id": 17,
+        "name": "Dispel"
+      },
+      {
+        "id": 7,
+        "name": "Frost Damage"
+      }
+    ],
+    "signature": [
+      {
+        "id": 24,
+        "name": "Lingering Torment"
+      },
+      {
+        "id": 25,
+        "name": "Hunter's Snare"
+      },
+      {
+        "id": 28,
+        "name": "Immobilizing Strike"
+      },
+      {
+        "id": 29,
+        "name": "Assassin's Misery"
+      },
+      {
+        "id": 31,
+        "name": "Class Flourish"
+      },
+      {
+        "id": 35,
+        "name": "Thief's Swiftness"
+      },
+      {
+        "id": 40,
+        "name": "Wayfarer's Mastery"
+      },
+      {
+        "id": 41,
+        "name": "Warrior's Opportunity"
+      },
+      {
+        "id": 42,
+        "name": "Cavalier's Charge"
+      }
+    ],
+    "affix": [
+      {
+        "id": 44,
+        "name": "Off Balance"
+      },
+      {
+        "id": 46,
+        "name": "Savagery"
+      },
+      {
+        "id": 47,
+        "name": "Expedition"
+      },
+      {
+        "id": 56,
+        "name": "Heroism"
+      },
+      {
+        "id": 59,
+        "name": "Vulnerability"
+      },
+      {
+        "id": 61,
+        "name": "Cowardice"
+      },
+      {
+        "id": 63,
+        "name": "Mangle"
+      },
+      {
+        "id": 66,
+        "name": "Defile"
+      },
+      {
+        "id": 52,
+        "name": "Brutality"
+      },
+      {
+        "id": 54,
+        "name": "Protection"
+      }
+    ]
+  },
+  "220549": {
+    "focus": [
+      {
+        "id": 5,
+        "name": "Magic Damage"
+      },
+      {
+        "id": 15,
+        "name": "Immobilize"
+      },
+      {
+        "id": 18,
+        "name": "Healing"
+      },
+      {
+        "id": 19,
+        "name": "Restore Resources"
+      },
+      {
+        "id": 20,
+        "name": "Damage Shield"
+      },
+      {
+        "id": 23,
+        "name": "Mitigation"
+      },
+      {
+        "id": 22,
+        "name": "Generate Ultimate"
+      }
+    ],
+    "signature": [
+      {
+        "id": 25,
+        "name": "Hunter's Snare"
+      },
+      {
+        "id": 26,
+        "name": "Knight's Valor"
+      },
+      {
+        "id": 31,
+        "name": "Class Flourish"
+      },
+      {
+        "id": 32,
+        "name": "Sage's Remedy"
+      },
+      {
+        "id": 33,
+        "name": "Warmage's Defense"
+      },
+      {
+        "id": 34,
+        "name": "Druid's Resurgence"
+      },
+      {
+        "id": 36,
+        "name": "Crusader's Defiance"
+      }
+    ],
+    "affix": [
+      {
+        "id": 50,
+        "name": "Vitality"
+      },
+      {
+        "id": 53,
+        "name": "Empower"
+      },
+      {
+        "id": 54,
+        "name": "Protection"
+      },
+      {
+        "id": 55,
+        "name": "Courage"
+      },
+      {
+        "id": 56,
+        "name": "Heroism"
+      },
+      {
+        "id": 57,
+        "name": "Intellect and Endurance"
+      },
+      {
+        "id": 60,
+        "name": "Maim"
+      },
+      {
+        "id": 67,
+        "name": "Brittle"
+      },
+      {
+        "id": 64,
+        "name": "Breach"
+      },
+      {
+        "id": 49,
+        "name": "Evasion"
+      },
+      {
+        "id": 58,
+        "name": "Force"
+      },
+      {
+        "id": 59,
+        "name": "Vulnerability"
+      }
+    ]
+  },
+  "222678": {
+    "focus": [
+      {
+        "id": 5,
+        "name": "Magic Damage"
+      },
+      {
+        "id": 7,
+        "name": "Frost Damage"
+      },
+      {
+        "id": 8,
+        "name": "Flame Damage"
+      },
+      {
+        "id": 13,
+        "name": "Knockback"
+      },
+      {
+        "id": 15,
+        "name": "Immobilize"
+      },
+      {
+        "id": 18,
+        "name": "Healing"
+      },
+      {
+        "id": 20,
+        "name": "Damage Shield"
+      },
+      {
+        "id": 6,
+        "name": "Shock Damage"
+      },
+      {
+        "id": 4,
+        "name": "Bleed Damage"
+      }
+    ],
+    "signature": [
+      {
+        "id": 24,
+        "name": "Lingering Torment"
+      },
+      {
+        "id": 25,
+        "name": "Hunter's Snare"
+      },
+      {
+        "id": 31,
+        "name": "Class Flourish"
+      },
+      {
+        "id": 32,
+        "name": "Sage's Remedy"
+      },
+      {
+        "id": 70,
+        "name": "Growing Impact"
+      },
+      {
+        "id": 38,
+        "name": "Gladiator's Tenacity"
+      },
+      {
+        "id": 41,
+        "name": "Warrior's Opportunity"
+      }
+    ],
+    "affix": [
+      {
+        "id": 48,
+        "name": "Resolve"
+      },
+      {
+        "id": 54,
+        "name": "Protection"
+      },
+      {
+        "id": 57,
+        "name": "Intellect and Endurance"
+      },
+      {
+        "id": 58,
+        "name": "Force"
+      },
+      {
+        "id": 59,
+        "name": "Vulnerability"
+      },
+      {
+        "id": 62,
+        "name": "Enervation"
+      },
+      {
+        "id": 64,
+        "name": "Breach"
+      },
+      {
+        "id": 69,
+        "name": "Magickasteal"
+      },
+      {
+        "id": 46,
+        "name": "Savagery"
+      },
+      {
+        "id": 52,
+        "name": "Brutality"
+      }
+    ]
+  }
+}

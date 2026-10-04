@@ -1,0 +1,30 @@
+{
+  "name": "ttemplate",
+  "private": true,
+  "scripts": {
+    "predev": "node scripts/prepare-static-assets.mjs",
+    "dev": "next dev",
+    "prebuild": "node scripts/prepare-static-assets.mjs",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:skill-catalog": "node --test tests/scripts/generate-eso-skill-catalog.node-test.mjs"
+  },
+  "dependencies": {
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^2.1.9"
+  }
+}
