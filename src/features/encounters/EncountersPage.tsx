@@ -156,7 +156,10 @@ function getDefaultSetItemSelection(
   let trait: string | null = null;
   let enchantment = '';
   let poison = '';
-  if (representative.gearType === 'armor') {
+  if (representative.weaponType === 'Shield') {
+    trait = choice.variants.some((item) => item.trait === 'Charged') ? 'Charged' : null;
+    enchantment = role === RoleType.Tank ? '1' : role === RoleType.Heal ? '2' : '4';
+  } else if (representative.gearType === 'armor') {
     trait = choice.variants.some((item) => item.trait === 'Divines') ? 'Divines' : null;
     const enchantId = representative.armorWeight === 'light' ? 2
       : representative.armorWeight === 'medium' ? 4
@@ -704,15 +707,16 @@ export default function EncountersPage() {
   const availableTraits = selectedItemChoice
     ? [...new Set(selectedItemChoice.variants.map((item) => item.trait))]
     : [];
+  const isShieldItem = selectedSetItem?.weaponType === 'Shield';
   const enchantmentOptions = selectedSetItem
-    ? ESO_ENCHANTS.filter((enchant) => enchant.gearType === selectedSetItem.gearType)
+    ? ESO_ENCHANTS.filter((enchant) => enchant.gearType === (isShieldItem ? 'armor' : selectedSetItem.gearType))
     : [];
   const validEnchantment = Boolean(
     selectedSetItem
     && gearDraft?.enchantment
     && enchantmentOptions.some((enchant) => String(enchant.id) === gearDraft.enchantment),
   );
-  const poisonOptions = selectedSetItem?.gearType === 'weapon' ? ESO_POISONS : [];
+  const poisonOptions = selectedSetItem?.gearType === 'weapon' && !isShieldItem ? ESO_POISONS : [];
   const validPoison = Boolean(gearDraft && 'poison' in gearDraft && gearDraft.poison && poisonOptions.some((poison) => poison === gearDraft.poison));
   const canValidateSet = Boolean(selectedSetId !== null && selectedItemChoice && selectedTrait !== null && selectedSetItem && (validEnchantment || validPoison));
   const previewItem = selectedItemChoice?.representative;
@@ -809,7 +813,7 @@ export default function EncountersPage() {
   const foodGroups = [
     { label: 'Mono-stat', foods: filteredFoods.filter((food) => [261, 351, 153].includes(food.id)) },
     { label: 'Bi-stat', foods: filteredFoods.filter((food) => [341, 62, 538].includes(food.id)) },
-    { label: 'Stat + recovery', foods: filteredFoods.filter((food) => [119, 257, 175, 75].includes(food.id)) },
+    { label: 'Stat + recovery', foods: filteredFoods.filter((food) => [119, 257, 175, 75, 120764, 71059].includes(food.id)) },
     { label: 'Full recovery', foods: filteredFoods.filter((food) => food.id === 41) },
     { label: 'Tri-stat', foods: filteredFoods.filter((food) => food.id === 537) },
   ].filter((group) => group.foods.length > 0);
@@ -2859,8 +2863,8 @@ export default function EncountersPage() {
                 </label>
                 <label className="text-sm text-[#f8f7f2] col-span-2">Trait<select value={selectedTrait ?? ''} disabled={!selectedItemChoice} onChange={(event) => { const trait = event.target.value; setSelectedTrait(trait); const item = findCatalogItemVariant(selectedItemChoice, trait === NO_TRAIT_VALUE ? '' : trait); setGearDraft((current) => ({ ...(current ?? createEmptyGearPiece()), itemId: item?.id ?? null, trait: trait === NO_TRAIT_VALUE ? '' : trait })); }} className="mt-1 w-full border border-[#d6b46b] bg-[#171717] p-2 disabled:opacity-50"><option value="">Choose a trait</option>{availableTraits.map((trait) => <option key={trait || NO_TRAIT_VALUE} value={trait || NO_TRAIT_VALUE}>{trait || 'No trait'}</option>)}</select></label>
                 <label className="text-sm text-[#f8f7f2]">Enchantment<select value={gearDraft.enchantment} disabled={!selectedSetItem} onChange={(event) => { const nextDraft = selectedSetItem?.gearType === 'weapon' ? { ...gearDraft, enchantment: event.target.value, poison: '' } : { ...withoutWeaponPoison(gearDraft), enchantment: event.target.value }; setGearDraft(nextDraft); }} className="mt-1 w-full border border-[#d6b46b] bg-[#171717] p-2 disabled:opacity-50"><option value="">Choose an enchantment</option>{enchantmentOptions.map((enchant) => <option key={enchant.id} value={String(enchant.id)}>{enchant.name}</option>)}</select></label>
-                {selectedSetItem?.gearType === 'weapon' && <label className="text-sm text-[#f8f7f2]">Poison<select value={gearDraft && 'poison' in gearDraft ? gearDraft.poison : ''} onChange={(event) => setGearDraft({ ...gearDraft, poison: event.target.value, enchantment: '' })} className="mt-1 w-full border border-[#d6b46b] bg-[#171717] p-2"><option value="">Choose a poison</option>{ESO_POISONS.map((poison) => <option key={poison} value={poison}>{poison}</option>)}</select></label>}
-                <button type="button" disabled={!canValidateSet} onClick={() => { if (!canValidateSet || !selectedSetItem) return; const draftHasPoison = 'poison' in gearDraft; updateFightPlayerStuff(fight.name, setEditor.playerId, setEditor.slot, { itemId: selectedSetItem.id, trait: selectedSetItem.trait, enchantment: draftHasPoison && gearDraft.poison ? '' : gearDraft.enchantment, ...(selectedSetItem.gearType === 'weapon' && draftHasPoison ? { poison: gearDraft.poison } : {}) }); setSetEditor(null); setGearDraft(null); setSetSearch(''); setSelectedSetId(null); setSelectedItemChoiceKey(''); setSelectedTrait(null); setSetItemOptions([]); }} className="col-span-2 border border-[#f8f7f2] bg-[#d6b46b] px-3 py-2 font-bold text-black disabled:opacity-50">Validate</button>
+                {selectedSetItem?.gearType === 'weapon' && !isShieldItem && <label className="text-sm text-[#f8f7f2]">Poison<select value={gearDraft && 'poison' in gearDraft ? gearDraft.poison : ''} onChange={(event) => setGearDraft({ ...gearDraft, poison: event.target.value, enchantment: '' })} className="mt-1 w-full border border-[#d6b46b] bg-[#171717] p-2"><option value="">Choose a poison</option>{ESO_POISONS.map((poison) => <option key={poison} value={poison}>{poison}</option>)}</select></label>}
+                <button type="button" disabled={!canValidateSet} onClick={() => { if (!canValidateSet || !selectedSetItem) return; const draftHasPoison = 'poison' in gearDraft; updateFightPlayerStuff(fight.name, setEditor.playerId, setEditor.slot, { itemId: selectedSetItem.id, trait: selectedSetItem.trait, enchantment: draftHasPoison && gearDraft.poison ? '' : gearDraft.enchantment, ...(selectedSetItem.gearType === 'weapon' && !isShieldItem && draftHasPoison ? { poison: gearDraft.poison } : {}) }); setSetEditor(null); setGearDraft(null); setSetSearch(''); setSelectedSetId(null); setSelectedItemChoiceKey(''); setSelectedTrait(null); setSetItemOptions([]); }} className="col-span-2 border border-[#f8f7f2] bg-[#d6b46b] px-3 py-2 font-bold text-black disabled:opacity-50">Validate</button>
               </div>
             )}
 
