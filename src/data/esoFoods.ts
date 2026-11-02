@@ -13,4 +13,6 @@ export const ESO_FOODS: Food[] = [
   { id: 257, name: 'Lava Foot Soup-and-Saltrice', imageUrl: '/storage/icons/event_newlifefestival_2016_dancersfestival_soup.png', effect: 'Increase Max Stamina by 4936 and Stamina Recovery by 493 for 2 hours. These effects are scaled based on your level.' },
   { id: 41, name: 'Berveza Vitae', imageUrl: '/storage/icons/crafting_beer_003.png', effect: 'Increase Health Recovery by 309 and Magicka and Stamina Recovery by 284 for 2 hours.' },
   { id: 537, name: 'Bewitched Sugar Skulls', imageUrl: '/storage/icons/plate_of_sugarskulls.png', effect: 'Increase Max Health by 4620, Max Stamina and Magicka by 4250, and Health Recovery by 462 for 2 hours. These effects are scaled based on your level.' },
+  { id: 120764, name: 'Jewels of Misrule', imageUrl: '/storage/icons/event_jester_rockcandy.png', effect: 'Increase Max Health by 4620 and Magicka and Stamina Recovery by 425 for 2 hours. These effects are scaled based on your level.' },
+  { id: 71059, name: "Orzorga's Smoked Bear Haunch", imageUrl: '/storage/icons/crafting_meat_001.png', effect: 'Increase Max Health by 5395 and Health Recovery by 539 for 2 hours.' },
 ];
