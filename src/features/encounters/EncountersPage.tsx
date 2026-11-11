@@ -234,13 +234,35 @@ function PortalTooltip({ children, content }: { children: ReactNode; content: Re
   return (
     <span className="contents" onMouseEnter={(event) => show(event.currentTarget)} onMouseLeave={() => setPosition(null)} onFocus={(event) => show(event.currentTarget)} onBlur={() => setPosition(null)}>
       {children}
-      {position && typeof document !== 'undefined' ? createPortal(
+      {position && content != null && typeof document !== 'undefined' ? createPortal(
         <span className={`pointer-events-none fixed z-[99999] w-72 max-h-[min(60vh,28rem)] overflow-y-auto rounded-lg border border-[#d6b46b] bg-[#111111] p-3 text-left text-xs text-white shadow-2xl ${position.above ? '-translate-y-full' : ''}`} style={{ top: position.top, left: position.left }}>
           {content}
         </span>,
         document.body,
       ) : null}
     </span>
+  );
+}
+
+function getAbilityTooltipContent(value: SkillAbilityId | '') {
+  const abilityName = getAbilityDisplayName(value);
+  const decoded = decodeScribingSkillId(value);
+  const options = decoded ? getScribingOptions(decoded.grimoireAbilityId) : undefined;
+
+  return (
+    <>
+      <span className="mb-1 block font-bold text-[#f7e7ba]">{abilityName}</span>
+      {decoded && options ? (
+        <span className="space-y-1">
+          {(['focus', 'signature', 'affix'] as const).map((kind) => (
+            <span key={kind} className="block">
+              <span className="text-[#d6b46b]">{kind[0].toUpperCase() + kind.slice(1)}: </span>
+              {options[kind].find((option) => option.id === decoded[`${kind}ScriptId` as 'focusScriptId' | 'signatureScriptId' | 'affixScriptId'])?.name ?? '—'}
+            </span>
+          ))}
+        </span>
+      ) : null}
+    </>
   );
 }
 
@@ -292,15 +314,27 @@ function withoutWeaponPoison(draft: GearDraft): GearPiece {
   };
 }
 
-function GearDetailsTooltip({ label, itemId, gear, slot }: { label: string; itemId: number; gear: GearSlotPiece | undefined; slot: SetSlot }) {
+function GearDetailsTooltip({ itemId, gear, slot }: { itemId: number; gear: GearSlotPiece | undefined; slot: SetSlot }) {
   const [item, setItem] = useState<CatalogSetItem | null>(() => getCachedCatalogItem(itemId, gear?.trait));
+  const [setEffects, setSetEffects] = useState<CatalogSetSummary['effects'] | null>(null);
 
   useEffect(() => {
     let active = true;
     void ensureCatalogItemLoaded(itemId, gear?.trait).then((loadedItem) => {
-      if (active) setItem(loadedItem);
+      if (!active) return;
+      setItem(loadedItem);
+      if (!loadedItem) {
+        setSetEffects([]);
+        return;
+      }
+      return fetchSetById(loadedItem.setId).then((set) => {
+        if (active) setSetEffects(set?.effects ?? []);
+      });
     }).catch(() => {
-      if (active) setItem(null);
+      if (active) {
+        setItem(null);
+        setSetEffects([]);
+      }
     });
     return () => { active = false; };
   }, [itemId, gear?.trait]);
@@ -317,15 +351,23 @@ function GearDetailsTooltip({ label, itemId, gear, slot }: { label: string; item
 
   return (
     <div className="w-full">
-      <div className="mb-2 flex items-start justify-between gap-3 border-b border-[#d6b46b] pb-2">
-        <h3 className="font-bold text-[#f7e7ba]">{label} details</h3>
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="font-bold text-[#f7e7ba]">{item?.setName ?? 'Loading...'}</h3>
         <GearIcon gear={gear} slot={slot} fallbackSrc={SET_SLOT_PLACEHOLDER_IMAGES[slot]} alt={item ? getItemLabel(item) : 'Selected item'} className="h-12 w-12 shrink-0 border border-[#d6b46b] bg-black/40 p-1 object-cover" />
       </div>
+      <ul className="mt-2 space-y-1">
+        {(setEffects ?? []).map((effect) => (
+          <li key={`${effect.numberOfPiecesRequired}-${effect.description}`}>
+            <span className="text-[#d6b46b]">{effect.numberOfPiecesRequired} pieces: </span>
+            {effect.description.replace(/\|c[0-9a-fA-F]{6}|\|r/g, '')}
+          </li>
+        ))}
+        {setEffects === null && <li className="text-white/60">Loading set bonuses...</li>}
+      </ul>
+      <div className="my-2 border-t border-[#d6b46b]" />
       <dl className="space-y-1">
-        <div><dt className="inline text-[#d6b46b]">Set name: </dt><dd className="inline">{item?.setName ?? 'Loading...'}</dd></div>
-        <div><dt className="inline text-[#d6b46b]">Item: </dt><dd className="inline">{item?.name ?? 'Loading...'}</dd></div>
-        <div><dt className="inline text-[#d6b46b]">Trait: </dt><dd className="inline">{gear?.trait || item?.trait || 'No trait'}</dd></div>
         <div><dt className="inline text-[#d6b46b]">Item type: </dt><dd className="inline">{itemType}</dd></div>
+        <div><dt className="inline text-[#d6b46b]">Trait: </dt><dd className="inline">{gear?.trait || item?.trait || 'No trait'}</dd></div>
         <div><dt className="inline text-[#d6b46b]">Enchantment: </dt><dd className="inline">{enchantment?.name ?? (gear?.enchantment ? `Unknown enchantment (${gear.enchantment})` : 'None')}</dd></div>
         {item?.gearType === 'weapon' && <div><dt className="inline text-[#d6b46b]">Poison: </dt><dd className="inline">{poison || 'None'}</dd></div>}
       </dl>
@@ -1095,7 +1137,7 @@ export default function EncountersPage() {
     const abilityName = getAbilityDisplayName(value);
     const decodedScribingId = decodeScribingSkillId(value);
 
-    return (
+    const button = (
       <button
         type="button"
         aria-label={`${slotLabel}: ${abilityName || 'empty'}`}
@@ -1169,6 +1211,10 @@ export default function EncountersPage() {
         ) : null}
       </button>
     );
+
+    return hasValue && abilityName ? (
+      <PortalTooltip content={getAbilityTooltipContent(value)}>{button}</PortalTooltip>
+    ) : button;
   };
 
   const renderViewAbilityIcon = (value: SkillAbilityId | '', category?: AbilityCategory, compact = false) => {
@@ -1176,18 +1222,16 @@ export default function EncountersPage() {
     if (!value || !category || !abilityName) {
       return <div className={`${compact ? 'h-auto max-h-9 w-full max-w-9 aspect-square' : 'h-12 w-12'} shrink-0 border border-dashed border-yellow-700 bg-black/40`} />;
     }
-    const decoded = decodeScribingSkillId(value);
-    const options = decoded ? getScribingOptions(decoded.grimoireAbilityId) : undefined;
     return (
-      <PortalTooltip content={<><span className="mb-1 block font-bold text-[#f7e7ba]">{abilityName}</span>{decoded && options ? <span className="space-y-1">{(['focus', 'signature', 'affix'] as const).map((kind) => <span key={kind} className="block"><span className="text-[#d6b46b]">{kind[0].toUpperCase() + kind.slice(1)}: </span>{options[kind].find((option) => option.id === decoded[`${kind}ScriptId` as 'focusScriptId' | 'signatureScriptId' | 'affixScriptId'])?.name ?? '—'}</span>)}</span> : null}</>}>
-      <button
-        type="button"
-        aria-label={`Show details for ${abilityName}`}
-        onClick={() => setViewSkillDetails(value)}
-        className={`group/skill relative flex ${compact ? 'h-auto max-h-9 w-full max-w-9 aspect-square' : 'h-12 w-12'} shrink-0 cursor-pointer items-center justify-center border-2 border-yellow-600 bg-black/40 p-0.5 transition hover:z-[60] hover:scale-110 hover:border-yellow-300 focus-visible:z-[60] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300`}
-      >
-        <Image src={getAbilityImagePath(category, abilityName)} alt="" width={40} height={40} className="h-full w-full object-cover" />
-      </button>
+      <PortalTooltip content={getAbilityTooltipContent(value)}>
+        <button
+          type="button"
+          aria-label={`Show details for ${abilityName}`}
+          onClick={() => setViewSkillDetails(value)}
+          className={`group/skill relative flex ${compact ? 'h-auto max-h-9 w-full max-w-9 aspect-square' : 'h-12 w-12'} shrink-0 cursor-pointer items-center justify-center border-2 border-yellow-600 bg-black/40 p-0.5 transition hover:z-[60] hover:scale-110 hover:border-yellow-300 focus-visible:z-[60] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300`}
+        >
+          <Image src={getAbilityImagePath(category, abilityName)} alt="" width={40} height={40} className="h-full w-full object-cover" />
+        </button>
       </PortalTooltip>
     );
   };
@@ -1207,37 +1251,41 @@ export default function EncountersPage() {
     const foodEffect = type === 'food'
       ? ESO_FOODS.find((item) => String(item.id) === value || item.name === value)?.effect
       : undefined;
-    const tooltipContent = <><span className="mb-1 block font-bold text-[#f7e7ba]">{itemName}</span>{foodEffect ? <span className="block">{foodEffect}</span> : null}</>;
+    const consumableEffect = foodEffect ?? (type === 'potion' ? potionEffects[itemName] : undefined);
+    const tooltipContent = <><span className="mb-1 block font-bold text-[#f7e7ba]">{itemName}</span>{consumableEffect ? <span className="block">{consumableEffect}</span> : null}</>;
 
     if (isEditMode) {
-      return (
-        <PortalTooltip content={tooltipContent}>
-          <button
-            type="button"
-            onClick={() => setConsumableEditor({ playerId, type })}
-            className={`flex ${compact ? 'h-8 w-8' : 'h-12 w-12'} shrink-0 items-center justify-center self-center border-2 bg-black/60 p-0.5 transition hover:border-yellow-400 ${
-              value ? 'border-yellow-600' : 'border-dashed border-yellow-700'
-            }`}
-          >
-            {iconSrc ? (
-              <Image src={iconSrc} alt="" width={40} height={40} className="h-full w-full object-cover" />
-            ) : null}
-          </button>
-        </PortalTooltip>
+      const button = (
+        <button
+          type="button"
+          onClick={() => setConsumableEditor({ playerId, type })}
+          className={`flex ${compact ? 'h-8 w-8' : 'h-12 w-12'} shrink-0 items-center justify-center self-center border-2 bg-black/60 p-0.5 transition hover:border-yellow-400 ${
+            value ? 'border-yellow-600' : 'border-dashed border-yellow-700'
+          }`}
+        >
+          {iconSrc ? (
+            <Image src={iconSrc} alt="" width={40} height={40} className="h-full w-full object-cover" />
+          ) : null}
+        </button>
       );
+      return value ? <PortalTooltip content={tooltipContent}>{button}</PortalTooltip> : button;
     }
 
     if (!iconSrc) {
       return <div className={`${compact ? 'h-8 w-8' : 'h-12 w-12'} shrink-0 self-center border border-dashed border-yellow-700 bg-black/40`} />;
     }
 
-    return (
-      <PortalTooltip content={tooltipContent}>
-        <div aria-label={itemName} className={`flex ${compact ? 'h-8 w-8' : 'h-12 w-12'} shrink-0 items-center justify-center self-center border-2 border-yellow-600 bg-black/40 p-0.5 transition hover:z-[60] hover:scale-110 hover:border-yellow-300`}>
-          <Image src={iconSrc} alt="" width={40} height={40} className="h-full w-full object-cover" />
-        </div>
-      </PortalTooltip>
+    const slot = (
+      <div aria-label={itemName} className={`flex ${compact ? 'h-8 w-8' : 'h-12 w-12'} shrink-0 items-center justify-center self-center border-2 border-yellow-600 bg-black/40 p-0.5 transition hover:z-[60] hover:scale-110 hover:border-yellow-300`}>
+        <Image src={iconSrc} alt="" width={40} height={40} className="h-full w-full object-cover" />
+      </div>
     );
+
+    return value ? (
+      <PortalTooltip content={tooltipContent}>
+        {slot}
+      </PortalTooltip>
+    ) : slot;
   };
 
   const renderActionBar = (
@@ -1469,7 +1517,7 @@ export default function EncountersPage() {
       <div className={`flex min-w-0 flex-col items-center gap-1 ${detailPreview ? 'w-16' : 'w-12'}`}>
         {showSlotLabel && <span className="w-full truncate text-center text-[clamp(8px,2.2cqw,10px)] font-semibold uppercase tracking-wide text-yellow-300">{label}</span>}
         {isEditMode ? (
-          <PortalTooltip content={gearItemId !== null && gearItemId !== undefined ? <GearDetailsTooltip label={label} itemId={gearItemId} gear={gear} slot={slot} /> : null}>
+          <PortalTooltip content={gearItemId !== null && gearItemId !== undefined ? <GearDetailsTooltip itemId={gearItemId} gear={gear} slot={slot} /> : null}>
           <button
             type="button"
             draggable={isEditMode && gearItemId != null && Boolean(itemMeta)}
@@ -1531,7 +1579,7 @@ export default function EncountersPage() {
           </PortalTooltip>
         ) : (
           gearItemId != null ? (
-            <PortalTooltip content={<GearDetailsTooltip label={label} itemId={gearItemId} gear={gear} slot={slot} />}>
+            <PortalTooltip content={<GearDetailsTooltip itemId={gearItemId} gear={gear} slot={slot} />}>
             <button
               type="button"
               onClick={() => {
@@ -2017,6 +2065,15 @@ export default function EncountersPage() {
               const food = ESO_FOODS.find((item) => String(item.id) === playerStuff.food || item.name === playerStuff.food)?.name ?? playerStuff.food ?? 'None';
               const foodEffect = ESO_FOODS.find((item) => String(item.id) === playerStuff.food || item.name === playerStuff.food)?.effect;
               const potion = ESO_POTIONS.find((item) => String(item.id) === playerStuff.potion || item.name === playerStuff.potion)?.name ?? playerStuff.potion ?? 'None';
+              const foodTooltipContent = <><span className="mb-1 block font-bold text-[#f7e7ba]">{food}</span>{foodEffect ? <span className="block">{foodEffect}</span> : null}</>;
+              const potionEffect = potionEffects[potion];
+              const potionTooltipContent = <><span className="mb-1 block font-bold text-[#f7e7ba]">{potion}</span>{potionEffect ? <span className="block">{potionEffect}</span> : null}</>;
+              const foodSummary = isEditMode
+                ? <button type="button" onClick={() => setConsumableEditor({ playerId: player.id, type: 'food' })} className="flex w-full items-center gap-1 truncate text-left hover:text-yellow-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300"><span className="text-white/50">Food</span>{playerStuff.food && <Image src={FOOD_ICON_MAP[playerStuff.food] ?? DEFAULT_FOOD_ICON} alt="" width={18} height={18} className="h-[18px] w-[18px] shrink-0 rounded" />}<span className="truncate">{food || 'None'}</span></button>
+                : <div className="flex min-w-0 items-center gap-1 truncate"><span className="text-white/50">Food</span>{playerStuff.food && <Image src={FOOD_ICON_MAP[playerStuff.food] ?? DEFAULT_FOOD_ICON} alt="" width={18} height={18} className="h-[18px] w-[18px] shrink-0 rounded" />}<span className="truncate">{food || 'None'}</span></div>;
+              const potionSummary = isEditMode
+                ? <button type="button" onClick={() => setConsumableEditor({ playerId: player.id, type: 'potion' })} className="flex w-full items-center gap-1 truncate text-left hover:text-yellow-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300"><span className="text-white/50">Potion</span>{playerStuff.potion && <Image src={POTION_ICON_MAP[playerStuff.potion] ?? DEFAULT_POTION_ICON} alt="" width={18} height={18} className="h-[18px] w-[18px] shrink-0 rounded" />}<span className="truncate">{potion || 'None'}</span></button>
+                : <div className="flex min-w-0 items-center gap-1 truncate"><span className="text-white/50">Potion</span>{playerStuff.potion && <Image src={POTION_ICON_MAP[playerStuff.potion] ?? DEFAULT_POTION_ICON} alt="" width={18} height={18} className="h-[18px] w-[18px] shrink-0 rounded" />}<span className="truncate">{potion || 'None'}</span></div>;
               const classMasteries = [player.classMasteries.firstClassMastery, player.classMasteries.secondClassMastery].filter(Boolean);
               const descriptionLineCount = Math.max(1, ...visiblePlayers.map((visiblePlayer) => {
                 const description = fight.playersStuff.find((entry) => entry.id === visiblePlayer.id)?.description ?? '';
@@ -2038,17 +2095,8 @@ export default function EncountersPage() {
                   </div>
                   <div className="mb-2 flex flex-col items-center gap-1 text-xs text-yellow-200">{renderPlayerSetupEditors(player)}{classMasteries.map((mastery) => isEditMode ? <button key={mastery} type="button" disabled={!hasCompletePlayerClass(player)} aria-expanded={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery'} onClick={() => toggleMasteryMenu(player.id)} className="w-full rounded border border-yellow-500 bg-black/30 px-2 py-0.5 text-center text-yellow-200 transition hover:border-yellow-300 hover:bg-yellow-700/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">{mastery}</button> : <span key={mastery} className="w-full text-center">{mastery}</span>)}</div>
                   <div className="space-y-1 border-y border-white/10 py-2 text-[11px]">
-                    {isEditMode ? (
-                      <>
-                        <PortalTooltip content={<><span className="mb-1 block font-bold text-[#f7e7ba]">{food}</span>{foodEffect ? <span className="block">{foodEffect}</span> : null}</>}><button type="button" onClick={() => setConsumableEditor({ playerId: player.id, type: 'food' })} className="flex w-full items-center gap-1 truncate text-left hover:text-yellow-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300"><span className="text-white/50">Food</span>{playerStuff.food && <Image src={FOOD_ICON_MAP[playerStuff.food] ?? DEFAULT_FOOD_ICON} alt="" width={18} height={18} className="h-[18px] w-[18px] shrink-0 rounded" />}<span className="truncate">{food || 'None'}</span></button></PortalTooltip>
-                        <button type="button" onClick={() => setConsumableEditor({ playerId: player.id, type: 'potion' })} className="flex w-full items-center gap-1 truncate text-left hover:text-yellow-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300"><span className="text-white/50">Potion</span>{playerStuff.potion && <Image src={POTION_ICON_MAP[playerStuff.potion] ?? DEFAULT_POTION_ICON} alt="" width={18} height={18} className="h-[18px] w-[18px] shrink-0 rounded" />}<span className="truncate">{potion || 'None'}</span></button>
-                      </>
-                    ) : (
-                      <>
-                        <PortalTooltip content={<><span className="mb-1 block font-bold text-[#f7e7ba]">{food}</span>{foodEffect ? <span className="block">{foodEffect}</span> : null}</>}><div className="flex min-w-0 items-center gap-1 truncate"><span className="text-white/50">Food</span>{playerStuff.food && <Image src={FOOD_ICON_MAP[playerStuff.food] ?? DEFAULT_FOOD_ICON} alt="" width={18} height={18} className="h-[18px] w-[18px] shrink-0 rounded" />}<span className="truncate">{food || 'None'}</span></div></PortalTooltip>
-                        <div className="flex min-w-0 items-center gap-1 truncate"><span className="text-white/50">Potion</span>{playerStuff.potion && <Image src={POTION_ICON_MAP[playerStuff.potion] ?? DEFAULT_POTION_ICON} alt="" width={18} height={18} className="h-[18px] w-[18px] shrink-0 rounded" />}<span className="truncate">{potion || 'None'}</span></div>
-                      </>
-                    )}
+                    {playerStuff.food ? <PortalTooltip content={foodTooltipContent}>{foodSummary}</PortalTooltip> : foodSummary}
+                    {playerStuff.potion ? <PortalTooltip content={potionTooltipContent}>{potionSummary}</PortalTooltip> : potionSummary}
                     {isEditMode ? (
                       <button type="button" onClick={() => setMundusEditorPlayerId(player.id)} aria-label={`Change ${player.name} Mundus stone`} className="flex w-full min-w-0 cursor-pointer items-center gap-1 truncate text-left hover:text-yellow-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">
                         <span className="shrink-0 text-white/50">Mundus</span>
