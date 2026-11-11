@@ -44,6 +44,7 @@ import {
   CommonSkillLine,
   ClassSkillLine,
   createEmptyGearPiece,
+  createEmptyGearForSlot,
   createEmptyFightPlayerStuff,
   getPairedWeaponSlot,
   getChampionPointDisciplineFromSlot,
@@ -62,7 +63,7 @@ import {
   type ChampionPoints,
   type SetSlot,
 } from '@/features/template/raidTemplate';
-import { GearIcon } from '@/lib/gearIcons';
+import { GearIcon, normalizeSetName, SET_ICON_SOURCES } from '@/lib/gearIcons';
 import { withBasePath } from '@/lib/staticAssets';
 import {
   CHAMPION_CATEGORY_FRAME,
@@ -85,6 +86,7 @@ type ScribingDraft = {
   affixScriptId: number | '';
 };
 type SetEditorState = { playerId: number; slot: SetSlot };
+type QuickGearSetupState = { playerId: number; replaceSetId: number | null };
 type GearDetailsState = {
   playerId: number;
   slot: SetSlot;
@@ -144,6 +146,15 @@ const COPY_CATEGORY_LABELS: Record<CopyCategory, string> = {
 const NO_TRAIT_VALUE = '__no_trait__';
 type SetSlotCategory = CatalogSetItem['gearType'];
 type DraggedSetSlot = { playerId: number; slot: SetSlot; itemId: number; category: SetSlotCategory };
+
+const QUICK_GEAR_SLOT_ORDER: readonly SetSlot[] = [
+  'head', 'chest', 'waist', 'boots', 'shoulders', 'gloves', 'legs',
+  'necklace', 'ring1', 'ring2',
+  'offHandFrontBar', 'mainHandFrontBar', 'offHandBackBar', 'mainHandBackBar',
+];
+const NORMALIZED_SET_ICON_SOURCES = new Map(
+  Object.entries(SET_ICON_SOURCES).map(([setName, source]) => [normalizeSetName(setName), source]),
+);
 
 function getDefaultSetItemSelection(
   choice: ReturnType<typeof groupCatalogItems>[number] | undefined,
@@ -285,10 +296,21 @@ function CritDamageValue({ breakdown, children }: { breakdown: CritDamageBreakdo
   );
 }
 
-function SetHeadIcon({ setId, setName }: { setId: number; setName: string }) {
+function SetHeadIcon({
+  setId,
+  setName,
+  className = 'mb-2 flex h-12 w-12 items-center justify-center border border-[#d6b46b] bg-black/40 p-1',
+}: {
+  setId: number;
+  setName: string;
+  className?: string;
+}) {
   const [headItem, setHeadItem] = useState<CatalogSetItem | null>(null);
+  const staticIcon = SET_ICON_SOURCES[setName]
+    ?? NORMALIZED_SET_ICON_SOURCES.get(normalizeSetName(setName));
 
   useEffect(() => {
+    if (staticIcon) return;
     let active = true;
     void fetchSetById(setId).then((set) => {
       if (active) setHeadItem(set?.items.find((item) => item.equipType === 'Head') ?? set?.items[0] ?? null);
@@ -296,11 +318,18 @@ function SetHeadIcon({ setId, setName }: { setId: number; setName: string }) {
       if (active) setHeadItem(null);
     });
     return () => { active = false; };
-  }, [setId]);
+  }, [setId, staticIcon]);
 
+  if (staticIcon) {
+    return (
+      <span className={className}>
+        <Image src={staticIcon} alt={`${setName} icon`} width={40} height={40} className="h-full w-full object-cover" />
+      </span>
+    );
+  }
   if (!headItem) return null;
   return (
-    <span className="mb-2 flex h-12 w-12 items-center justify-center border border-[#d6b46b] bg-black/40 p-1">
+    <span className={className}>
       <GearIcon gear={{ itemId: headItem.id, enchantment: '', trait: headItem.trait }} slot="head" fallbackSrc={SET_SLOT_PLACEHOLDER_IMAGES.head} alt={`${setName} head`} className="h-full w-full object-cover" />
     </span>
   );
@@ -531,6 +560,10 @@ export default function EncountersPage() {
   const [overviewSetPlayerId, setOverviewSetPlayerId] = useState<number | null>(null);
   const [mundusEditorPlayerId, setMundusEditorPlayerId] = useState<number | null>(null);
   const [setEditor, setSetEditor] = useState<SetEditorState | null>(null);
+  const [quickGearSetup, setQuickGearSetup] = useState<QuickGearSetupState | null>(null);
+  const [quickGearSearch, setQuickGearSearch] = useState('');
+  const [quickGearError, setQuickGearError] = useState<string | null>(null);
+  const [isApplyingQuickGear, setIsApplyingQuickGear] = useState(false);
   const [gearDetails, setGearDetails] = useState<GearDetailsState | null>(null);
   const [gearDetailsError, setGearDetailsError] = useState<string | null>(null);
   const [setTransferError, setSetTransferError] = useState<string | null>(null);
@@ -1505,6 +1538,118 @@ export default function EncountersPage() {
     }
   };
 
+  const applyQuickGearSet = async (setId: number) => {
+    if (!quickGearSetup || !fight || isApplyingQuickGear) return;
+
+    setIsApplyingQuickGear(true);
+    setQuickGearError(null);
+    try {
+      const selectedSet = catalogSets.find((set) => set.id === setId);
+      const requiredPieces = getSetMaxPiecesRequired(selectedSet?.effects ?? []);
+      if (requiredPieces === null) {
+        throw new Error('This set does not have a piece requirement that can be equipped automatically.');
+      }
+
+      const playerStuff = fight.playersStuff.find((entry) => entry.id === quickGearSetup.playerId);
+      if (!playerStuff) throw new Error('Unable to find this player in the selected encounter.');
+      await ensureCatalogItemsLoaded(
+        Object.values(playerStuff.sets)
+          .map((gear) => gear.itemId)
+          .filter((itemId): itemId is number => itemId !== null),
+      );
+
+      const setEntry = await fetchSetById(setId);
+      if (!setEntry) throw new Error('Unable to load the selected set.');
+
+      const replacedSlots = quickGearSetup.replaceSetId === null
+        ? []
+        : QUICK_GEAR_SLOT_ORDER.filter((slot) => (
+          getCachedCatalogItem(playerStuff.sets[slot].itemId, playerStuff.sets[slot].trait)?.setId
+          === quickGearSetup.replaceSetId
+        ));
+      if (quickGearSetup.replaceSetId !== null && replacedSlots.length === 0) {
+        throw new Error('The selected equipped set is no longer available to replace.');
+      }
+
+      const replacementSlotSet = new Set(replacedSlots);
+      const availableSlots = QUICK_GEAR_SLOT_ORDER.filter((slot) => (
+        playerStuff.sets[slot].itemId === null || replacementSlotSet.has(slot)
+      ));
+      const simulatedSets: Record<string, GearPiece> = { ...playerStuff.sets };
+      for (const slot of replacedSlots) simulatedSets[slot] = createEmptyGearForSlot(slot);
+
+      const plannedGear = new Map<SetSlot, GearSlotPiece>();
+      const role = playerStuff.role ?? RoleType.DPS;
+
+      for (const slot of availableSlots) {
+        if ((getSetSummary(simulatedSets, catalogSets).find((set) => set.id === setId)?.pieceCount ?? 0) >= requiredPieces) {
+          break;
+        }
+        if (plannedGear.has(slot)) continue;
+
+        const slotItems = await getSlotItemOptions(slot, setId);
+        const choices = groupCatalogItems(slotItems);
+        const choice = choices.find((itemChoice) => getDefaultSetItemSelection(itemChoice, slot, role).item);
+        if (!choice) continue;
+
+        const defaults = getDefaultSetItemSelection(choice, slot, role);
+        if (!defaults.item) continue;
+
+        const pairSlot = defaults.item.gearType === 'weapon'
+          && (defaults.item.equipType === 'Two Hand' || Boolean(defaults.poison))
+          ? getPairedWeaponSlot(slot)
+          : null;
+        if (
+          pairSlot
+          && (
+            !availableSlots.includes(pairSlot)
+            || plannedGear.has(pairSlot)
+            || (playerStuff.sets[pairSlot].itemId !== null && !replacementSlotSet.has(pairSlot))
+          )
+        ) continue;
+
+        const gear: GearSlotPiece = {
+          itemId: defaults.item.id,
+          trait: defaults.item.trait,
+          enchantment: defaults.poison ? '' : defaults.enchantment,
+          ...(getPairedWeaponSlot(slot) !== null ? { poison: defaults.poison } : {}),
+        };
+        plannedGear.set(slot, gear);
+        simulatedSets[slot] = gear;
+
+        if (pairSlot) {
+          const pairedGear: GearSlotPiece = { ...gear, poison: defaults.poison };
+          plannedGear.set(pairSlot, pairedGear);
+          simulatedSets[pairSlot] = pairedGear;
+        }
+      }
+
+      const equippedPieces = getSetSummary(simulatedSets, catalogSets)
+        .find((set) => set.id === setId)?.pieceCount ?? 0;
+      if (equippedPieces < requiredPieces) {
+        throw new Error(
+          `Not enough available compatible slots to equip ${requiredPieces} pieces of ${selectedSet?.setName ?? setEntry.setName}. No changes were made.`,
+        );
+      }
+
+      for (const slot of replacedSlots) {
+        updateFightPlayerStuff(fight.name, quickGearSetup.playerId, slot, createEmptyGearForSlot(slot));
+      }
+      for (const [slot, gear] of plannedGear) {
+        updateFightPlayerStuff(fight.name, quickGearSetup.playerId, slot, gear);
+      }
+
+      setQuickGearSetup(null);
+      setQuickGearSearch('');
+      setQuickGearError(null);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setQuickGearError(message);
+    } finally {
+      setIsApplyingQuickGear(false);
+    }
+  };
+
   const renderSetSlot = (playerId: number, slot: SetSlot, label: string, showSlotLabel = true, detailPreview = false) => {
     const playerStuff = fight.playersStuff.find((entry) => entry.id === playerId);
     const gear = playerStuff?.sets[slot as keyof typeof playerStuff.sets];
@@ -2219,6 +2364,19 @@ export default function EncountersPage() {
                     <td className="relative z-0 px-4 py-6 text-sm text-yellow-100 align-top hover:z-20">
                       <div className="flex w-full min-w-0 flex-col items-center gap-3">
                         {renderCopyPasteControls('sets', player.id, player.name, playerStuff, emptyPlayerStuff)}
+                        {isEditMode && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setQuickGearSetup({ playerId: player.id, replaceSetId: null });
+                              setQuickGearSearch('');
+                              setQuickGearError(null);
+                            }}
+                            className="rounded border border-[#d6b46b] bg-[#171717] px-3 py-1 text-xs font-bold text-[#f8f7f2] transition hover:border-[#f8f7f2] hover:bg-[#333]"
+                          >
+                            Quick Gear Setup
+                          </button>
+                        )}
                         <button
                           type="button"
                           aria-pressed={showSetDetailsByPlayer[player.id] ?? false}
@@ -2956,6 +3114,169 @@ export default function EncountersPage() {
                 </section>
               ))}
             </div>
+          </div>
+        </div>,
+        document.body,
+      )}
+
+      {quickGearSetup && createPortal(
+        <div
+          data-raid-theme={raidTheme || undefined}
+          className="raid-theme-portal encounters-page fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !isApplyingQuickGear) {
+              setQuickGearSetup(null);
+              setQuickGearError(null);
+            }
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="quick-gear-setup-title"
+            className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-lg border-2 border-[#d6b46b] bg-[#111111] p-6"
+          >
+            {(() => {
+              const quickPlayer = players.find((player) => player.id === quickGearSetup.playerId);
+              const quickPlayerStuff = fight?.playersStuff.find((entry) => entry.id === quickGearSetup.playerId);
+              const equippedSets = quickPlayerStuff
+                ? getSetSummary(quickPlayerStuff.sets, catalogSets)
+                : [];
+              const quickFilteredSets = catalogSets
+                .filter((set) => set.setName.toLowerCase().includes(quickGearSearch.trim().toLowerCase()))
+                .sort((first, second) => first.setName.localeCompare(second.setName));
+
+              return (
+                <>
+                  <div className="mb-4 flex items-start justify-between gap-4 border-b border-[#d6b46b] pb-4">
+                    <div>
+                      <h2 id="quick-gear-setup-title" className="text-2xl font-bold text-[#f8f7f2]">
+                        Quick Gear Setup
+                      </h2>
+                      <p className="mt-1 text-sm text-[#d6b46b]">
+                        {quickPlayer ? `Choose a set for ${quickPlayer.name}.` : 'Choose a set.'}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={isApplyingQuickGear}
+                      onClick={() => {
+                        setQuickGearSetup(null);
+                        setQuickGearError(null);
+                      }}
+                      aria-label="Close quick gear setup"
+                      className="text-2xl text-[#d6b46b] hover:text-[#f7e7ba] disabled:opacity-50"
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  <section className="mb-5">
+                    <h3 className="mb-2 text-sm font-semibold text-[#d6b46b]">Replace an equipped set (optional)</h3>
+                    <p className="mb-3 text-xs text-[#f8f7f2]/75">
+                      Select a set here, then choose its replacement below. Otherwise, the new set will use empty slots.
+                    </p>
+                    {equippedSets.length ? (
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                        {equippedSets.map((set) => (
+                          <button
+                            key={set.id}
+                            type="button"
+                            disabled={isApplyingQuickGear}
+                            aria-pressed={quickGearSetup.replaceSetId === set.id}
+                            onClick={() => {
+                              setQuickGearSetup((current) => current
+                                ? { ...current, replaceSetId: current.replaceSetId === set.id ? null : set.id }
+                                : current);
+                              setQuickGearError(null);
+                            }}
+                            className={`flex min-w-0 items-center gap-3 rounded px-3 py-2 text-left text-sm transition disabled:opacity-50 ${
+                              quickGearSetup.replaceSetId === set.id
+                                ? 'border-2 border-[#f8f7f2] bg-[#d6b46b]/20 text-[#f8f7f2] ring-2 ring-[#d6b46b]/70'
+                                : 'border border-[#d6b46b] bg-[#171717] text-[#f8f7f2] hover:border-[#f8f7f2]'
+                            }`}
+                          >
+                            <SetHeadIcon
+                              setId={set.id}
+                              setName={set.setName}
+                              className="flex h-12 w-12 shrink-0 items-center justify-center border border-[#d6b46b]/70 bg-black/40 p-1"
+                            />
+                            <span className="min-w-0 flex-1">
+                              <span className="block [overflow-wrap:anywhere] font-semibold">{set.setName}</span>
+                              {quickGearSetup.replaceSetId === set.id && (
+                                <span className="mt-1 block text-xs font-bold uppercase tracking-wide text-[#f7e7ba]">
+                                  Selected to replace
+                                </span>
+                              )}
+                            </span>
+                            {quickGearSetup.replaceSetId === set.id && (
+                              <span aria-hidden="true" className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#d6b46b] text-sm font-bold text-black">
+                                ✓
+                              </span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-[#f8f7f2]/70">No equipped sets to replace.</p>
+                    )}
+                  </section>
+
+                  <label className="mb-3 block text-sm text-[#f8f7f2]">
+                    Search sets
+                    <input
+                      type="search"
+                      value={quickGearSearch}
+                      onChange={(event) => {
+                        setQuickGearSearch(event.target.value);
+                        setQuickGearError(null);
+                      }}
+                      placeholder="Search by set name"
+                      className="mt-1 w-full border border-[#d6b46b] bg-[#171717] p-2"
+                    />
+                  </label>
+
+                  {quickGearError && (
+                    <p role="alert" className="mb-3 border border-red-500/70 bg-red-950/40 p-3 text-sm text-red-200">
+                      {quickGearError}
+                    </p>
+                  )}
+
+                  <div className="max-h-72 overflow-y-auto border border-[#d6b46b]/50 p-2">
+                    {quickFilteredSets.length ? (
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                        {quickFilteredSets.map((set) => {
+                          return (
+                            <button
+                              key={set.id}
+                              type="button"
+                              disabled={isApplyingQuickGear}
+                              onClick={() => void applyQuickGearSet(set.id)}
+                              className="flex min-w-0 items-center gap-3 rounded border border-[#d6b46b] bg-[#171717] px-3 py-2 text-left text-sm text-[#f8f7f2] transition hover:border-[#f8f7f2] hover:bg-[#242424] disabled:cursor-wait disabled:opacity-50"
+                            >
+                              <SetHeadIcon
+                                setId={set.id}
+                                setName={set.setName}
+                                className="flex h-12 w-12 shrink-0 items-center justify-center border border-[#d6b46b]/70 bg-black/40 p-1"
+                              />
+                              <span className="min-w-0 [overflow-wrap:anywhere] font-semibold">
+                                {set.setName}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="p-3 text-sm text-[#f8f7f2]/70">No sets found.</p>
+                    )}
+                  </div>
+
+                  {isApplyingQuickGear && (
+                    <p className="mt-3 text-sm text-[#d6b46b]" role="status">Applying set...</p>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>,
         document.body,
