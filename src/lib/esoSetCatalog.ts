@@ -1,6 +1,7 @@
 export type CatalogSetSummary = {
   id: number;
   setName: string;
+  itemSearchText?: string;
   itemCount: number;
   availableSlots: string[];
   effects: Array<{
@@ -9,6 +10,19 @@ export type CatalogSetSummary = {
     description: string;
   }>;
 };
+
+export function matchesCatalogSetSearch(set: CatalogSetSummary, search: string): boolean {
+  const query = search.trim().toLocaleLowerCase();
+  return !query || set.setName.toLocaleLowerCase().includes(query)
+    || getMatchingCatalogItemNames(set, query).length > 0;
+}
+
+export function getMatchingCatalogItemNames(set: CatalogSetSummary, search: string): string[] {
+  const query = search.trim().toLocaleLowerCase();
+  if (!query) return [];
+  return (set.itemSearchText ?? '').split('\n')
+    .filter((itemName) => itemName.toLocaleLowerCase().includes(query));
+}
 
 export function getSetMaxPiecesRequired(effects: CatalogSetSummary['effects']): number | null {
   if (effects.length === 0) return null;
@@ -101,7 +115,7 @@ async function readCatalogJson<T>(relativePath: string): Promise<T> {
 
   if (typeof window !== 'undefined') {
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
-    const response = await fetch(`${basePath}${relativePath}`);
+    const response = await fetch(`${basePath}${relativePath}`, { cache: 'no-store' });
     if (!response.ok) {
       throw new Error(`Unable to load ESO set catalog resource ${relativePath}: ${response.status}`);
     }

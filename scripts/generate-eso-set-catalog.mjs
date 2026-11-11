@@ -482,7 +482,14 @@ async function main() {
       itemIdToSetId[item.id] = id;
     }
 
-    return { id, setName, itemCount: items.length, availableSlots: getAvailableSlots(items), effects };
+    return {
+      id,
+      setName,
+      itemSearchText: [...new Set(items.map((item) => item.name))].join('\n'),
+      itemCount: items.length,
+      availableSlots: getAvailableSlots(items),
+      effects,
+    };
   });
 
   for (const set of sets) {

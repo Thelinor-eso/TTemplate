@@ -1,19 +1,42 @@
 import { describe, expect, it } from 'vitest';
-import { ensureCatalogItemsLoaded, fetchSetById, fetchSetCatalogIndex, getCachedCatalogItem, getItemLabel, getSetMaxPiecesRequired, getSlotItemOptions, findCatalogItemVariant, findCompatibleSlotItem, groupCatalogItems, sortSetsBySelectedPieceCount, type CatalogSetSummary } from '@/lib/esoSetCatalog';
+import { ensureCatalogItemsLoaded, fetchSetById, fetchSetCatalogIndex, getCachedCatalogItem, getItemLabel, getMatchingCatalogItemNames, getSetMaxPiecesRequired, getSlotItemOptions, findCatalogItemVariant, findCompatibleSlotItem, groupCatalogItems, matchesCatalogSetSearch, sortSetsBySelectedPieceCount, type CatalogSetSummary } from '@/lib/esoSetCatalog';
 import { createEmptySetSlots, updateSetSlot, type GearPiece } from '@/features/template/raidTemplate';
 
 describe('local ESO set catalog', () => {
   it('prioritizes sets with more already-selected pieces without mutating catalog order', () => {
     const sets: CatalogSetSummary[] = [
-      { id: 1, setName: 'First', itemCount: 0, availableSlots: [], effects: [] },
-      { id: 2, setName: 'Second', itemCount: 0, availableSlots: [], effects: [] },
-      { id: 3, setName: 'Third', itemCount: 0, availableSlots: [], effects: [] },
+      { id: 1, setName: 'First', itemSearchText: '', itemCount: 0, availableSlots: [], effects: [] },
+      { id: 2, setName: 'Second', itemSearchText: '', itemCount: 0, availableSlots: [], effects: [] },
+      { id: 3, setName: 'Third', itemSearchText: '', itemCount: 0, availableSlots: [], effects: [] },
     ];
 
     const sortedSets = sortSetsBySelectedPieceCount(sets, new Map([[2, 1], [3, 2]]));
 
     expect(sortedSets.map((set) => set.id)).toEqual([3, 2, 1]);
     expect(sets.map((set) => set.id)).toEqual([1, 2, 3]);
+  });
+
+  it('matches set searches against item names as well as set names', async () => {
+    const catalog = await fetchSetCatalogIndex();
+    const crushingWall = catalog.sets.find((set) => set.id === 373);
+
+    expect(crushingWall).toBeDefined();
+    expect(crushingWall?.availableSlots).toContain('mainBarWeapon1');
+    expect(matchesCatalogSetSearch(crushingWall!, ' maelstrom ')).toBe(true);
+    expect(matchesCatalogSetSearch(crushingWall!, 'crushing wall')).toBe(true);
+    expect(matchesCatalogSetSearch(crushingWall!, 'no match')).toBe(false);
+    expect(matchesCatalogSetSearch(crushingWall!, '')).toBe(true);
+    expect(matchesCatalogSetSearch({ ...crushingWall!, itemSearchText: undefined }, 'crushing wall')).toBe(true);
+    expect(getMatchingCatalogItemNames(crushingWall!, 'mael')).toEqual(expect.arrayContaining([
+      "The Maelstrom's Inferno Staff",
+      "The Maelstrom's Lightning Staff",
+    ]));
+    const mainHandItems = await getSlotItemOptions('mainHandFrontBar', crushingWall!.id);
+    expect(mainHandItems.map((item) => item.name)).toEqual(expect.arrayContaining([
+      "The Maelstrom's Inferno Staff",
+      "The Maelstrom's Lightning Staff",
+    ]));
+    expect(await getSlotItemOptions('waist', crushingWall!.id)).toEqual([]);
   });
 
   it('keeps Mantle of Siroria items, traits, slot compatibility, and ordered text bonuses', async () => {
