@@ -1178,7 +1178,7 @@ export default function EncountersPage() {
         onDragStart={(event) => {
           draggedAbilitySlot.current = { playerId, field };
           event.dataTransfer.setData('text/plain', `${playerId}:${field}`);
-          event.dataTransfer.effectAllowed = 'move';
+          event.dataTransfer.effectAllowed = 'copyMove';
         }}
         onDragEnd={() => {
           draggedAbilitySlot.current = null;
@@ -1190,7 +1190,7 @@ export default function EncountersPage() {
             isUltimateSkillSlot(source.field) !== isUltimateSkillSlot(field)
           ) return;
           event.preventDefault();
-          event.dataTransfer.dropEffect = 'move';
+          event.dataTransfer.dropEffect = source.playerId === playerId ? 'move' : 'copy';
         }}
         onDrop={(event) => {
           event.preventDefault();
@@ -1202,15 +1202,17 @@ export default function EncountersPage() {
             : draggedAbilitySlot.current?.field;
           if (!sourceField || !isSkillBarSlot(field)) return;
           const sourcePlayerId = match ? Number(match[1]) : draggedAbilitySlot.current?.playerId;
-          if (sourcePlayerId === undefined || sourceField === field) return;
+          if (sourcePlayerId === undefined || (sourcePlayerId === playerId && sourceField === field)) return;
           if (isUltimateSkillSlot(sourceField) !== isUltimateSkillSlot(field)) return;
 
           const sourceStuff = fight.playersStuff.find((player) => player.id === sourcePlayerId);
           const targetStuff = fight.playersStuff.find((player) => player.id === playerId);
           if (!sourceStuff || !targetStuff) return;
           const sourceAbility = sourceStuff.competencies[sourceField];
-          const targetAbility = targetStuff.competencies[field];
-          updateFightPlayerStuff(fight.name, sourcePlayerId, sourceField, targetAbility);
+          if (sourcePlayerId === playerId) {
+            const targetAbility = targetStuff.competencies[field];
+            updateFightPlayerStuff(fight.name, sourcePlayerId, sourceField, targetAbility);
+          }
           updateFightPlayerStuff(fight.name, playerId, field, sourceAbility);
         }}
         onClick={() => {

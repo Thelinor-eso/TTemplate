@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRaid } from '@/features/template/RaidContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type DragEvent } from 'react';
 import { getRaidBackground, getRaidTheme } from '@/lib/raidDisplay';
 import { MUNDUS_ICON_MAP, SKILL_LINE_ICON_MAP, ROLE_ICON_MAP, CLASS_ICON_MAP, RACE_ICON_MAP } from '@/data/iconMaps';
 import EditModeToggle from '@/components/layout/EditModeToggle';
@@ -14,6 +14,26 @@ import { CLASS_MASTERY_OPTIONS_BY_CLASS, ClassName, MUNDUS_STONE_OPTIONS, ROLE_O
 const skillLineIconMap = SKILL_LINE_ICON_MAP;
 const classIconMap = CLASS_ICON_MAP;
 const classMasteryOptionsByClass = CLASS_MASTERY_OPTIONS_BY_CLASS;
+
+const PLAYER_DRAG_TYPE = 'application/x-ttemplate-player-setup';
+type PlayerDragKind = 'class' | 'skill-line' | 'race' | 'mundus';
+type PlayerDragPayload = { kind: PlayerDragKind; playerId: number; index?: number };
+
+function readPlayerDragPayload(event: DragEvent): PlayerDragPayload | null {
+  const [kind, playerIdValue, indexValue] = (
+    event.dataTransfer.getData(PLAYER_DRAG_TYPE)
+    || event.dataTransfer.getData('text/plain')
+  ).split(':');
+  const playerId = Number(playerIdValue);
+  if (!Number.isSafeInteger(playerId) || playerId < 0) return null;
+  if (kind === 'skill-line') {
+    const index = Number(indexValue);
+    if (!Number.isInteger(index) || index < 0 || index >= SKILL_CLASS_SLOTS.length) return null;
+    return { kind, playerId, index };
+  }
+  if (kind === 'class' || kind === 'race' || kind === 'mundus') return { kind, playerId };
+  return null;
+}
 
 function CopyIcon() {
   return (
@@ -156,6 +176,74 @@ export default function PlayersPage() {
     if (!hasCompleteSelectedClass) {
       updatePlayerClassMasteries(playerId, { firstClassMastery: '', secondClassMastery: '' });
     }
+  };
+
+  const startPlayerDrag = (event: DragEvent, kind: PlayerDragKind, playerId: number, index?: number) => {
+    const payload = `${kind}:${playerId}${index === undefined ? '' : `:${index}`}`;
+    event.dataTransfer.setData(PLAYER_DRAG_TYPE, payload);
+    event.dataTransfer.setData('text/plain', payload);
+    event.dataTransfer.effectAllowed = 'copy';
+  };
+
+  const allowPlayerDrop = (event: DragEvent) => {
+    if (!isEditMode || !event.dataTransfer.types.includes(PLAYER_DRAG_TYPE)) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+  };
+
+  const dropPlayerSetup = (
+    event: DragEvent,
+    targetPlayerId: number,
+    targetKind: PlayerDragKind,
+    targetIndex?: number,
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!isEditMode) return;
+
+    const payload = readPlayerDragPayload(event);
+    if (!payload || payload.playerId === targetPlayerId || payload.kind !== targetKind) return;
+
+    const sourcePlayer = players.find(({ id }) => id === payload.playerId);
+    if (!sourcePlayer) return;
+
+    if (targetKind === 'class') {
+      const sourceLines = SKILL_CLASS_SLOTS.map((slot) => sourcePlayer.skillClasses[slot]);
+      const sourceClass = getClassForSkillLine(sourceLines.find(Boolean));
+      if (!sourceClass) return;
+
+      const hasCompleteSourceClass = sourceLines.every((line) => !!line && getClassForSkillLine(line) === sourceClass);
+      const validMasteries = hasCompleteSourceClass ? classMasteryOptionsByClass[sourceClass] : [];
+      const firstClassMastery = validMasteries.includes(sourcePlayer.classMasteries.firstClassMastery)
+        ? sourcePlayer.classMasteries.firstClassMastery
+        : '';
+      const secondClassMastery = validMasteries.includes(sourcePlayer.classMasteries.secondClassMastery)
+        && sourcePlayer.classMasteries.secondClassMastery !== firstClassMastery
+        ? sourcePlayer.classMasteries.secondClassMastery
+        : '';
+
+      updatePlayerClasses(targetPlayerId, {
+        MainSkillClass: ESO_CLASS_SKILL_LINES[sourceClass][0],
+        SecondSkillClass: ESO_CLASS_SKILL_LINES[sourceClass][1],
+        ThirdSkillClass: ESO_CLASS_SKILL_LINES[sourceClass][2],
+      });
+      updatePlayerClassMasteries(targetPlayerId, { firstClassMastery, secondClassMastery });
+      return;
+    }
+
+    if (targetKind === 'skill-line') {
+      if (payload.index === undefined || targetIndex === undefined) return;
+      const skillLine = sourcePlayer.skillClasses[SKILL_CLASS_SLOTS[payload.index]];
+      if (skillLine) selectClass(targetPlayerId, targetIndex, skillLine);
+      return;
+    }
+
+    if (targetKind === 'race') {
+      if (sourcePlayer.race !== null) selectPlayerRace(targetPlayerId, sourcePlayer.race);
+      return;
+    }
+
+    if (sourcePlayer.mundus) selectPlayerMundus(targetPlayerId, sourcePlayer.mundus);
   };
 
   const updateClassMastery = (playerId: number, className: string, masteryName: string) => {
@@ -392,12 +480,16 @@ export default function PlayersPage() {
                     <div className="relative">
                       <button
                         type="button"
+                        draggable={isEditMode && player.race !== null}
                         disabled={!isEditMode}
                         aria-label={player.race === null ? 'Select race' : `Select race: ${ESO_RACES.find(({ id }) => id === player.race)?.name ?? 'Unknown'}`}
                         aria-expanded={activeDropdownKey === `${player.id}-race`}
                         title={ESO_RACES.find(({ id }) => id === player.race)?.name ?? 'Select race'}
                         onClick={() => toggleRaceDropdown(player.id)}
-                        className={`h-14 w-14 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition ${isEditMode ? 'hover:border-yellow-400 hover:scale-110 transform cursor-pointer' : 'cursor-default'}`}
+                        onDragStart={(event) => startPlayerDrag(event, 'race', player.id)}
+                        onDragOver={allowPlayerDrop}
+                        onDrop={(event) => dropPlayerSetup(event, player.id, 'race')}
+                        className={`h-14 w-14 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition ${isEditMode ? `${player.race !== null ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} hover:border-yellow-400 hover:scale-110 transform` : 'cursor-default'}`}
                       >
                         {player.race !== null && RACE_ICON_MAP[player.race] ? (
                           <Image src={RACE_ICON_MAP[player.race]} alt={ESO_RACES.find(({ id }) => id === player.race)?.name ?? ''} width={52} height={52} className="h-12 w-12 object-contain" />
@@ -438,7 +530,11 @@ export default function PlayersPage() {
                           <div key={index} className="player-card__skill-option relative">
                             <button
                               disabled={!isEditMode}
+                              draggable={isEditMode && !!selectedSkillLine}
                               onClick={() => toggleDropdown(player.id, index)}
+                              onDragStart={(event) => startPlayerDrag(event, 'skill-line', player.id, index)}
+                              onDragOver={allowPlayerDrop}
+                              onDrop={(event) => dropPlayerSetup(event, player.id, 'skill-line', index)}
                               className="player-card__skill-trigger relative group disabled:cursor-default"
                               type="button"
                             >
@@ -518,12 +614,16 @@ export default function PlayersPage() {
                     <div className="relative">
                       <button
                         type="button"
+                        draggable={isEditMode && !!primaryClass}
                         disabled={!isEditMode}
                         aria-label={primaryClass ? `Select class: ${primaryClass}` : 'Select class'}
                         aria-expanded={activeDropdownKey === `${player.id}-class`}
                         title={primaryClass ?? 'Select class'}
                         onClick={() => toggleClassDropdown(player.id)}
-                        className={`player-card__class-tile w-16 h-16 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition ${isEditMode ? 'hover:border-yellow-400 hover:scale-110 transform cursor-pointer' : 'cursor-default'}`}
+                        onDragStart={(event) => startPlayerDrag(event, 'class', player.id)}
+                        onDragOver={allowPlayerDrop}
+                        onDrop={(event) => dropPlayerSetup(event, player.id, 'class')}
+                        className={`player-card__class-tile w-16 h-16 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition ${isEditMode ? `${primaryClass ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} hover:border-yellow-400 hover:scale-110 transform` : 'cursor-default'}`}
                       >
                         {primaryClass && classIconMap[primaryClass] ? (
                           <Image
@@ -634,10 +734,14 @@ export default function PlayersPage() {
                       <div className="relative min-h-8">
                         <button
                           type="button"
+                          draggable={isEditMode && !!player.mundus}
                           aria-label={player.mundus ? `Select Mundus stone: ${player.mundus}` : 'Select Mundus stone'}
                           aria-expanded={activeDropdownKey === `${player.id}-mundus`}
                           onClick={() => toggleMundusDropdown(player.id)}
-                          className="flex w-full items-center gap-2 rounded border border-yellow-600 bg-yellow-950 px-2 py-1 text-left text-sm text-yellow-100 transition hover:border-yellow-400 cursor-pointer"
+                          onDragStart={(event) => startPlayerDrag(event, 'mundus', player.id)}
+                          onDragOver={allowPlayerDrop}
+                          onDrop={(event) => dropPlayerSetup(event, player.id, 'mundus')}
+                          className={`flex w-full items-center gap-2 rounded border border-yellow-600 bg-yellow-950 px-2 py-1 text-left text-sm text-yellow-100 transition hover:border-yellow-400 ${player.mundus ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}`}
                         >
                           {player.mundus && MUNDUS_ICON_MAP[player.mundus] && (
                             <Image
