@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { createPortal } from 'react-dom';
-import { useEffect, useRef, useState, type DragEvent, type FormEvent, type ReactNode } from 'react';
+import { memo, useDeferredValue, useEffect, useMemo, useRef, useState, type DragEvent, type FormEvent, type ReactNode } from 'react';
 import { useRaid } from '@/features/template/RaidContext';
 import EditModeToggle from '@/components/layout/EditModeToggle';
 import { CLASS_ICON_MAP, DEFAULT_FOOD_ICON, DEFAULT_POTION_ICON, FOOD_ICON_MAP, POTION_ICON_MAP, MUNDUS_ICON_MAP, ROLE_ICON_MAP, SKILL_LINE_ICON_MAP } from '@/data/iconMaps';
@@ -275,17 +275,6 @@ function getSetSlotLabel(slot: SetSlot): string {
   return labels[slot];
 }
 
-function highlightSearchMatch(text: string, search: string): ReactNode {
-  const query = search.trim();
-  if (!query) return text;
-  const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return text.split(new RegExp(`(${escapedQuery})`, 'ig')).map((part, index) => (
-    index % 2 === 1
-      ? <mark key={index} className="bg-transparent font-extrabold text-[#ffd46b]">{part}</mark>
-      : part
-  ));
-}
-
 function CatalogSetTooltip({ set, slot, search = '', children }: { set: CatalogSetSummary; slot?: SetSlot; search?: string; children: ReactNode }) {
   const [isHovered, setIsHovered] = useState(false);
   const [setItems, setSetItems] = useState<CatalogSetItem[]>([]);
@@ -382,6 +371,231 @@ function CatalogSetSlotItems({ setId, slot }: { setId: number; slot: SetSlot }) 
   );
 }
 
+
+type QuickGearSetResultsProps = {
+  catalogSets: CatalogSetSummary[];
+  isApplying: boolean;
+  onSelectSet: (setId: number) => void;
+  search: string;
+};
+
+const QuickGearSetResults = memo(function QuickGearSetResults({
+  catalogSets,
+  isApplying,
+  onSelectSet,
+  search,
+}: QuickGearSetResultsProps) {
+  const filteredSets = useMemo(() => (
+    catalogSets
+      .filter((set) => Boolean(search.trim()) && matchesCatalogSetSearch(set, search))
+      .sort((first, second) => first.setName.localeCompare(second.setName))
+  ), [catalogSets, search]);
+
+  return (
+    <div
+      className="shrink-0 overflow-y-auto border border-[#d6b46b]/50 p-2"
+      style={{ height: 'min(38vh, 32rem)', flex: '0 0 min(38vh, 32rem)' }}
+    >
+      {filteredSets.length ? (
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {filteredSets.map((set) => {
+            const matchingItemNames = getMatchingCatalogItemNames(set, search);
+            return (
+              <CatalogSetTooltip key={set.id} set={set} search={search}>
+                <button
+                  type="button"
+                  disabled={isApplying}
+                  onClick={() => onSelectSet(set.id)}
+                  className="flex min-h-24 min-w-0 items-center gap-3 rounded border border-[#d6b46b] bg-[#171717] px-3 py-2 text-left text-sm text-[#f8f7f2] transition hover:border-[#f8f7f2] hover:bg-[#242424] disabled:cursor-wait disabled:opacity-50"
+                >
+                  <SetHeadIcon
+                    setId={set.id}
+                    setName={set.setName}
+                    className="flex h-12 w-12 shrink-0 items-center justify-center border border-[#d6b46b]/70 bg-black/40 p-1"
+                  />
+                  <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+                    <span className="line-clamp-2 block min-h-10 font-semibold">{set.setName}</span>
+                    <span aria-hidden="true" className="my-1 block border-t border-[#d6b46b]/50" />
+                    <span className="line-clamp-2 block min-h-8 text-xs font-normal text-[#f7e7ba]/80">
+                      {matchingItemNames.map((name, index) => (
+                        <span key={name}>
+                          {index > 0 ? ' • ' : ''}
+                          {name}
+                        </span>
+                      ))}
+                    </span>
+                  </span>
+                </button>
+              </CatalogSetTooltip>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="p-3 text-sm text-[#f8f7f2]/70">No sets found.</p>
+      )}
+    </div>
+  );
+});
+
+type QuickGearSearchResultsProps = {
+  catalogSets: CatalogSetSummary[];
+  hasError: boolean;
+  isApplying: boolean;
+  onSelectSet: (setId: number) => void;
+  onSearchChange: () => void;
+};
+
+const QuickGearSearchResults = memo(function QuickGearSearchResults({
+  catalogSets,
+  hasError,
+  isApplying,
+  onSelectSet,
+  onSearchChange,
+}: QuickGearSearchResultsProps) {
+  const [search, setSearch] = useState('');
+  const deferredSearch = useDeferredValue(search);
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <label className="mb-3 block text-sm text-[#f8f7f2]">
+        Search sets
+        <input
+          type="search"
+          value={search}
+          onChange={(event) => {
+            setSearch(event.target.value);
+            if (hasError) onSearchChange();
+          }}
+          placeholder="Search by set or item name"
+          className="mt-1 w-full border border-[#d6b46b] bg-[#171717] p-2"
+        />
+      </label>
+
+      <div className="mb-2 min-h-5">
+        {search !== deferredSearch && (
+          <p className="text-xs text-[#d6b46b]" role="status">Updating search results…</p>
+        )}
+      </div>
+
+      <QuickGearSetResults
+        catalogSets={catalogSets}
+        isApplying={isApplying}
+        onSelectSet={onSelectSet}
+        search={deferredSearch}
+      />
+    </div>
+  );
+});
+
+type SetEditorSearchResultsProps = {
+  catalogSets: CatalogSetSummary[];
+  selectedPieceCounts: ReadonlyMap<number, number>;
+  slot: SetSlot;
+  onSelectSet: (setId: number) => void;
+};
+
+type SetEditorSetListProps = SetEditorSearchResultsProps & { search: string };
+
+const SetEditorSetList = memo(function SetEditorSetList({
+  catalogSets,
+  selectedPieceCounts,
+  slot,
+  onSelectSet,
+  search,
+}: SetEditorSetListProps) {
+  const filteredSets = useMemo(() => sortSetsBySelectedPieceCount(
+    catalogSets.filter((set) => (
+      Boolean(search.trim())
+      && matchesCatalogSetSearch(set, search)
+      && (setSupportsSlot(set, slot) || Boolean(search.trim()))
+    )),
+    selectedPieceCounts,
+  ), [catalogSets, search, selectedPieceCounts, slot]);
+  const equippedSets = filteredSets.filter((set) => (selectedPieceCounts.get(set.id) ?? 0) > 0);
+  const otherSets = filteredSets.filter((set) => (selectedPieceCounts.get(set.id) ?? 0) === 0);
+
+  return (
+    <div className="min-h-0 flex-1 space-y-5 overflow-y-auto pr-1">
+      {[
+        { title: 'Sets already equipped on this player', sets: equippedSets },
+        { title: 'Other sets', sets: otherSets },
+      ].map(({ title, sets }) => sets.length > 0 && (
+        <section key={title}>
+          <h3 className="mb-2 text-sm font-semibold text-[#d6b46b]">{title}</h3>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+            {sets.map((set) => {
+              const supportsSelectedSlot = setSupportsSlot(set, slot);
+              return (
+                <CatalogSetTooltip key={set.id} set={set} slot={slot}>
+                  <button
+                    type="button"
+                    disabled={!supportsSelectedSlot}
+                    onClick={() => onSelectSet(set.id)}
+                    title={!supportsSelectedSlot ? 'This set cannot be equipped in the selected slot.' : undefined}
+                    className="flex h-full min-h-32 min-w-0 flex-col rounded border border-[#d6b46b] bg-[#171717] px-3 py-2 text-left text-sm [overflow-wrap:anywhere] text-[#f8f7f2] transition hover:border-[#f8f7f2] hover:bg-[#242424] disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:border-[#d6b46b] disabled:hover:bg-[#171717]"
+                  >
+                    <span className="line-clamp-2 min-h-10 font-semibold">{set.setName}</span>
+                    <span aria-hidden="true" className="my-2 block border-t border-[#d6b46b]/50" />
+                    <CatalogSetSlotItems setId={set.id} slot={slot} />
+                    {!supportsSelectedSlot && (
+                      <span className="mt-1 block text-xs font-medium text-amber-200/80">
+                        Cannot equip in {getSetSlotLabel(slot)}
+                      </span>
+                    )}
+                  </button>
+                </CatalogSetTooltip>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+});
+
+const SetEditorSearchResults = memo(function SetEditorSearchResults({
+  catalogSets,
+  selectedPieceCounts,
+  slot,
+  onSelectSet,
+}: SetEditorSearchResultsProps) {
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => setDebouncedSearch(search), 200);
+    return () => window.clearTimeout(timeoutId);
+  }, [search]);
+
+  return (
+    <>
+      <div className="relative mb-4 shrink-0">
+        <input
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search by set or item name..."
+          aria-label="Search a set"
+          className="w-full border border-[#d6b46b] bg-[#171717] px-3 py-2 text-[#f8f7f2] outline-none placeholder:text-[#b7b5aa]/80 focus:border-[#f8f7f2]"
+        />
+      </div>
+
+      <div className="mb-2 min-h-5 shrink-0" aria-live="polite">
+        {search !== debouncedSearch && (
+          <p className="text-xs text-[#d6b46b]">Updating search results…</p>
+        )}
+      </div>
+
+      <SetEditorSetList
+        catalogSets={catalogSets}
+        selectedPieceCounts={selectedPieceCounts}
+        slot={slot}
+        onSelectSet={onSelectSet}
+        search={debouncedSearch}
+      />
+    </>
+  );
+});
 
 function getAbilityTooltipContent(value: SkillAbilityId | '') {
   const abilityName = getAbilityDisplayName(value);
@@ -689,14 +903,12 @@ export default function EncountersPage() {
   const [mundusEditorPlayerId, setMundusEditorPlayerId] = useState<number | null>(null);
   const [setEditor, setSetEditor] = useState<SetEditorState | null>(null);
   const [quickGearSetup, setQuickGearSetup] = useState<QuickGearSetupState | null>(null);
-  const [quickGearSearch, setQuickGearSearch] = useState('');
   const [quickGearError, setQuickGearError] = useState<string | null>(null);
   const [isApplyingQuickGear, setIsApplyingQuickGear] = useState(false);
   const [gearDetails, setGearDetails] = useState<GearDetailsState | null>(null);
   const [gearDetailsError, setGearDetailsError] = useState<string | null>(null);
   const [setTransferError, setSetTransferError] = useState<string | null>(null);
   const [gearDraft, setGearDraft] = useState<GearDraft | null>(null);
-  const [setSearch, setSetSearch] = useState('');
   const [catalogSets, setCatalogSets] = useState<CatalogSetSummary[]>([]);
   const [requiredSetSearch, setRequiredSetSearch] = useState('');
   const [isRequiredSetsExpanded, setIsRequiredSetsExpanded] = useState(true);
@@ -1002,15 +1214,6 @@ export default function EncountersPage() {
       ).map(({ id, pieceCount }) => [id, pieceCount]),
     )
     : new Map<number, number>();
-  const filteredSets = sortSetsBySelectedPieceCount(
-    catalogSets.filter((set) => (
-      Boolean(setSearch.trim()) && matchesCatalogSetSearch(set, setSearch)
-      && (setEditor ? setSupportsSlot(set, setEditor.slot) || Boolean(setSearch.trim()) : false)
-    )),
-    selectedSetPieceCounts,
-  );
-  const equippedSets = filteredSets.filter((set) => (selectedSetPieceCounts.get(set.id) ?? 0) > 0);
-  const otherSets = filteredSets.filter((set) => (selectedSetPieceCounts.get(set.id) ?? 0) === 0);
   const filteredFoods = ESO_FOODS.filter((food) => food.name.toLowerCase().includes(foodSearch.trim().toLowerCase()));
   const filteredPotions = ESO_POTIONS.filter((potion) => potion.name.toLowerCase().includes(potionSearch.trim().toLowerCase()));
   const foodGroups = [
@@ -1770,7 +1973,6 @@ export default function EncountersPage() {
       }
 
       setQuickGearSetup(null);
-      setQuickGearSearch('');
       setQuickGearError(null);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -2499,7 +2701,6 @@ export default function EncountersPage() {
                             type="button"
                             onClick={() => {
                               setQuickGearSetup({ playerId: player.id, replaceSetId: null });
-                              setQuickGearSearch('');
                               setQuickGearError(null);
                             }}
                             className="rounded border border-[#d6b46b] bg-[#171717] px-3 py-1 text-xs font-bold text-[#f8f7f2] transition hover:border-[#f8f7f2] hover:bg-[#333]"
@@ -3139,7 +3340,6 @@ export default function EncountersPage() {
                     updateFightPlayerStuff(fight.name, setEditor.playerId, setEditor.slot, createEmptyGearPiece());
                     setSetEditor(null);
                     setGearDraft(null);
-                    setSetSearch('');
                     setSelectedSetId(null);
                     setSelectedItemChoiceKey('');
                     setSelectedTrait(null);
@@ -3159,14 +3359,14 @@ export default function EncountersPage() {
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <button type="button" onClick={() => { setSetEditor(null); setGearDraft(null); setSetSearch(''); setSelectedSetId(null); setSelectedItemChoiceKey(''); setSelectedTrait(null); setSetItemOptions([]); }} className="text-2xl text-[#d6b46b] hover:text-[#f7e7ba]">×</button>
+                <button type="button" onClick={() => { setSetEditor(null); setGearDraft(null); setSelectedSetId(null); setSelectedItemChoiceKey(''); setSelectedTrait(null); setSetItemOptions([]); }} className="text-2xl text-[#d6b46b] hover:text-[#f7e7ba]">×</button>
               </div>
             </div>
 
             {gearDraft && (
               <div className="mb-5 grid grid-cols-2 gap-3 border border-[#d6b46b] bg-[#171717] p-4">
                 <div className="col-span-2 text-sm text-[#f8f7f2]">
-                  <span className="text-[#d6b46b]">Selected set:</span> {selectedSetId ? filteredSets.find((set) => set.id === selectedSetId)?.setName ?? 'selected' : 'none'}
+                  <span className="text-[#d6b46b]">Selected set:</span> {selectedSetId ? catalogSets.find((set) => set.id === selectedSetId)?.setName ?? 'selected' : 'none'}
                 </div>
                 <label className="col-span-2 text-sm text-[#f8f7f2]">
                   Item
@@ -3202,62 +3402,23 @@ export default function EncountersPage() {
                 <label className="text-sm text-[#f8f7f2] col-span-2">Trait<select value={selectedTrait ?? ''} disabled={!selectedItemChoice} onChange={(event) => { const trait = event.target.value; setSelectedTrait(trait); const item = findCatalogItemVariant(selectedItemChoice, trait === NO_TRAIT_VALUE ? '' : trait); setGearDraft((current) => ({ ...(current ?? createEmptyGearPiece()), itemId: item?.id ?? null, trait: trait === NO_TRAIT_VALUE ? '' : trait })); }} className="mt-1 w-full border border-[#d6b46b] bg-[#171717] p-2 disabled:opacity-50"><option value="">Choose a trait</option>{availableTraits.map((trait) => <option key={trait || NO_TRAIT_VALUE} value={trait || NO_TRAIT_VALUE}>{trait || 'No trait'}</option>)}</select></label>
                 <label className="text-sm text-[#f8f7f2]">Enchantment<select value={gearDraft.enchantment} disabled={!selectedSetItem} onChange={(event) => { const nextDraft = selectedSetItem?.gearType === 'weapon' ? { ...gearDraft, enchantment: event.target.value, poison: '' } : { ...withoutWeaponPoison(gearDraft), enchantment: event.target.value }; setGearDraft(nextDraft); }} className="mt-1 w-full border border-[#d6b46b] bg-[#171717] p-2 disabled:opacity-50"><option value="">Choose an enchantment</option>{enchantmentOptions.map((enchant) => <option key={enchant.id} value={String(enchant.id)}>{enchant.name}</option>)}</select></label>
                 {selectedSetItem?.gearType === 'weapon' && !isShieldItem && <label className="text-sm text-[#f8f7f2]">Poison<select value={gearDraft && 'poison' in gearDraft ? gearDraft.poison : ''} onChange={(event) => setGearDraft({ ...gearDraft, poison: event.target.value, enchantment: '' })} className="mt-1 w-full border border-[#d6b46b] bg-[#171717] p-2"><option value="">Choose a poison</option>{ESO_POISONS.map((poison) => <option key={poison} value={poison}>{poison}</option>)}</select></label>}
-                <button type="button" disabled={!canValidateSet} onClick={() => { if (!canValidateSet || !selectedSetItem) return; const draftHasPoison = 'poison' in gearDraft; updateFightPlayerStuff(fight.name, setEditor.playerId, setEditor.slot, { itemId: selectedSetItem.id, trait: selectedSetItem.trait, enchantment: draftHasPoison && gearDraft.poison ? '' : gearDraft.enchantment, ...(selectedSetItem.gearType === 'weapon' && !isShieldItem && draftHasPoison ? { poison: gearDraft.poison } : {}) }); setSetEditor(null); setGearDraft(null); setSetSearch(''); setSelectedSetId(null); setSelectedItemChoiceKey(''); setSelectedTrait(null); setSetItemOptions([]); }} className="col-span-2 border border-[#f8f7f2] bg-[#d6b46b] px-3 py-2 font-bold text-black disabled:opacity-50">Validate</button>
+                <button type="button" disabled={!canValidateSet} onClick={() => { if (!canValidateSet || !selectedSetItem) return; const draftHasPoison = 'poison' in gearDraft; updateFightPlayerStuff(fight.name, setEditor.playerId, setEditor.slot, { itemId: selectedSetItem.id, trait: selectedSetItem.trait, enchantment: draftHasPoison && gearDraft.poison ? '' : gearDraft.enchantment, ...(selectedSetItem.gearType === 'weapon' && !isShieldItem && draftHasPoison ? { poison: gearDraft.poison } : {}) }); setSetEditor(null); setGearDraft(null); setSelectedSetId(null); setSelectedItemChoiceKey(''); setSelectedTrait(null); setSetItemOptions([]); }} className="col-span-2 border border-[#f8f7f2] bg-[#d6b46b] px-3 py-2 font-bold text-black disabled:opacity-50">Validate</button>
               </div>
             )}
 
-            <div className="relative mb-4">
-              <input
-                type="search"
-                value={setSearch}
-                onChange={(event) => setSetSearch(event.target.value)}
-                placeholder="Search by set or item name..."
-                aria-label="Search a set"
-                className="w-full border border-[#d6b46b] bg-[#171717] px-3 py-2 text-[#f8f7f2] outline-none placeholder:text-[#b7b5aa]/80 focus:border-[#f8f7f2]"
-              />
-            </div>
-
-            <div className="max-h-[42vh] space-y-5 overflow-y-auto pr-1">
-              {[
-                { title: 'Sets already equipped on this player', sets: equippedSets },
-                { title: 'Other sets', sets: otherSets },
-              ].map(({ title, sets }) => sets.length > 0 && (
-                <section key={title}>
-                  <h3 className="mb-2 text-sm font-semibold text-[#d6b46b]">{title}</h3>
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
-                    {sets.map((set) => {
-                      const supportsSelectedSlot = setSupportsSlot(set, setEditor.slot);
-                      return (
-                        <CatalogSetTooltip key={set.id} set={set} slot={setEditor.slot}>
-                          <button
-                            type="button"
-                            disabled={!supportsSelectedSlot}
-                            onClick={() => {
-                              autoSelectFirstItemForSetId.current = set.id;
-                              setSelectedSetId(set.id);
-                              setSelectedItemChoiceKey('');
-                              setSelectedTrait(null);
-                              setGearDraft({ itemId: null, enchantment: '' });
-                            }}
-                            title={!supportsSelectedSlot ? 'This set cannot be equipped in the selected slot.' : undefined}
-                            className="flex h-full min-h-32 min-w-0 flex-col rounded border border-[#d6b46b] bg-[#171717] px-3 py-2 text-left text-sm [overflow-wrap:anywhere] text-[#f8f7f2] transition hover:border-[#f8f7f2] hover:bg-[#242424] disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:border-[#d6b46b] disabled:hover:bg-[#171717]"
-                          >
-                            <span className="line-clamp-2 min-h-10 font-semibold">{set.setName}</span>
-                            <span aria-hidden="true" className="my-2 block border-t border-[#d6b46b]/50" />
-                            <CatalogSetSlotItems setId={set.id} slot={setEditor.slot} />
-                            {!supportsSelectedSlot && (
-                              <span className="mt-1 block text-xs font-medium text-amber-200/80">
-                                Cannot equip in {getSetSlotLabel(setEditor.slot)}
-                              </span>
-                            )}
-                          </button>
-                        </CatalogSetTooltip>
-                      );
-                    })}
-                  </div>
-                </section>
-              ))}
-            </div>
+            <SetEditorSearchResults
+              key={`${setEditor.playerId}:${setEditor.slot}`}
+              catalogSets={catalogSets}
+              selectedPieceCounts={selectedSetPieceCounts}
+              slot={setEditor.slot}
+              onSelectSet={(setId) => {
+                autoSelectFirstItemForSetId.current = setId;
+                setSelectedSetId(setId);
+                setSelectedItemChoiceKey('');
+                setSelectedTrait(null);
+                setGearDraft({ itemId: null, enchantment: '' });
+              }}
+            />
           </div>
         </div>,
         document.body,
@@ -3278,7 +3439,13 @@ export default function EncountersPage() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="quick-gear-setup-title"
-            className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-lg border-2 border-[#d6b46b] bg-[#111111] p-6"
+            className="flex w-full max-w-4xl flex-col overflow-y-auto rounded-lg border-2 border-[#d6b46b] bg-[#111111] p-6"
+            style={{
+              height: 'min(90vh, 900px)',
+              minHeight: 'min(90vh, 900px)',
+              maxHeight: 'min(90vh, 900px)',
+              flex: '0 0 min(90vh, 900px)',
+            }}
           >
             {(() => {
               const quickPlayer = players.find((player) => player.id === quickGearSetup.playerId);
@@ -3286,13 +3453,10 @@ export default function EncountersPage() {
               const equippedSets = quickPlayerStuff
                 ? getSetSummary(quickPlayerStuff.sets, catalogSets)
                 : [];
-              const quickFilteredSets = catalogSets
-                .filter((set) => Boolean(quickGearSearch.trim()) && matchesCatalogSetSearch(set, quickGearSearch))
-                .sort((first, second) => first.setName.localeCompare(second.setName));
 
               return (
                 <>
-                  <div className="mb-4 flex items-start justify-between gap-4 border-b border-[#d6b46b] pb-4">
+                  <div className="mb-4 flex shrink-0 items-start justify-between gap-4 border-b border-[#d6b46b] pb-4">
                     <div>
                       <h2 id="quick-gear-setup-title" className="text-2xl font-bold text-[#f8f7f2]">
                         Quick Gear Setup
@@ -3315,7 +3479,7 @@ export default function EncountersPage() {
                     </button>
                   </div>
 
-                  <section className="mb-5">
+                  <section className="mb-5 max-h-[35%] shrink-0 overflow-y-auto">
                     <h3 className="mb-2 text-sm font-semibold text-[#d6b46b]">Replace an equipped set (optional)</h3>
                     <p className="mb-3 text-xs text-[#f8f7f2]/75">
                       Select a set here, then choose its replacement below. Otherwise, the new set will use empty slots.
@@ -3366,67 +3530,19 @@ export default function EncountersPage() {
                     )}
                   </section>
 
-                  <label className="mb-3 block text-sm text-[#f8f7f2]">
-                    Search sets
-                    <input
-                      type="search"
-                      value={quickGearSearch}
-                      onChange={(event) => {
-                        setQuickGearSearch(event.target.value);
-                        setQuickGearError(null);
-                      }}
-                      placeholder="Search by set or item name"
-                      className="mt-1 w-full border border-[#d6b46b] bg-[#171717] p-2"
-                    />
-                  </label>
-
                   {quickGearError && (
                     <p role="alert" className="mb-3 border border-red-500/70 bg-red-950/40 p-3 text-sm text-red-200">
                       {quickGearError}
                     </p>
                   )}
 
-                  <div className="max-h-72 overflow-y-auto border border-[#d6b46b]/50 p-2">
-                    {quickFilteredSets.length ? (
-                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                        {quickFilteredSets.map((set) => {
-                          const matchingItemNames = getMatchingCatalogItemNames(set, quickGearSearch);
-                          return (
-                            <CatalogSetTooltip key={set.id} set={set} search={quickGearSearch}>
-                              <button
-                                type="button"
-                                disabled={isApplyingQuickGear}
-                                onClick={() => void applyQuickGearSet(set.id)}
-                                className="flex min-h-24 min-w-0 items-center gap-3 rounded border border-[#d6b46b] bg-[#171717] px-3 py-2 text-left text-sm text-[#f8f7f2] transition hover:border-[#f8f7f2] hover:bg-[#242424] disabled:cursor-wait disabled:opacity-50"
-                              >
-                                <SetHeadIcon
-                                  setId={set.id}
-                                  setName={set.setName}
-                                  className="flex h-12 w-12 shrink-0 items-center justify-center border border-[#d6b46b]/70 bg-black/40 p-1"
-                                />
-                                <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
-                                  <span className="line-clamp-2 block min-h-10 font-semibold">
-                                    {highlightSearchMatch(set.setName, quickGearSearch)}
-                                  </span>
-                                  <span aria-hidden="true" className="my-1 block border-t border-[#d6b46b]/50" />
-                                  <span className="line-clamp-2 block min-h-8 text-xs font-normal text-[#f7e7ba]/80">
-                                    {matchingItemNames.map((name, index) => (
-                                      <span key={name}>
-                                        {index > 0 ? ' • ' : ''}
-                                        {highlightSearchMatch(name, quickGearSearch)}
-                                      </span>
-                                    ))}
-                                  </span>
-                                </span>
-                              </button>
-                            </CatalogSetTooltip>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <p className="p-3 text-sm text-[#f8f7f2]/70">No sets found.</p>
-                    )}
-                  </div>
+                  <QuickGearSearchResults
+                    catalogSets={catalogSets}
+                    hasError={quickGearError !== null}
+                    isApplying={isApplyingQuickGear}
+                    onSelectSet={(setId) => void applyQuickGearSet(setId)}
+                    onSearchChange={() => setQuickGearError(null)}
+                  />
 
                   {isApplyingQuickGear && (
                     <p className="mt-3 text-sm text-[#d6b46b]" role="status">Applying set...</p>

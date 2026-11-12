@@ -84,7 +84,7 @@ describe('local ESO set catalog', () => {
       'Charged', 'Decisive', 'Defending', 'Infused', 'Nirnhoned',
       'Powered', 'Precise', 'Sharpened', 'Training',
     ]));
-    const gear: GearPiece = { itemId: twoHanded!.id, enchantment: '18' };
+    const gear: GearPiece = { itemId: twoHanded!.id, enchantment: '18', poison: '' };
     const synchronized = updateSetSlot(
       createEmptySetSlots(),
       'mainHandFrontBar',
