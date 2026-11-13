@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { createPortal } from 'react-dom';
-import { memo, useDeferredValue, useEffect, useMemo, useRef, useState, type DragEvent, type FormEvent, type ReactNode } from 'react';
+import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type DragEvent, type FormEvent, type ReactNode } from 'react';
 import { useRaid } from '@/features/template/RaidContext';
 import EditModeToggle from '@/components/layout/EditModeToggle';
 import { CLASS_ICON_MAP, DEFAULT_FOOD_ICON, DEFAULT_POTION_ICON, FOOD_ICON_MAP, POTION_ICON_MAP, MUNDUS_ICON_MAP, ROLE_ICON_MAP, SKILL_LINE_ICON_MAP } from '@/data/iconMaps';
@@ -24,6 +24,7 @@ import { fetchSetCatalogIndex, fetchSetById, getItemLabel, getSlotItemOptions, g
 import { ESO_ENCHANTS } from '@/data/esoEnchants';
 import { ESO_POISONS } from '@/data/esoPoisons';
 import { getCritDamageBreakdown, getSetSummary, type CritDamageBreakdown } from '@/lib/critDamage';
+import useOutsideClick from '@/hooks/useOutsideClick';
 import {
   decodeScribingSkillId,
   encodeScribingSkillId,
@@ -891,6 +892,8 @@ function countPlayersWithCompleteRequiredSet(
 export default function EncountersPage() {
   const { template, players, updatePlayerClasses, updatePlayerClassMasteries, updatePlayerRole, updateFightPlayerStuff, updatePlayerMundus, pasteFightPlayerSetup, pasteFightSetup, addFight, duplicateFight, renameFight, removeFight, swapFights, updateFightRequiredSets, isEditMode } = useRaid();
   const [selectedFightName, setSelectedFightName] = useState(template.fights[0]?.name ?? '');
+  const requiredSetSearchRef = useRef<HTMLDivElement>(null);
+  const playerSetupEditorRef = useRef<HTMLDivElement>(null);
   const [isOverview, setIsOverview] = useState(false);
   const [isDeleteFightConfirmationOpen, setIsDeleteFightConfirmationOpen] = useState(false);
   const [selectedSetupPlayerId, setSelectedSetupPlayerId] = useState<number | null>(null);
@@ -911,6 +914,7 @@ export default function EncountersPage() {
   const [gearDraft, setGearDraft] = useState<GearDraft | null>(null);
   const [catalogSets, setCatalogSets] = useState<CatalogSetSummary[]>([]);
   const [requiredSetSearch, setRequiredSetSearch] = useState('');
+  const [isRequiredSetSearchOpen, setIsRequiredSetSearchOpen] = useState(false);
   const [isRequiredSetsExpanded, setIsRequiredSetsExpanded] = useState(true);
   const [setItemOptions, setSetItemOptions] = useState<CatalogSetItem[]>([]);
   const [selectedSetId, setSelectedSetId] = useState<number | null>(null);
@@ -932,6 +936,11 @@ export default function EncountersPage() {
   const [draggedFightName, setDraggedFightName] = useState<string | null>(null);
   const [dropTargetFightName, setDropTargetFightName] = useState<string | null>(null);
   const [playerSetupEditor, setPlayerSetupEditor] = useState<{ playerId: number; type: 'skill'; index: number } | { playerId: number; type: 'mastery' } | { playerId: number; type: 'role' } | null>(null);
+
+  const closePlayerSetupEditor = useCallback(() => setPlayerSetupEditor(null), []);
+  const closeRequiredSetSearch = useCallback(() => setIsRequiredSetSearchOpen(false), []);
+  useOutsideClick(playerSetupEditorRef, playerSetupEditor !== null, closePlayerSetupEditor);
+  useOutsideClick(requiredSetSearchRef, isRequiredSetSearchOpen && Boolean(requiredSetSearch.trim()), closeRequiredSetSearch);
 
   const selectPlayerSkillLine = (playerId: number, index: number, skillLine: ClassSkillLine) => {
     if (!isEditMode) return;
@@ -989,8 +998,8 @@ export default function EncountersPage() {
 
   const renderRoleIcon = (player: (typeof players)[number]) => {
     const open = playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'role';
-    return <PortalTooltip content={<span className="block font-bold text-[#f7e7ba]">{player.role}</span>}><div className="relative inline-block">
-      <button type="button" disabled={!isEditMode} aria-label={`${player.name} role: ${player.role}`} aria-expanded={isEditMode ? open : undefined} onClick={() => isEditMode && setPlayerSetupEditor(open ? null : { playerId: player.id, type: 'role' })} className={isEditMode ? 'cursor-pointer rounded hover:ring-2 hover:ring-yellow-300' : 'cursor-default'}>
+    return <PortalTooltip content={<span className="block font-bold text-[#f7e7ba]">{player.role}</span>}><div ref={open ? playerSetupEditorRef : null} className="relative inline-block">
+      <button type="button" disabled={!isEditMode} aria-label={`${player.name} role: ${player.role}`} aria-expanded={isEditMode ? open : undefined} onClick={() => isEditMode && setPlayerSetupEditor(open ? null : { playerId: player.id, type: 'role' })} className={`raid-interactive-tile ${isEditMode ? 'cursor-pointer rounded hover:ring-2 hover:ring-yellow-300' : 'cursor-default'}`}>
         <Image src={ROLE_ICON_MAP[player.role] || ''} alt={player.role} width={40} height={40} className="h-10 w-10" />
       </button>
       {open && <div className="absolute left-1/2 top-full z-50 mt-1 w-40 -translate-x-1/2 rounded border-2 border-yellow-500 bg-gray-800 shadow-2xl">{ROLE_OPTIONS.map((role: RoleType) => <button key={role} type="button" onClick={() => { updatePlayerRole(player.id, role); setPlayerSetupEditor(null); }} className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition ${player.role === role ? 'bg-yellow-700 text-yellow-50' : 'text-yellow-200 hover:bg-yellow-700'}`}><Image src={ROLE_ICON_MAP[role]} alt="" width={24} height={24} className="h-6 w-6" />{role}</button>)}</div>}
@@ -1006,8 +1015,8 @@ export default function EncountersPage() {
         const open = playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'skill' && playerSetupEditor.index === index;
         const iconSize = size === 'small' ? 24 : 32;
         return <PortalTooltip key={slot} content={<span className="block font-bold text-[#f7e7ba]">{line}</span>}>
-        <div className="relative">
-          <button type="button" disabled={!isEditMode} aria-label={`${player.name} skill line ${index + 1}${line ? `: ${line}` : ': empty'}`} aria-expanded={isEditMode ? open : undefined} onClick={() => isEditMode && setPlayerSetupEditor(open ? null : { playerId: player.id, type: 'skill', index })} className={`${size === 'small' ? 'h-6 w-6' : 'h-8 w-8'} flex items-center justify-center rounded-full border ${line ? 'border-yellow-500 bg-black/30 p-1' : 'border-dashed border-yellow-600 bg-black/20'} ${isEditMode ? 'cursor-pointer hover:border-yellow-300' : 'cursor-default'}`}>
+        <div ref={open ? playerSetupEditorRef : null} className="relative">
+          <button type="button" disabled={!isEditMode} aria-label={`${player.name} skill line ${index + 1}${line ? `: ${line}` : ': empty'}`} aria-expanded={isEditMode ? open : undefined} onClick={() => isEditMode && setPlayerSetupEditor(open ? null : { playerId: player.id, type: 'skill', index })} className={`raid-interactive-tile ${size === 'small' ? 'h-6 w-6' : 'h-8 w-8'} flex items-center justify-center rounded-full border ${line ? 'border-yellow-500 bg-black/30 p-1' : 'border-dashed border-yellow-600 bg-black/20'} ${isEditMode ? 'cursor-pointer hover:border-yellow-300' : 'cursor-default'}`}>
             {icon ? <Image src={icon} alt="" width={iconSize} height={iconSize} className="h-full w-full rounded-full object-cover" /> : isEditMode ? <span className="text-sm leading-none text-yellow-300">+</span> : null}
           </button>
           {open && <div className={`absolute top-full z-50 mt-1 max-h-64 w-56 overflow-auto rounded border border-yellow-500 bg-gray-900 p-1 shadow-xl ${size === 'small' && index === 2 ? 'right-0' : 'left-0'}`}>{Object.entries(ESO_CLASS_SKILL_LINES).map(([name, options]) => <div key={name}><div className="sticky top-0 bg-gray-950 px-2 py-1 text-[10px] font-bold text-yellow-300">{name}</div>{options.map((option) => <button key={option} type="button" disabled={SKILL_CLASS_SLOTS.some((otherSlot, otherIndex) => otherIndex !== index && player.skillClasses[otherSlot] === option)} onClick={() => selectPlayerSkillLine(player.id, index, option)} className="flex w-full items-center gap-2 px-2 py-1 text-left text-xs text-yellow-100 hover:bg-yellow-800 disabled:opacity-40">{SKILL_LINE_ICON_MAP[option] && <Image src={SKILL_LINE_ICON_MAP[option]} alt="" width={24} height={24} className="h-6 w-6" />}<span>{option}</span></button>)}</div>)}</div>}
@@ -1021,7 +1030,7 @@ export default function EncountersPage() {
     const hasOpenMenu = Boolean(
       isDeleteFightConfirmationOpen || skillEditor || viewSkillDetails || viewChampionDiscipline
       || overviewSetPlayerId !== null || mundusEditorPlayerId !== null || setEditor || gearDetails
-      || consumableEditor || championPointEditor || playerSetupEditor,
+      || consumableEditor || championPointEditor || playerSetupEditor || isRequiredSetSearchOpen,
     );
     if (!hasOpenMenu) return;
 
@@ -1040,11 +1049,12 @@ export default function EncountersPage() {
       setConsumableEditor(null);
       setChampionPointEditor(null);
       setPlayerSetupEditor(null);
+      setIsRequiredSetSearchOpen(false);
     };
 
     window.addEventListener('keydown', closeMenusOnEscape);
     return () => window.removeEventListener('keydown', closeMenusOnEscape);
-  }, [isDeleteFightConfirmationOpen, skillEditor, viewSkillDetails, viewChampionDiscipline, overviewSetPlayerId, mundusEditorPlayerId, setEditor, gearDetails, consumableEditor, championPointEditor, playerSetupEditor]);
+  }, [isDeleteFightConfirmationOpen, skillEditor, viewSkillDetails, viewChampionDiscipline, overviewSetPlayerId, mundusEditorPlayerId, setEditor, gearDetails, consumableEditor, championPointEditor, playerSetupEditor, isRequiredSetSearchOpen]);
 
   const draggedAbilitySlot = useRef<{ playerId: number; field: keyof Skills } | null>(null);
   const draggedChampionPointSlot = useRef<{ playerId: number; field: keyof ChampionPoints } | null>(null);
@@ -1568,7 +1578,7 @@ export default function EncountersPage() {
           } : null);
           setSkillEditor({ playerId, field, ultimateOnly: field === 'MainBarUlt' || field === 'BackBarUlt' });
         }}
-        className={`flex ${compact ? 'h-auto max-h-9 w-full max-w-9 aspect-square' : 'h-12 w-12'} shrink-0 items-center justify-center border-2 bg-black/60 p-0.5 transition hover:border-yellow-400 ${
+        className={`raid-interactive-tile flex ${compact ? 'h-auto max-h-9 w-full max-w-9 aspect-square' : 'h-12 w-12'} shrink-0 items-center justify-center border-2 bg-black/60 p-0.5 transition ${
           hasValue ? 'border-yellow-600' : 'border-dashed border-yellow-700'
         } cursor-grab active:cursor-grabbing`}
       >
@@ -2407,16 +2417,20 @@ export default function EncountersPage() {
                     <label htmlFor="required-set-search" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-[#f7e7ba]/80">
                       Add a set
                     </label>
-                    <div className="relative max-w-md">
+                    <div ref={requiredSetSearchRef} className="relative max-w-md">
                       <input
                         id="required-set-search"
                         aria-label="Search all sets"
                         value={requiredSetSearch}
-                        onChange={(event) => setRequiredSetSearch(event.target.value)}
+                        onFocus={() => setIsRequiredSetSearchOpen(true)}
+                        onChange={(event) => {
+                          setRequiredSetSearch(event.target.value);
+                          setIsRequiredSetSearchOpen(true);
+                        }}
                         placeholder="Search any set…"
                         className="w-full rounded-md border border-white/20 bg-black/70 px-3 py-2 text-sm text-white placeholder:text-white/35 focus:border-[#d6b46b] focus:outline-none focus:ring-1 focus:ring-[#d6b46b]/50"
                       />
-                      {requiredSetSearch.trim() && (
+                      {isRequiredSetSearchOpen && requiredSetSearch.trim() && (
                         <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-52 overflow-y-auto rounded-md border border-[#d6b46b]/70 bg-[#111111] shadow-xl">
                           {catalogSets.filter((set) => matchesCatalogSetSearch(set, requiredSetSearch) && !(fight.requiredSetChecks ?? []).some((check) => check.setIds.includes(set.id))).slice(0, 30).map((set) => (
                             <button
@@ -2426,6 +2440,7 @@ export default function EncountersPage() {
                                 const proposal = REQUIRED_SET_PROPOSALS.find((entry) => entry.setIds.includes(set.id));
                                 updateFightRequiredSets(fight.name, [...(fight.requiredSetChecks ?? []), proposal ? { key: proposal.key, setIds: proposal.setIds, requiredPlayers: proposal.defaultPlayers } : { key: `set:${set.id}`, setIds: [set.id], requiredPlayers: 1 }]);
                                 setRequiredSetSearch('');
+                                setIsRequiredSetSearchOpen(false);
                               }}
                               className="block w-full px-3 py-2 text-left text-sm text-white transition hover:bg-white/10"
                             >{set.setName}</button>
@@ -2570,7 +2585,7 @@ export default function EncountersPage() {
                   <div className="mb-3 flex w-full justify-center">
                     {renderActionBar(player.id, playerStuff.competencies, playerStuff.food, playerStuff.potion, true)}
                   </div>
-                  <div className="mb-2 flex flex-col items-center gap-1 text-xs text-yellow-200">{renderPlayerSetupEditors(player)}{classMasteries.map((mastery) => isEditMode ? <button key={mastery} type="button" disabled={!hasCompletePlayerClass(player)} aria-expanded={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery'} onClick={() => toggleMasteryMenu(player.id)} className="w-full rounded border border-yellow-500 bg-black/30 px-2 py-0.5 text-center text-yellow-200 transition hover:border-yellow-300 hover:bg-yellow-700/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">{mastery}</button> : <span key={mastery} className="w-full text-center">{mastery}</span>)}</div>
+                  <div ref={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery' ? playerSetupEditorRef : null} className="mb-2 flex flex-col items-center gap-1 text-xs text-yellow-200">{renderPlayerSetupEditors(player)}{classMasteries.map((mastery) => isEditMode ? <button key={mastery} type="button" disabled={!hasCompletePlayerClass(player)} aria-expanded={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery'} onClick={() => toggleMasteryMenu(player.id)} className="w-full rounded border border-yellow-500 bg-black/30 px-2 py-0.5 text-center text-yellow-200 transition hover:border-yellow-300 hover:bg-yellow-700/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">{mastery}</button> : <span key={mastery} className="w-full text-center">{mastery}</span>)}</div>
                   <div className="space-y-1 border-y border-white/10 py-2 text-[11px]">
                     {playerStuff.food ? <PortalTooltip content={foodTooltipContent}>{foodSummary}</PortalTooltip> : foodSummary}
                     {playerStuff.potion ? <PortalTooltip content={potionTooltipContent}>{potionSummary}</PortalTooltip> : potionSummary}
@@ -2659,7 +2674,7 @@ export default function EncountersPage() {
 
                         {renderSkillLineIcons(player, 'large')}
 
-                        <div className="flex flex-col items-center gap-1 text-xs text-yellow-200">
+                        <div ref={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery' ? playerSetupEditorRef : null} className="flex flex-col items-center gap-1 text-xs text-yellow-200">
                           {renderPlayerSetupEditors(player)}
                           {classMasteries.map((mastery) => isEditMode ? (
                             <button key={`${player.id}-${mastery}`} type="button" disabled={!hasCompletePlayerClass(player)} aria-expanded={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery'} onClick={() => toggleMasteryMenu(player.id)} className="rounded border border-yellow-500 bg-black/30 px-2 py-0.5 text-yellow-200 transition hover:border-yellow-300 hover:bg-yellow-700/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">
@@ -3328,8 +3343,16 @@ export default function EncountersPage() {
 
       {setEditor && createPortal(
         <div data-raid-theme={raidTheme || undefined} className="raid-theme-portal encounters-page fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-lg border-2 border-[#d6b46b] bg-[#111111] p-6">
-            <div className="sticky top-0 z-10 -mx-6 -mt-6 mb-4 flex items-start justify-between gap-4 border-b border-[#d6b46b] bg-[#111111] px-6 pb-4 pt-6">
+          <div
+            className="flex w-full max-w-3xl flex-col overflow-hidden rounded-lg border-2 border-[#d6b46b] bg-[#111111] p-6"
+            style={{
+              height: 'min(90vh, 900px)',
+              minHeight: 'min(90vh, 900px)',
+              maxHeight: 'min(90vh, 900px)',
+              flex: '0 0 min(90vh, 900px)',
+            }}
+          >
+            <div className="mb-4 flex shrink-0 items-start justify-between gap-4 border-b border-[#d6b46b] pb-4">
               <h2 className="text-2xl font-bold text-[#f8f7f2]">
                 Choose a {getSetSlotLabel(setEditor.slot)}
               </h2>
@@ -3364,7 +3387,7 @@ export default function EncountersPage() {
             </div>
 
             {gearDraft && (
-              <div className="mb-5 grid grid-cols-2 gap-3 border border-[#d6b46b] bg-[#171717] p-4">
+              <div className="mb-5 grid max-h-[42%] shrink-0 grid-cols-2 gap-3 overflow-y-auto border border-[#d6b46b] bg-[#171717] p-4">
                 <div className="col-span-2 text-sm text-[#f8f7f2]">
                   <span className="text-[#d6b46b]">Selected set:</span> {selectedSetId ? catalogSets.find((set) => set.id === selectedSetId)?.setName ?? 'selected' : 'none'}
                 </div>

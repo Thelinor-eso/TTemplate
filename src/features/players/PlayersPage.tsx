@@ -3,13 +3,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRaid } from '@/features/template/RaidContext';
-import { useEffect, useState, type DragEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type DragEvent } from 'react';
 import { getRaidBackground, getRaidTheme } from '@/lib/raidDisplay';
 import { MUNDUS_ICON_MAP, SKILL_LINE_ICON_MAP, ROLE_ICON_MAP, CLASS_ICON_MAP, RACE_ICON_MAP } from '@/data/iconMaps';
 import EditModeToggle from '@/components/layout/EditModeToggle';
 import { ESO_CLASS_SKILL_LINES, getClassForSkillLine } from '@/data/esoClasses';
 import { ESO_RACES } from '@/data/esoRaces';
 import { CLASS_MASTERY_OPTIONS_BY_CLASS, ClassName, MUNDUS_STONE_OPTIONS, ROLE_OPTIONS, SKILL_CLASS_SLOTS, copyPlayerSetup, pastePlayerSetup, type ClassMasteries, type ClassSkillLine, type PlayerSetup } from '@/features/template/raidTemplate';
+import useOutsideClick from '@/hooks/useOutsideClick';
 
 const skillLineIconMap = SKILL_LINE_ICON_MAP;
 const classIconMap = CLASS_ICON_MAP;
@@ -74,9 +75,13 @@ export default function PlayersPage() {
     updatePlayerMundus,
   } = useRaid();
   const [activeDropdownKey, setActiveDropdownKey] = useState<string | null>(null);
+  const activeDropdownRef = useRef<HTMLDivElement>(null);
   const [copiedPlayerSetup, setCopiedPlayerSetup] = useState<CopiedPlayerSetup | null>(null);
   const [playerPendingDeletion, setPlayerPendingDeletion] = useState<{ id: number; name: string } | null>(null);
   const [hasScrolled, setHasScrolled] = useState(false);
+
+  const closeAllDropdowns = useCallback(() => setActiveDropdownKey(null), []);
+  useOutsideClick(activeDropdownRef, activeDropdownKey !== null, closeAllDropdowns);
 
   useEffect(() => {
     if (!playerPendingDeletion && !activeDropdownKey) return;
@@ -276,10 +281,6 @@ export default function PlayersPage() {
     updatePlayerClassMasteries(playerId, nextMasteries);
   };
 
-  const closeAllDropdowns = () => {
-    setActiveDropdownKey(null);
-  };
-
   const raidBackground = getRaidBackground(template.raid.selectedRaid);
   const raidTheme = getRaidTheme(template.raid.selectedRaid);
 
@@ -317,13 +318,6 @@ export default function PlayersPage() {
             <EditModeToggle className="raid-action-control" />
           </div>
         </div>
-        {activeDropdownKey !== null && (
-          <div
-            className="fixed inset-0 z-30"
-            onClick={closeAllDropdowns}
-          />
-        )}
-
         {isEditMode && copiedPlayerSetup && (
           <div className="mb-5 rounded-xl border border-[#d6b46b] bg-[#111720]/90 px-4 py-3 text-sm text-yellow-100 shadow-lg">
             Copied to clipboard: <span className="font-bold text-[#f7e7ba]">Player setup</span> from <span className="font-bold text-[#f7e7ba]">{copiedPlayerSetup.playerName}</span>. Use the paste icon on another player to apply the role, skill lines, class masteries and Mundus stone.
@@ -477,7 +471,7 @@ export default function PlayersPage() {
                   </div>
                   <div className="shrink-0">
                     <label className="text-xs font-bold text-yellow-400 uppercase block mb-2 text-right">Race</label>
-                    <div className="relative">
+                    <div ref={activeDropdownKey === `${player.id}-race` ? activeDropdownRef : null} className="relative">
                       <button
                         type="button"
                         draggable={isEditMode && player.race !== null}
@@ -527,7 +521,7 @@ export default function PlayersPage() {
                         const isDuplicate = !!selectedSkillLine && currentPlayerClasses.indexOf(selectedSkillLine) !== index;
 
                         return (
-                          <div key={index} className="player-card__skill-option relative">
+                          <div ref={isOpen ? activeDropdownRef : null} key={index} className="player-card__skill-option relative">
                             <button
                               disabled={!isEditMode}
                               draggable={isEditMode && !!selectedSkillLine}
@@ -611,7 +605,7 @@ export default function PlayersPage() {
                   </div>
                   <div className="player-card__class-option">
                     <label className="player-card__section-label text-xs font-bold text-yellow-400 uppercase">Class</label>
-                    <div className="relative">
+                    <div ref={activeDropdownKey === `${player.id}-class` ? activeDropdownRef : null} className="relative">
                       <button
                         type="button"
                         draggable={isEditMode && !!primaryClass}
@@ -731,7 +725,7 @@ export default function PlayersPage() {
                   <div className="mt-3">
                     <label className="text-[10px] font-bold uppercase tracking-wide text-yellow-300 block mb-1">Mundus Stone</label>
                     {isEditMode ? (
-                      <div className="relative min-h-8">
+                      <div ref={activeDropdownKey === `${player.id}-mundus` ? activeDropdownRef : null} className="relative min-h-8">
                         <button
                           type="button"
                           draggable={isEditMode && !!player.mundus}

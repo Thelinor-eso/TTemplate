@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { useRaid } from '@/features/template/RaidContext';
 import { isGoogleOAuthPopupClosed, useGoogleDrive } from '@/features/template/GoogleDriveContext';
+import useOutsideClick from '@/hooks/useOutsideClick';
 import {
   createTemplateFilename,
   ensureJsonFilename,
@@ -50,6 +51,7 @@ function SaveIcon() {
 
 export default function BurgerMenu({ onImport }: BurgerMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [driveMessage, setDriveMessage] = useState<string | null>(null);
   const [isNewFileBusy, setIsNewFileBusy] = useState(false);
   const [isLocalSaveBusy, setIsLocalSaveBusy] = useState(false);
@@ -66,6 +68,9 @@ export default function BurgerMenu({ onImport }: BurgerMenuProps) {
   const pathname = usePathname();
   const { template, importedTemplateFile, loadTemplate, markTemplateSaved, requestHomeNavigation, setGroupName, setSelectedRaid } = useRaid();
   const { isConnected, disconnect, pickDriveFolder, saveTemplate, updateTemplateFile } = useGoogleDrive();
+
+  const closeMenu = useCallback(() => setIsOpen(false), []);
+  useOutsideClick(menuRef, isOpen, closeMenu);
 
   useEffect(() => {
     if (!isOpen && !isNewFileDialogOpen && !isGroupNameDialogOpen && !isRaidNameDialogOpen && !isSaveDestinationDialogOpen) return;
@@ -231,7 +236,7 @@ export default function BurgerMenu({ onImport }: BurgerMenuProps) {
   ];
 
   return (
-    <div className="relative z-50">
+    <div ref={menuRef} className="relative z-50">
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
