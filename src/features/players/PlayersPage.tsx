@@ -443,7 +443,7 @@ export default function PlayersPage() {
                           }}
                           className={`relative group transition disabled:cursor-default ${isEditMode && isSelected ? 'scale-110' : ''}`}
                         >
-                          <div className={`w-14 h-14 rounded border-2 transition flex items-center justify-center ${isEditMode ? 'cursor-pointer hover:scale-110 transform' : 'cursor-default'} ${borderColor} ${
+                          <div className={`raid-interactive-tile w-14 h-14 rounded border-2 transition flex items-center justify-center ${isEditMode ? 'cursor-pointer' : 'cursor-default'} ${borderColor} ${
                             isSelected
                               ? selectedBg
                               : `${bgColor} ${isEditMode ? hoverBorder : ''}`
@@ -483,7 +483,7 @@ export default function PlayersPage() {
                         onDragStart={(event) => startPlayerDrag(event, 'race', player.id)}
                         onDragOver={allowPlayerDrop}
                         onDrop={(event) => dropPlayerSetup(event, player.id, 'race')}
-                        className={`h-14 w-14 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition ${isEditMode ? `${player.race !== null ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} hover:border-yellow-400 hover:scale-110 transform` : 'cursor-default'}`}
+                        className={`raid-interactive-tile h-14 w-14 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition ${isEditMode ? `${player.race !== null ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}` : 'cursor-default'}`}
                       >
                         {player.race !== null && RACE_ICON_MAP[player.race] ? (
                           <Image src={RACE_ICON_MAP[player.race]} alt={ESO_RACES.find(({ id }) => id === player.race)?.name ?? ''} width={52} height={52} className="h-12 w-12 object-contain" />
@@ -533,7 +533,7 @@ export default function PlayersPage() {
                               type="button"
                             >
                               <div
-                                className={`player-card__skill-tile w-16 h-16 bg-yellow-950 border-[3px] rounded transition flex items-center justify-center ${isEditMode ? `${selectedSkillLine ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} hover:border-yellow-400 hover:scale-110 transform` : 'cursor-default'} ${
+                                className={`player-card__skill-tile raid-interactive-tile w-16 h-16 bg-yellow-950 border-[3px] rounded transition flex items-center justify-center ${isEditMode ? `${selectedSkillLine ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}` : 'cursor-default'} ${
                                   isPrimarySkillLine ? 'border-white shadow-[0_0_0_3px_rgba(255,255,255,0.35)]' : 'border-yellow-600'
                                 } ${isDuplicate ? 'opacity-60' : ''}`}
                                 style={{

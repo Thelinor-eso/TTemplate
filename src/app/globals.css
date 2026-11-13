@@ -493,6 +493,19 @@ textarea:focus-visible {
   transition-timing-function: ease-out;
 }
 
+.raid-interactive-tile {
+  position: relative;
+  transition: transform 160ms ease-out, border-color 160ms ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .raid-interactive-tile:hover {
+    z-index: 30;
+    transform: scale(1.1);
+    border-color: var(--raid-highlight, var(--gold-bright));
+  }
+}
+
 :is(.players-page, .encounters-page) :is(button, a):not(:disabled):active {
   transform: translateY(1px);
 }

@@ -372,7 +372,6 @@ function CatalogSetSlotItems({ setId, slot }: { setId: number; slot: SetSlot }) 
   );
 }
 
-
 type QuickGearSetResultsProps = {
   catalogSets: CatalogSetSummary[];
   isApplying: boolean;
@@ -597,6 +596,7 @@ const SetEditorSearchResults = memo(function SetEditorSearchResults({
     </>
   );
 });
+
 
 function getAbilityTooltipContent(value: SkillAbilityId | '') {
   const abilityName = getAbilityDisplayName(value);
@@ -1604,7 +1604,7 @@ export default function EncountersPage() {
           type="button"
           aria-label={`Show details for ${abilityName}`}
           onClick={() => setViewSkillDetails(value)}
-          className={`group/skill relative flex ${compact ? 'h-auto max-h-9 w-full max-w-9 aspect-square' : 'h-12 w-12'} shrink-0 cursor-pointer items-center justify-center border-2 border-yellow-600 bg-black/40 p-0.5 transition hover:z-[60] hover:scale-110 hover:border-yellow-300 focus-visible:z-[60] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300`}
+          className={`raid-interactive-tile group/skill relative flex ${compact ? 'h-auto max-h-9 w-full max-w-9 aspect-square' : 'h-12 w-12'} shrink-0 cursor-pointer items-center justify-center border-2 border-yellow-600 bg-black/40 p-0.5 transition focus-visible:z-[60] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300`}
         >
           <Image src={getAbilityImagePath(category, abilityName)} alt="" width={40} height={40} className="h-full w-full object-cover" />
         </button>
@@ -1652,7 +1652,7 @@ export default function EncountersPage() {
     }
 
     const slot = (
-      <div aria-label={itemName} className={`flex ${compact ? 'h-8 w-8' : 'h-12 w-12'} shrink-0 items-center justify-center self-center border-2 border-yellow-600 bg-black/40 p-0.5 transition hover:z-[60] hover:scale-110 hover:border-yellow-300`}>
+      <div aria-label={itemName} className={`raid-interactive-tile flex ${compact ? 'h-8 w-8' : 'h-12 w-12'} shrink-0 items-center justify-center self-center border-2 border-yellow-600 bg-black/40 p-0.5 transition`}>
         <Image src={iconSrc} alt="" width={40} height={40} className="h-full w-full object-cover" />
       </div>
     );
@@ -2052,7 +2052,7 @@ export default function EncountersPage() {
             onDrop={(event) => {
               void handleSetSlotDrop(event, playerId, slot);
             }}
-            className={`group relative flex shrink-0 items-center justify-center overflow-visible border-2 bg-black/60 p-1 transition hover:z-30 hover:scale-110 hover:border-yellow-400 ${detailPreview ? 'h-16 w-16' : 'h-12 w-12 p-0.5'} ${
+            className={`raid-interactive-tile group relative flex shrink-0 items-center justify-center overflow-visible border-2 bg-black/60 p-1 transition ${detailPreview ? 'h-16 w-16' : 'h-12 w-12 p-0.5'} ${
               value ? 'border-yellow-600' : 'border-dashed border-yellow-700'
             } cursor-grab active:cursor-grabbing`}
           >
@@ -2081,7 +2081,7 @@ export default function EncountersPage() {
                 });
               }}
               aria-label={`Show details for ${value || label}`}
-              className={`group relative flex shrink-0 cursor-pointer items-center justify-center overflow-visible border-2 border-yellow-600 bg-black/60 p-1 transition hover:z-30 hover:scale-110 hover:border-yellow-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 ${detailPreview ? 'h-16 w-16' : 'h-12 w-12 p-0.5'}`}
+              className={`raid-interactive-tile group relative flex shrink-0 cursor-pointer items-center justify-center overflow-visible border-2 border-yellow-600 bg-black/60 p-1 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 ${detailPreview ? 'h-16 w-16' : 'h-12 w-12 p-0.5'}`}
             >
               <GearIcon key={`${gearItemId}-${slot}`} gear={gear} slot={slot} fallbackSrc={placeholderImage} alt={value} className="h-full w-full object-cover" />
             </button>
