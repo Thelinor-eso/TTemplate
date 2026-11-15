@@ -909,7 +909,7 @@ textarea:focus-visible {
   background: color-mix(in srgb, var(--raid-accent) 8%, rgba(14, 19, 27, 0.95));
 }
 
-.encounters-page [role="dialog"],
+.encounters-page [role="dialog"]:not(.quick-gear-dialog),
 .players-page [role="alertdialog"] {
   border: 1px solid color-mix(in srgb, var(--raid-accent) 40%, rgba(174, 187, 204, 0.2));
   border-radius: 20px;
@@ -917,7 +917,7 @@ textarea:focus-visible {
 }
 
 :is(.players-page, .encounters-page) [role="alertdialog"] button,
-.encounters-page [role="dialog"] button {
+.encounters-page [role="dialog"]:not(.quick-gear-dialog) button {
   min-height: 40px;
   padding-inline: 15px;
   border: 1px solid rgba(174, 187, 204, 0.2);
@@ -1141,7 +1141,7 @@ textarea:focus-visible {
   background: rgba(23, 31, 43, 0.70);
 }
 
-.encounters-page [role="dialog"] {
+.encounters-page [role="dialog"]:not(.quick-gear-dialog) {
   border-color: rgba(211, 180, 117, 0.38);
   border-radius: 18px;
   background-color: #111720;

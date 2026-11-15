@@ -20,7 +20,7 @@ import {
   getArmorWeightForAbility,
   type ArmorWeight,
 } from '@/lib/abilityCategories';
-import { fetchSetCatalogIndex, fetchSetById, getItemLabel, getSlotItemOptions, getCachedCatalogItem, ensureCatalogItemLoaded, ensureCatalogItemsLoaded, findCatalogItemVariant, findCompatibleSlotItem, getCatalogItemChoiceKey, getMatchingCatalogItemNames, getSetMaxPiecesRequired, groupCatalogItems, itemMatchesSlot, matchesCatalogSetSearch, sortSetsBySelectedPieceCount, type CatalogSetItem, type CatalogSetSummary } from '@/lib/esoSetCatalog';
+import { fetchSetCatalogIndex, fetchSetById, getItemLabel, getSlotItemOptions, getCachedCatalogItem, ensureCatalogItemLoaded, ensureCatalogItemsLoaded, findCatalogItemVariant, findCompatibleSlotItem, getCatalogItemChoiceKey, getSetMaxPiecesRequired, groupCatalogItems, matchesCatalogSetSearch, sortSetsBySelectedPieceCount, type CatalogSetItem, type CatalogSetSummary } from '@/lib/esoSetCatalog';
 import { ESO_ENCHANTS } from '@/data/esoEnchants';
 import { ESO_POISONS } from '@/data/esoPoisons';
 import { getCritDamageBreakdown, getSetSummary, type CritDamageBreakdown } from '@/lib/critDamage';
@@ -87,7 +87,20 @@ type ScribingDraft = {
   affixScriptId: number | '';
 };
 type SetEditorState = { playerId: number; slot: SetSlot };
-type QuickGearSetupState = { playerId: number; replaceSetId: number | null };
+type QuickGearPlacement = 'body' | 'jewels-weapons' | 'head-shoulders' | 'replace-set';
+type QuickGearSetupState = {
+  playerId: number;
+  replaceSetIds: number[];
+  selectedSetId: number | null;
+  placement: QuickGearPlacement | null;
+  selectedSlots: SetSlot[];
+  bodyEnchantment: string;
+  jewelryEnchantment: string;
+  bodyTrait: string;
+  jewelryTrait: string;
+};
+type QuickGearDefaults = Pick<QuickGearSetupState, 'bodyEnchantment' | 'jewelryEnchantment' | 'bodyTrait' | 'jewelryTrait'>;
+type BulkEnchantmentCategory = 'body' | 'jewelry';
 type GearDetailsState = {
   playerId: number;
   slot: SetSlot;
@@ -148,10 +161,17 @@ const NO_TRAIT_VALUE = '__no_trait__';
 type SetSlotCategory = CatalogSetItem['gearType'];
 type DraggedSetSlot = { playerId: number; slot: SetSlot; itemId: number; category: SetSlotCategory };
 
+const QUICK_GEAR_BODY_SLOTS: readonly SetSlot[] = ['chest', 'waist', 'boots', 'gloves', 'legs'];
+const QUICK_GEAR_HEAD_SHOULDER_SLOTS: readonly SetSlot[] = ['head', 'shoulders'];
+const QUICK_GEAR_JEWEL_SLOTS: readonly SetSlot[] = ['necklace', 'ring1', 'ring2'];
+const QUICK_GEAR_FRONT_BAR_SLOTS: readonly SetSlot[] = ['mainHandFrontBar', 'offHandFrontBar'];
+const QUICK_GEAR_BACK_BAR_SLOTS: readonly SetSlot[] = ['mainHandBackBar', 'offHandBackBar'];
+const QUICK_GEAR_WEAPON_SLOTS: readonly SetSlot[] = [...QUICK_GEAR_FRONT_BAR_SLOTS, ...QUICK_GEAR_BACK_BAR_SLOTS];
 const QUICK_GEAR_SLOT_ORDER: readonly SetSlot[] = [
-  'head', 'chest', 'waist', 'boots', 'shoulders', 'gloves', 'legs',
-  'necklace', 'ring1', 'ring2',
-  'offHandFrontBar', 'mainHandFrontBar', 'offHandBackBar', 'mainHandBackBar',
+  ...QUICK_GEAR_BODY_SLOTS,
+  ...QUICK_GEAR_WEAPON_SLOTS,
+  ...QUICK_GEAR_JEWEL_SLOTS,
+  'head', 'shoulders',
 ];
 const NORMALIZED_SET_ICON_SOURCES = new Map(
   Object.entries(SET_ICON_SOURCES).map(([setName, source]) => [normalizeSetName(setName), source]),
@@ -161,6 +181,7 @@ function getDefaultSetItemSelection(
   choice: ReturnType<typeof groupCatalogItems>[number] | undefined,
   slot: SetSlot,
   role: RoleType,
+  preferences?: QuickGearDefaults,
 ) {
   if (!choice) return { trait: null, item: undefined, enchantment: '', poison: '' };
 
@@ -181,6 +202,15 @@ function getDefaultSetItemSelection(
     const preferredTrait = role === RoleType.DPS ? 'Bloodthirsty' : 'Infused';
     trait = choice.variants.some((item) => item.trait === preferredTrait) ? preferredTrait : null;
     enchantment = role === RoleType.DPS ? '28' : '35';
+  } else if (role === RoleType.DPS && representative.gearType === 'weapon') {
+    trait = representative.equipType === 'Two Hand'
+      ? slot === 'mainHandFrontBar' || slot === 'offHandFrontBar' ? 'Precise' : 'Infused'
+      : slot === 'mainHandFrontBar' || slot === 'mainHandBackBar' ? 'Nirnhoned' : 'Charged';
+    if (slot === 'mainHandFrontBar' || slot === 'offHandFrontBar') {
+      enchantment = '10';
+    } else {
+      poison = 'Damage Health Poison IX';
+    }
   } else if (representative.equipType === 'Two Hand') {
     trait = slot === 'mainHandFrontBar' || slot === 'offHandFrontBar' ? 'Precise' : 'Infused';
     enchantment = '18';
@@ -193,10 +223,66 @@ function getDefaultSetItemSelection(
     }
   }
 
+  if (representative.gearType === 'armor' || representative.gearType === 'jewelry') {
+    const preferredTrait = representative.gearType === 'armor'
+      ? preferences?.bodyTrait
+      : preferences?.jewelryTrait;
+    const preferredTraitValue = preferredTrait === NO_TRAIT_VALUE ? '' : preferredTrait;
+    if (
+      preferredTrait
+      && choice.variants.some((item) => item.trait === preferredTraitValue)
+    ) {
+      trait = preferredTraitValue ?? '';
+    }
+
+    const preferredEnchantment = representative.gearType === 'armor'
+      ? preferences?.bodyEnchantment
+      : preferences?.jewelryEnchantment;
+    if (
+      preferredEnchantment
+      && ESO_ENCHANTS.some((enchant) => (
+        String(enchant.id) === preferredEnchantment && enchant.gearType === representative.gearType
+      ))
+    ) {
+      enchantment = preferredEnchantment;
+    }
+  }
+
   if (trait && !choice.variants.some((item) => item.trait === trait)) trait = null;
   const item = findCatalogItemVariant(choice, trait ?? '');
 
   return { trait, item, enchantment, poison };
+}
+
+type QuickGearAutomaticDefault = {
+  armorWeight: CatalogSetItem['armorWeight'];
+  trait: string | null;
+  enchantmentName: string;
+};
+
+function getQuickGearAutomaticDefaults(
+  items: CatalogSetItem[],
+  gearType: 'armor' | 'jewelry',
+  role: RoleType,
+): QuickGearAutomaticDefault[] {
+  const choices = groupCatalogItems(items.filter((item) => item.gearType === gearType));
+  const defaults = choices.flatMap((choice) => {
+    const selection = getDefaultSetItemSelection(choice, gearType === 'armor' ? 'chest' : 'necklace', role);
+    const enchantment = ESO_ENCHANTS.find((entry) => String(entry.id) === selection.enchantment);
+    if (!selection.item || !enchantment) return [];
+    return [{
+      armorWeight: gearType === 'armor' ? choice.representative.armorWeight : null,
+      trait: selection.trait,
+      enchantmentName: enchantment.name,
+    }];
+  });
+  const uniqueDefaults = new Map(
+    defaults.map((entry) => [
+      `${entry.armorWeight ?? ''}:${entry.trait ?? ''}:${entry.enchantmentName}`,
+      entry,
+    ]),
+  );
+  return [...uniqueDefaults.values()];
 }
 
 const SET_CATALOG_SLOT_ALIASES: Partial<Record<SetSlot, string[]>> = {
@@ -209,6 +295,41 @@ const SET_CATALOG_SLOT_ALIASES: Partial<Record<SetSlot, string[]>> = {
 function setSupportsSlot(set: CatalogSetSummary, slot: SetSlot): boolean {
   return set.availableSlots.includes(slot)
     || (SET_CATALOG_SLOT_ALIASES[slot] ?? []).some((alias) => set.availableSlots.includes(alias));
+}
+
+function getQuickGearPresetSlots(
+  set: CatalogSetSummary | null,
+  placement: QuickGearPlacement,
+  playerStuff: FightPlayerStuff | undefined,
+  replaceSetIds: readonly number[],
+): SetSlot[] {
+  if (placement === 'replace-set') return [];
+  if (placement === 'body') {
+    return set ? QUICK_GEAR_BODY_SLOTS.filter((slot) => setSupportsSlot(set, slot)) : [...QUICK_GEAR_BODY_SLOTS];
+  }
+  if (placement === 'head-shoulders') {
+    return set
+      ? QUICK_GEAR_HEAD_SHOULDER_SLOTS.filter((slot) => setSupportsSlot(set, slot))
+      : [...QUICK_GEAR_HEAD_SHOULDER_SLOTS];
+  }
+
+  const isAvailable = (slot: SetSlot) => {
+    const gear = playerStuff?.sets[slot];
+    if (!gear || gear.itemId === null) return true;
+    const equippedSetId = getCachedCatalogItem(gear.itemId, gear.trait)?.setId;
+    return equippedSetId !== undefined && replaceSetIds.includes(equippedSetId);
+  };
+  const frontBarIsAvailable = QUICK_GEAR_FRONT_BAR_SLOTS.some((slot) => (
+    isAvailable(slot) && (!set || setSupportsSlot(set, slot))
+  ));
+  const backBarIsAvailable = QUICK_GEAR_BACK_BAR_SLOTS.some((slot) => (
+    isAvailable(slot) && (!set || setSupportsSlot(set, slot))
+  ));
+  const weaponSlots = frontBarIsAvailable || !backBarIsAvailable
+    ? QUICK_GEAR_FRONT_BAR_SLOTS
+    : QUICK_GEAR_BACK_BAR_SLOTS;
+  const slots = [...QUICK_GEAR_JEWEL_SLOTS, ...weaponSlots];
+  return set ? slots.filter((slot) => setSupportsSlot(set, slot)) : slots;
 }
 const SKILL_BAR_SLOTS = [
   ...MAIN_BAR_SLOTS,
@@ -276,67 +397,70 @@ function getSetSlotLabel(slot: SetSlot): string {
   return labels[slot];
 }
 
-function CatalogSetTooltip({ set, slot, search = '', children }: { set: CatalogSetSummary; slot?: SetSlot; search?: string; children: ReactNode }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [setItems, setSetItems] = useState<CatalogSetItem[]>([]);
+function getEnchantmentColorClass(enchantmentName: string | undefined): string {
+  const normalizedName = enchantmentName?.toLowerCase() ?? '';
+  if (normalizedName.includes('magicka')) return 'text-blue-300';
+  if (normalizedName.includes('stamina')) return 'text-green-300';
+  if (normalizedName.includes('health')) return 'text-red-300';
+  return 'text-[#f8f7f2]';
+}
 
-  useEffect(() => {
-    if (!isHovered) return;
-    let active = true;
-    void fetchSetById(set.id).then((entry) => {
-      if (active) setSetItems(entry?.items ?? []);
-    }).catch(() => {
-      if (active) setSetItems([]);
-    });
-    return () => { active = false; };
-  }, [isHovered, set.id]);
+function getEnchantmentIndicatorClass(enchantmentName: string | undefined): string | null {
+  const normalizedName = enchantmentName?.toLowerCase() ?? '';
+  if (normalizedName.includes('magicka')) return 'bg-blue-400';
+  if (normalizedName.includes('stamina')) return 'bg-green-400';
+  if (normalizedName.includes('health')) return 'bg-red-400';
+  return null;
+}
 
-  const query = search.trim().toLocaleLowerCase();
-  const slotItems = [...new Map(setItems
-    .filter((item) => slot
-      ? itemMatchesSlot(slot, item)
-      : query.length > 0 && item.name.toLocaleLowerCase().includes(query))
-    .map((item) => [item.name, item])).values()];
+function EnchantmentIndicator({ gear }: { gear: GearSlotPiece | undefined }) {
+  const enchantment = ESO_ENCHANTS.find((entry) => String(entry.id) === gear?.enchantment);
+  const colorClass = getEnchantmentIndicatorClass(enchantment?.name);
+  if (!enchantment || !colorClass) return null;
 
   return (
-    <span onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onFocus={() => setIsHovered(true)} onBlur={() => setIsHovered(false)}>
-      <PortalTooltip content={
-        <>
-          <span className="mb-2 block font-bold text-[#f7e7ba]">{set.setName}</span>
-          {slotItems.map((item) => {
-            const itemSlot = slot ?? (item.gearType === 'weapon'
-              ? 'mainHandFrontBar'
-              : item.gearType === 'jewelry'
-                ? 'ring1'
-                : 'head');
-            return (
-              <span key={item.name} className="my-2 flex items-center gap-2 border-b border-white/10 pb-2">
-                <GearIcon
-                  gear={{ itemId: item.id, enchantment: '', trait: item.trait }}
-                  slot={itemSlot}
-                  fallbackSrc={SET_SLOT_PLACEHOLDER_IMAGES[itemSlot]}
-                  alt={item.name}
-                  className="h-10 w-10 shrink-0 object-contain"
-                />
-                <span>{item.name}</span>
-              </span>
-            );
-          })}
-          {set.effects.length > 0 ? set.effects.map((effect) => (
-            <span key={`${effect.numberOfPiecesRequired}-${effect.description}`} className="mt-1 block">
-              {effect.description.replace(/\|c[0-9a-fA-F]{6}|\|r/g, '')}
-            </span>
-          )) : (
-            <span className="text-white/60">No set bonuses available.</span>
-          )}
-          {slot && slotItems.length === 0 && (
-            <span className="mt-1 block text-white/60">No item for this slot.</span>
-          )}
-        </>
-      }>
-        {children}
-      </PortalTooltip>
-    </span>
+    <span
+      role="img"
+      aria-label={`${enchantment.name} enchantment`}
+      className={`h-1.5 w-1.5 shrink-0 rounded-full ${colorClass}`}
+      title={enchantment.name}
+    />
+  );
+}
+
+function getArmorWeightTextClass(weight: CatalogSetItem['armorWeight']): string {
+  if (weight === 'light') return 'text-blue-300';
+  if (weight === 'medium') return 'text-green-300';
+  if (weight === 'heavy') return 'text-red-300';
+  return 'text-[#f8f7f2]';
+}
+
+function getItemTypeLabel(item: CatalogSetItem): string {
+  if (item.gearType === 'armor') {
+    return item.armorWeight
+      ? `${item.armorWeight[0].toUpperCase()}${item.armorWeight.slice(1)} armor`
+      : 'Armor';
+  }
+  if (item.gearType === 'weapon') return item.weaponType;
+  return `Jewelry • ${item.equipType}`;
+}
+
+function CatalogSetTooltip({ set, children }: { set: CatalogSetSummary; children: ReactNode }) {
+  return (
+    <PortalTooltip content={
+      <>
+        <span className="mb-2 block font-bold text-[#f7e7ba]">{set.setName}</span>
+        {set.effects.length > 0 ? set.effects.map((effect) => (
+          <span key={`${effect.numberOfPiecesRequired}-${effect.description}`} className="mt-1 block">
+            {effect.description.replace(/\|c[0-9a-fA-F]{6}|\|r/g, '')}
+          </span>
+        )) : (
+          <span className="text-white/60">No set bonuses available.</span>
+        )}
+      </>
+    }>
+      {children}
+    </PortalTooltip>
   );
 }
 
@@ -376,6 +500,7 @@ type QuickGearSetResultsProps = {
   catalogSets: CatalogSetSummary[];
   isApplying: boolean;
   onSelectSet: (setId: number) => void;
+  selectedSetId: number | null;
   search: string;
 };
 
@@ -383,6 +508,7 @@ const QuickGearSetResults = memo(function QuickGearSetResults({
   catalogSets,
   isApplying,
   onSelectSet,
+  selectedSetId,
   search,
 }: QuickGearSetResultsProps) {
   const filteredSets = useMemo(() => (
@@ -393,20 +519,24 @@ const QuickGearSetResults = memo(function QuickGearSetResults({
 
   return (
     <div
-      className="shrink-0 overflow-y-auto border border-[#d6b46b]/50 p-2"
-      style={{ height: 'min(38vh, 32rem)', flex: '0 0 min(38vh, 32rem)' }}
+      className="min-h-0 flex-1 overflow-y-auto border border-[#d6b46b]/50 p-2"
+      style={{ minHeight: 0, flex: '1 1 0%' }}
     >
       {filteredSets.length ? (
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {filteredSets.map((set) => {
-            const matchingItemNames = getMatchingCatalogItemNames(set, search);
             return (
-              <CatalogSetTooltip key={set.id} set={set} search={search}>
+              <CatalogSetTooltip key={set.id} set={set}>
                 <button
                   type="button"
                   disabled={isApplying}
+                  aria-pressed={selectedSetId === set.id}
                   onClick={() => onSelectSet(set.id)}
-                  className="flex min-h-24 min-w-0 items-center gap-3 rounded border border-[#d6b46b] bg-[#171717] px-3 py-2 text-left text-sm text-[#f8f7f2] transition hover:border-[#f8f7f2] hover:bg-[#242424] disabled:cursor-wait disabled:opacity-50"
+                  className={`flex min-h-20 min-w-0 items-center gap-3 rounded px-3 py-2 text-left text-sm text-[#f8f7f2] transition disabled:cursor-wait disabled:opacity-50 ${
+                    selectedSetId === set.id
+                      ? 'border-2 border-[#f7e7ba] bg-[#d6b46b]/15 ring-1 ring-[#d6b46b]/40'
+                      : 'border border-[#d6b46b] bg-[#171717] hover:border-[#f8f7f2] hover:bg-[#242424]'
+                  }`}
                 >
                   <SetHeadIcon
                     setId={set.id}
@@ -414,16 +544,7 @@ const QuickGearSetResults = memo(function QuickGearSetResults({
                     className="flex h-12 w-12 shrink-0 items-center justify-center border border-[#d6b46b]/70 bg-black/40 p-1"
                   />
                   <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
-                    <span className="line-clamp-2 block min-h-10 font-semibold">{set.setName}</span>
-                    <span aria-hidden="true" className="my-1 block border-t border-[#d6b46b]/50" />
-                    <span className="line-clamp-2 block min-h-8 text-xs font-normal text-[#f7e7ba]/80">
-                      {matchingItemNames.map((name, index) => (
-                        <span key={name}>
-                          {index > 0 ? ' • ' : ''}
-                          {name}
-                        </span>
-                      ))}
-                    </span>
+                    <span className="block font-semibold [overflow-wrap:anywhere]">{set.setName}</span>
                   </span>
                 </button>
               </CatalogSetTooltip>
@@ -431,7 +552,9 @@ const QuickGearSetResults = memo(function QuickGearSetResults({
           })}
         </div>
       ) : (
-        <p className="p-3 text-sm text-[#f8f7f2]/70">No sets found.</p>
+        <p className="p-3 text-sm text-[#f8f7f2]/70">
+          {search.trim() ? 'No sets found.' : 'Enter a set or item name to search.'}
+        </p>
       )}
     </div>
   );
@@ -443,6 +566,7 @@ type QuickGearSearchResultsProps = {
   isApplying: boolean;
   onSelectSet: (setId: number) => void;
   onSearchChange: () => void;
+  selectedSetId: number | null;
 };
 
 const QuickGearSearchResults = memo(function QuickGearSearchResults({
@@ -451,13 +575,14 @@ const QuickGearSearchResults = memo(function QuickGearSearchResults({
   isApplying,
   onSelectSet,
   onSearchChange,
+  selectedSetId,
 }: QuickGearSearchResultsProps) {
   const [search, setSearch] = useState('');
   const deferredSearch = useDeferredValue(search);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <label className="mb-3 block text-sm text-[#f8f7f2]">
+      <label className="mb-3 block shrink-0 text-sm text-[#f8f7f2]">
         Search sets
         <input
           type="search"
@@ -471,7 +596,7 @@ const QuickGearSearchResults = memo(function QuickGearSearchResults({
         />
       </label>
 
-      <div className="mb-2 min-h-5">
+      <div className="mb-2 min-h-5 shrink-0">
         {search !== deferredSearch && (
           <p className="text-xs text-[#d6b46b]" role="status">Updating search results…</p>
         )}
@@ -481,9 +606,68 @@ const QuickGearSearchResults = memo(function QuickGearSearchResults({
         catalogSets={catalogSets}
         isApplying={isApplying}
         onSelectSet={onSelectSet}
+        selectedSetId={selectedSetId}
         search={deferredSearch}
       />
     </div>
+  );
+});
+
+type QuickGearSlotChoiceProps = {
+  slot: SetSlot;
+  gear: GearSlotPiece;
+  isSelected: boolean;
+  isReplacedSet: boolean;
+  supportsSet: boolean;
+  onChange: (slot: SetSlot, checked: boolean) => void;
+};
+
+const QuickGearSlotChoice = memo(function QuickGearSlotChoice({
+  slot,
+  gear,
+  isSelected,
+  isReplacedSet,
+  supportsSet,
+  onChange,
+}: QuickGearSlotChoiceProps) {
+  const isOccupied = gear.itemId !== null;
+  const occupyingItem = isOccupied ? getCachedCatalogItem(gear.itemId, gear.trait) : null;
+  const occupiedBy = occupyingItem?.setName ?? '';
+  const status = isOccupied ? occupiedBy : isSelected ? 'Selected' : 'Free';
+
+  return (
+    <button
+      type="button"
+      aria-label={`Select ${getSetSlotLabel(slot)} slot${occupiedBy ? `, ${occupiedBy}` : isOccupied ? ', occupied' : ', free'}`}
+      aria-pressed={isSelected}
+      disabled={!supportsSet || isReplacedSet}
+      onClick={() => onChange(slot, !isSelected)}
+      className={`flex w-[clamp(3rem,5vw,4.75rem)] shrink-0 flex-col items-center gap-1 rounded-lg p-1 text-center transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f7e7ba] ${
+      isSelected ? 'bg-[#d6b46b]/10 ring-1 ring-[#d6b46b]/50' : 'hover:bg-white/[0.04]'
+    } ${!supportsSet || isReplacedSet ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
+      <span className="block">
+        <span className={`block h-[clamp(2rem,4vw,3rem)] w-[clamp(2rem,4vw,3rem)] overflow-hidden rounded border-2 bg-black/60 p-0.5 ${
+          isSelected ? 'border-[#f7e7ba]' : isOccupied ? 'border-white/35' : 'border-dashed border-yellow-700'
+        }`}>
+          <GearIcon
+            gear={gear}
+            slot={slot}
+            fallbackSrc={SET_SLOT_PLACEHOLDER_IMAGES[slot]}
+            alt={getSetSlotLabel(slot)}
+            className={`h-full w-full object-cover ${isOccupied ? '' : 'opacity-50'}`}
+          />
+        </span>
+      </span>
+      <span className="flex w-full items-center justify-center gap-1 text-[9px] font-semibold capitalize leading-tight text-[#f8f7f2]">
+        <span className="break-words">{slot === 'ring1' ? 'Ring 1' : slot === 'ring2' ? 'Ring 2' : getSetSlotLabel(slot)}</span>
+        <EnchantmentIndicator gear={gear} />
+      </span>
+      <span className={`w-full break-words text-[8px] leading-tight ${
+        !supportsSet ? 'text-white/35' : isReplacedSet || isSelected ? 'text-amber-200' : isOccupied ? 'text-orange-200/80' : 'text-emerald-200/70'
+      }`}>
+        {!supportsSet ? 'Unavailable' : status}
+      </span>
+    </button>
   );
 });
 
@@ -526,7 +710,7 @@ const SetEditorSetList = memo(function SetEditorSetList({
             {sets.map((set) => {
               const supportsSelectedSlot = setSupportsSlot(set, slot);
               return (
-                <CatalogSetTooltip key={set.id} set={set} slot={slot}>
+                <CatalogSetTooltip key={set.id} set={set}>
                   <button
                     type="button"
                     disabled={!supportsSelectedSlot}
@@ -688,60 +872,40 @@ function withoutWeaponPoison(draft: GearDraft): GearPiece {
 
 function GearDetailsTooltip({ itemId, gear, slot }: { itemId: number; gear: GearSlotPiece | undefined; slot: SetSlot }) {
   const [item, setItem] = useState<CatalogSetItem | null>(() => getCachedCatalogItem(itemId, gear?.trait));
-  const [setEffects, setSetEffects] = useState<CatalogSetSummary['effects'] | null>(null);
 
   useEffect(() => {
     let active = true;
     void ensureCatalogItemLoaded(itemId, gear?.trait).then((loadedItem) => {
       if (!active) return;
       setItem(loadedItem);
-      if (!loadedItem) {
-        setSetEffects([]);
-        return;
-      }
-      return fetchSetById(loadedItem.setId).then((set) => {
-        if (active) setSetEffects(set?.effects ?? []);
-      });
     }).catch(() => {
-      if (active) {
-        setItem(null);
-        setSetEffects([]);
-      }
+      if (active) setItem(null);
     });
     return () => { active = false; };
   }, [itemId, gear?.trait]);
 
   const enchantment = ESO_ENCHANTS.find((entry) => String(entry.id) === gear?.enchantment);
   const poison = gear && 'poison' in gear ? gear.poison : null;
-  const itemType = item
-    ? item.gearType === 'armor'
-      ? `${item.armorWeight ? `${item.armorWeight} ` : ''}armor • ${item.equipType}`
-      : item.gearType === 'weapon'
-        ? item.weaponType
-        : `Jewelry • ${item.equipType}`
-    : 'Loading...';
+  const thirdDetailLabel = item?.gearType === 'weapon' && poison ? 'Poison' : 'Enchantment';
+  const thirdDetailValue = thirdDetailLabel === 'Poison'
+    ? poison
+    : enchantment?.name ?? (gear?.enchantment ? `Unknown enchantment (${gear.enchantment})` : 'None');
+  const itemType = item ? getItemTypeLabel(item) : 'Loading...';
 
   return (
     <div className="w-full">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="font-bold text-[#f7e7ba]">{item?.setName ?? 'Loading...'}</h3>
+        <h3 className="font-bold text-[#f7e7ba]">{item?.name ?? 'Loading item...'}</h3>
         <GearIcon gear={gear} slot={slot} fallbackSrc={SET_SLOT_PLACEHOLDER_IMAGES[slot]} alt={item ? getItemLabel(item) : 'Selected item'} className="h-12 w-12 shrink-0 border border-[#d6b46b] bg-black/40 p-1 object-cover" />
       </div>
-      <ul className="mt-2 space-y-1">
-        {(setEffects ?? []).map((effect) => (
-          <li key={`${effect.numberOfPiecesRequired}-${effect.description}`}>
-            <span className="text-[#d6b46b]">{effect.numberOfPiecesRequired} pieces: </span>
-            {effect.description.replace(/\|c[0-9a-fA-F]{6}|\|r/g, '')}
-          </li>
-        ))}
-        {setEffects === null && <li className="text-white/60">Loading set bonuses...</li>}
-      </ul>
       <div className="my-2 border-t border-[#d6b46b]" />
       <dl className="space-y-1">
-        <div><dt className="inline text-[#d6b46b]">Item type: </dt><dd className="inline">{itemType}</dd></div>
+        <div><dt className="inline text-[#d6b46b]">Item type: </dt><dd className={`inline ${item?.gearType === 'armor' ? getArmorWeightTextClass(item.armorWeight) : ''}`}>{itemType}</dd></div>
         <div><dt className="inline text-[#d6b46b]">Trait: </dt><dd className="inline">{gear?.trait || item?.trait || 'No trait'}</dd></div>
-        <div><dt className="inline text-[#d6b46b]">Enchantment: </dt><dd className="inline">{enchantment?.name ?? (gear?.enchantment ? `Unknown enchantment (${gear.enchantment})` : 'None')}</dd></div>
-        {item?.gearType === 'weapon' && <div><dt className="inline text-[#d6b46b]">Poison: </dt><dd className="inline">{poison || 'None'}</dd></div>}
+        <div>
+          <dt className="inline text-[#d6b46b]">{thirdDetailLabel}: </dt>
+          <dd className={`inline ${thirdDetailLabel === 'Enchantment' ? getEnchantmentColorClass(enchantment?.name) : ''}`}>{thirdDetailValue}</dd>
+        </div>
       </dl>
     </div>
   );
@@ -907,9 +1071,40 @@ export default function EncountersPage() {
   const [setEditor, setSetEditor] = useState<SetEditorState | null>(null);
   const [quickGearSetup, setQuickGearSetup] = useState<QuickGearSetupState | null>(null);
   const [quickGearError, setQuickGearError] = useState<string | null>(null);
+  const [quickGearTraitOptions, setQuickGearTraitOptions] = useState<{ body: string[]; jewelry: string[]; items: CatalogSetItem[] }>({ body: [], jewelry: [], items: [] });
   const [isApplyingQuickGear, setIsApplyingQuickGear] = useState(false);
+  const [bulkEnchantmentPlayerId, setBulkEnchantmentPlayerId] = useState<number | null>(null);
+  const [bulkEnchantmentEditor, setBulkEnchantmentEditor] = useState<{ playerId: number; category: BulkEnchantmentCategory } | null>(null);
   const [gearDetails, setGearDetails] = useState<GearDetailsState | null>(null);
   const [gearDetailsError, setGearDetailsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setQuickGearTraitOptions({ body: [], jewelry: [], items: [] });
+    const setId = quickGearSetup?.selectedSetId;
+    if (setId === null || setId === undefined) return () => { cancelled = true; };
+
+    void fetchSetById(setId).then((entry) => {
+      if (!entry) throw new Error('Unable to load trait options for the selected set.');
+      const getTraits = (gearType: 'armor' | 'jewelry') => [...new Set(
+        entry.items.filter((item) => item.gearType === gearType).map((item) => item.trait),
+      )].sort((first, second) => first.localeCompare(second));
+      if (!cancelled) {
+        setQuickGearTraitOptions({
+          body: getTraits('armor'),
+          jewelry: getTraits('jewelry'),
+          items: entry.items,
+        });
+      }
+    }).catch((error: unknown) => {
+      if (!cancelled) {
+        setQuickGearError(error instanceof Error ? error.message : String(error));
+      }
+    });
+
+    return () => { cancelled = true; };
+  }, [quickGearSetup?.selectedSetId]);
+
   const [setTransferError, setSetTransferError] = useState<string | null>(null);
   const [gearDraft, setGearDraft] = useState<GearDraft | null>(null);
   const [catalogSets, setCatalogSets] = useState<CatalogSetSummary[]>([]);
@@ -1030,12 +1225,13 @@ export default function EncountersPage() {
     const hasOpenMenu = Boolean(
       isDeleteFightConfirmationOpen || skillEditor || viewSkillDetails || viewChampionDiscipline
       || overviewSetPlayerId !== null || mundusEditorPlayerId !== null || setEditor || gearDetails
-      || consumableEditor || championPointEditor || playerSetupEditor || isRequiredSetSearchOpen,
+      || consumableEditor || championPointEditor || playerSetupEditor || isRequiredSetSearchOpen || quickGearSetup,
     );
     if (!hasOpenMenu) return;
 
     const closeMenusOnEscape = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
+      if (isApplyingQuickGear) return;
       event.preventDefault();
       setIsDeleteFightConfirmationOpen(false);
       setSkillEditor(null);
@@ -1050,11 +1246,13 @@ export default function EncountersPage() {
       setChampionPointEditor(null);
       setPlayerSetupEditor(null);
       setIsRequiredSetSearchOpen(false);
+      setQuickGearSetup(null);
+      setQuickGearError(null);
     };
 
     window.addEventListener('keydown', closeMenusOnEscape);
     return () => window.removeEventListener('keydown', closeMenusOnEscape);
-  }, [isDeleteFightConfirmationOpen, skillEditor, viewSkillDetails, viewChampionDiscipline, overviewSetPlayerId, mundusEditorPlayerId, setEditor, gearDetails, consumableEditor, championPointEditor, playerSetupEditor, isRequiredSetSearchOpen]);
+  }, [isDeleteFightConfirmationOpen, skillEditor, viewSkillDetails, viewChampionDiscipline, overviewSetPlayerId, mundusEditorPlayerId, setEditor, gearDetails, consumableEditor, championPointEditor, playerSetupEditor, isRequiredSetSearchOpen, quickGearSetup, isApplyingQuickGear]);
 
   const draggedAbilitySlot = useRef<{ playerId: number; field: keyof Skills } | null>(null);
   const draggedChampionPointSlot = useRef<{ playerId: number; field: keyof ChampionPoints } | null>(null);
@@ -1881,7 +2079,7 @@ export default function EncountersPage() {
     }
   };
 
-  const applyQuickGearSet = async (setId: number) => {
+  const applyQuickGearSet = async (setId: number, selectedSlots: SetSlot[]) => {
     if (!quickGearSetup || !fight || isApplyingQuickGear) return;
 
     setIsApplyingQuickGear(true);
@@ -1904,22 +2102,31 @@ export default function EncountersPage() {
       const setEntry = await fetchSetById(setId);
       if (!setEntry) throw new Error('Unable to load the selected set.');
 
-      const replacedSlots = quickGearSetup.replaceSetId === null
-        ? []
-        : QUICK_GEAR_SLOT_ORDER.filter((slot) => (
+      const replacedSlots = QUICK_GEAR_SLOT_ORDER.filter((slot) => {
+        const equippedSetId = getCachedCatalogItem(
+          playerStuff.sets[slot].itemId,
+          playerStuff.sets[slot].trait,
+        )?.setId;
+        return equippedSetId !== undefined && quickGearSetup.replaceSetIds.includes(equippedSetId);
+      });
+      const missingSetIds = quickGearSetup.replaceSetIds.filter((setId) => !replacedSlots.some((slot) => (
           getCachedCatalogItem(playerStuff.sets[slot].itemId, playerStuff.sets[slot].trait)?.setId
-          === quickGearSetup.replaceSetId
-        ));
-      if (quickGearSetup.replaceSetId !== null && replacedSlots.length === 0) {
-        throw new Error('The selected equipped set is no longer available to replace.');
+          === setId
+      )));
+      if (missingSetIds.length > 0) {
+        throw new Error('One or more selected equipped sets are no longer available to replace.');
       }
 
-      const replacementSlotSet = new Set(replacedSlots);
-      const availableSlots = QUICK_GEAR_SLOT_ORDER.filter((slot) => (
-        playerStuff.sets[slot].itemId === null || replacementSlotSet.has(slot)
+      const placementSlots = QUICK_GEAR_SLOT_ORDER.filter((slot) => (
+        selectedSlots.includes(slot) || replacedSlots.includes(slot)
+      ));
+      const slotsToReplace = new Set(replacedSlots);
+      placementSlots.forEach((slot) => slotsToReplace.add(slot));
+      const availableSlots = placementSlots.filter((slot) => (
+        playerStuff.sets[slot].itemId === null || slotsToReplace.has(slot)
       ));
       const simulatedSets: Record<string, GearPiece> = { ...playerStuff.sets };
-      for (const slot of replacedSlots) simulatedSets[slot] = createEmptyGearForSlot(slot);
+      for (const slot of slotsToReplace) simulatedSets[slot] = createEmptyGearForSlot(slot);
 
       const plannedGear = new Map<SetSlot, GearSlotPiece>();
       const role = playerStuff.role ?? RoleType.DPS;
@@ -1932,10 +2139,15 @@ export default function EncountersPage() {
 
         const slotItems = await getSlotItemOptions(slot, setId);
         const choices = groupCatalogItems(slotItems);
-        const choice = choices.find((itemChoice) => getDefaultSetItemSelection(itemChoice, slot, role).item);
+        const choice = choices.find((itemChoice) => getDefaultSetItemSelection(
+          itemChoice,
+          slot,
+          role,
+          quickGearSetup,
+        ).item);
         if (!choice) continue;
 
-        const defaults = getDefaultSetItemSelection(choice, slot, role);
+        const defaults = getDefaultSetItemSelection(choice, slot, role, quickGearSetup);
         if (!defaults.item) continue;
 
         const pairSlot = defaults.item.gearType === 'weapon'
@@ -1947,7 +2159,7 @@ export default function EncountersPage() {
           && (
             !availableSlots.includes(pairSlot)
             || plannedGear.has(pairSlot)
-            || (playerStuff.sets[pairSlot].itemId !== null && !replacementSlotSet.has(pairSlot))
+            || (playerStuff.sets[pairSlot].itemId !== null && !slotsToReplace.has(pairSlot))
           )
         ) continue;
 
@@ -1982,13 +2194,44 @@ export default function EncountersPage() {
         updateFightPlayerStuff(fight.name, quickGearSetup.playerId, slot, gear);
       }
 
-      setQuickGearSetup(null);
+      setQuickGearSetup((current) => current
+        ? {
+          ...current,
+          replaceSetIds: [],
+          selectedSetId: null,
+          placement: null,
+          selectedSlots: [],
+          bodyEnchantment: '',
+          jewelryEnchantment: '',
+          bodyTrait: '',
+          jewelryTrait: '',
+        }
+        : current);
       setQuickGearError(null);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       setQuickGearError(message);
     } finally {
       setIsApplyingQuickGear(false);
+    }
+  };
+
+  const applyBulkEnchantments = (
+    playerId: number,
+    category: BulkEnchantmentCategory,
+    enchantment: string,
+  ) => {
+    if (!fight) return;
+    const playerStuff = fight.playersStuff.find((entry) => entry.id === playerId);
+    if (!playerStuff) return;
+
+    const slots: readonly SetSlot[] = category === 'body'
+      ? ['head', 'chest', 'waist', 'boots', 'shoulders', 'gloves', 'legs']
+      : QUICK_GEAR_JEWEL_SLOTS;
+    for (const slot of slots) {
+      const gear = playerStuff.sets[slot];
+      if (gear.itemId === null) continue;
+      updateFightPlayerStuff(fight.name, playerId, slot, { ...gear, enchantment });
     }
   };
 
@@ -1999,10 +2242,21 @@ export default function EncountersPage() {
     const itemMeta = gear?.itemId !== null ? getCachedCatalogItem(gear?.itemId ?? null, gear?.trait) : null;
     const value = itemMeta?.setName ?? '';
     const placeholderImage = SET_SLOT_PLACEHOLDER_IMAGES[slot];
+    const armorWeightTextClass = itemMeta?.gearType === 'armor'
+      ? getArmorWeightTextClass(itemMeta.armorWeight)
+      : 'text-yellow-300';
+    const tileBorderClass = gearItemId == null
+      ? 'border-dashed border-yellow-700'
+      : 'border-yellow-600';
 
     return (
       <div className={`flex min-w-0 flex-col items-center gap-1 ${detailPreview ? 'w-16' : 'w-12'}`}>
-        {showSlotLabel && <span className="w-full truncate text-center text-[clamp(8px,2.2cqw,10px)] font-semibold uppercase tracking-wide text-yellow-300">{label}</span>}
+        {showSlotLabel && (
+          <span className={`inline-flex w-full min-w-0 items-center justify-center gap-1 text-center text-[clamp(8px,2.2cqw,10px)] font-semibold uppercase tracking-wide ${armorWeightTextClass}`}>
+            <span className="min-w-0 truncate">{label}</span>
+            <EnchantmentIndicator gear={gear} />
+          </span>
+        )}
         {isEditMode ? (
           <PortalTooltip content={gearItemId !== null && gearItemId !== undefined ? <GearDetailsTooltip itemId={gearItemId} gear={gear} slot={slot} /> : null}>
           <button
@@ -2052,9 +2306,7 @@ export default function EncountersPage() {
             onDrop={(event) => {
               void handleSetSlotDrop(event, playerId, slot);
             }}
-            className={`raid-interactive-tile group relative flex shrink-0 items-center justify-center overflow-visible border-2 bg-black/60 p-1 transition ${detailPreview ? 'h-16 w-16' : 'h-12 w-12 p-0.5'} ${
-              value ? 'border-yellow-600' : 'border-dashed border-yellow-700'
-            } cursor-grab active:cursor-grabbing`}
+            className={`raid-interactive-tile group relative flex shrink-0 items-center justify-center overflow-visible border-2 bg-black/60 p-1 transition ${detailPreview ? 'h-16 w-16' : 'h-12 w-12 p-0.5'} ${tileBorderClass} cursor-grab active:cursor-grabbing`}
           >
             <GearIcon key={`${gear?.itemId ?? ''}-${slot}`} gear={gear} slot={slot} fallbackSrc={placeholderImage} alt={value} className="h-full w-full object-cover opacity-90" />
             {!value && (
@@ -2094,11 +2346,6 @@ export default function EncountersPage() {
             </div>
           )
         )}
-        <span
-          className={`w-full truncate text-center text-yellow-100 ${showSlotLabel ? 'text-[clamp(8px,2cqw,10px)]' : 'text-[clamp(8px,3cqw,13px)] font-semibold'}`}
-        >
-          {value || ''}
-        </span>
       </div>
     );
   };
@@ -2131,6 +2378,46 @@ export default function EncountersPage() {
       </>
     );
   };
+
+  const renderSetSummary = (sets: ReturnType<typeof getSetSummary>) => (
+    <section className="rounded-xl border border-[#d6b46b]/50 bg-black/25 p-3">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <h3 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#d6b46b]">Equipped sets</h3>
+        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-white/60">
+          {sets.length} {sets.length === 1 ? 'set' : 'sets'}
+        </span>
+      </div>
+      {sets.length ? (
+        <ul className="grid gap-2 sm:grid-cols-2">
+          {sets.map(({ id, setName, pieceCount, requiredPieces }) => {
+            const set = catalogSets.find((entry) => entry.id === id);
+            const isComplete = requiredPieces !== null && pieceCount >= requiredPieces;
+            return (
+              <li key={id} className="min-w-0">
+                <PortalTooltip content={<><SetHeadIcon setId={id} setName={setName} /><span className="mb-1 block font-bold text-[#f7e7ba]">{setName}</span>{set?.effects.map((effect) => <span key={`${effect.numberOfPiecesRequired}-${effect.description}`} className="mt-1 block">{effect.description.replace(/\|c[0-9a-fA-F]{6}|\|r/g, '')}</span>)}</>}>
+                  <span className="flex min-w-0 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-2 py-1.5 text-left transition hover:border-[#d6b46b]/60 hover:bg-[#d6b46b]/[0.07]">
+                    <SetHeadIcon setId={id} setName={setName} className="h-7 w-7 shrink-0 rounded border border-[#d6b46b]/40 bg-black/40 p-0.5" />
+                    <span className="min-w-0 flex-1 whitespace-normal break-words [overflow-wrap:anywhere] text-xs font-medium leading-snug text-[#f8f7f2]">{setName}</span>
+                    <span className={`shrink-0 rounded-md border px-2 py-1 text-[11px] font-bold tabular-nums ${
+                      isComplete
+                        ? 'border-emerald-400/30 bg-emerald-500/15 text-emerald-300'
+                        : 'border-orange-400/30 bg-orange-500/15 text-orange-300'
+                    }`}>
+                      {pieceCount}{requiredPieces !== null ? `/${requiredPieces}` : ' pcs'}
+                    </span>
+                  </span>
+                </PortalTooltip>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p className="rounded-lg border border-dashed border-white/15 px-3 py-4 text-center text-xs text-white/45">
+          No sets equipped yet. Add one with Quick Gear Setup.
+        </p>
+      )}
+    </section>
+  );
 
   return (
     <div
@@ -2709,85 +2996,179 @@ export default function EncountersPage() {
                       </div>
                     </td>
                     <td className="relative z-0 px-4 py-6 text-sm text-yellow-100 align-top hover:z-20">
-                      <div className="flex w-full min-w-0 flex-col items-center gap-3">
-                        {renderCopyPasteControls('sets', player.id, player.name, playerStuff, emptyPlayerStuff)}
-                        {isEditMode && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setQuickGearSetup({ playerId: player.id, replaceSetId: null });
-                              setQuickGearError(null);
-                            }}
-                            className="rounded border border-[#d6b46b] bg-[#171717] px-3 py-1 text-xs font-bold text-[#f8f7f2] transition hover:border-[#f8f7f2] hover:bg-[#333]"
-                          >
-                            Quick Gear Setup
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          aria-pressed={showSetDetailsByPlayer[player.id] ?? false}
-                          onClick={() => setShowSetDetailsByPlayer((current) => ({
-                            ...current,
-                            [player.id]: !(current[player.id] ?? false),
-                          }))}
-                          className={`rounded border px-3 py-1 text-xs font-bold transition ${
-                            showSetDetailsByPlayer[player.id]
-                              ? 'border-[#f8f7f2] bg-[#d6b46b] text-black'
-                              : 'border-[#d6b46b] bg-[#1c1c1f] text-white hover:bg-[#333]'
-                          }`}
-                        >
-                          Show details
-                        </button>
-
-                        {showSetDetailsByPlayer[player.id] ? (
-                          <div className="@container/set-details grid w-full min-w-0 grid-cols-[minmax(0,0.7fr)_minmax(0,2fr)_minmax(0,1fr)] items-start gap-[2cqw]">
-                            <div className="flex min-w-0 flex-col items-center gap-[2cqw] pt-8">
-                              {renderSetSlot(player.id, 'necklace', 'Necklace')}
-                              {renderSetSlot(player.id, 'ring1', 'Ring1')}
-                              {renderSetSlot(player.id, 'ring2', 'Ring2')}
+                      <div className="mx-auto flex w-full max-w-[48rem] min-w-0 flex-col gap-3">
+                        <section className="rounded-2xl border border-[#d6b46b]/50 bg-gradient-to-br from-[#1a1916] via-[#111111] to-[#111111] p-3 shadow-lg shadow-black/20">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#d6b46b]">Gear setup</p>
+                              <p className="mt-0.5 text-xs text-white/55">
+                                {setSummary.length ? `${setSummary.length} active ${setSummary.length === 1 ? 'set' : 'sets'}` : 'Build this player’s set setup'}
+                              </p>
                             </div>
-
-                            <div className="flex min-w-0 flex-col items-center gap-0.5">
-                              {SET_LAYOUT_ROWS.map((row, rowIndex) => (
-                                <div
-                                  key={`set-row-${rowIndex}`}
-                                  className="flex items-end justify-center gap-[2cqw]"
-                                >
-                                  {row.map((item) => (
-                                    <div
-                                      key={`${player.id}-set-${item.slot}`}
-                                      className={'colSpan' in item && item.colSpan ? 'mx-auto' : ''}
-                                    >
-                                      {renderSetSlot(player.id, item.slot, item.label)}
-                                    </div>
-                                  ))}
-                                </div>
-                              ))}
-                            </div>
-
-                            <div className="flex min-w-0 flex-col items-center gap-[3cqw] pt-14">
-                              <div className="flex gap-[2cqw]">
-                                {renderWeaponSlots(player.id, 'mainHandFrontBar', 'offHandFrontBar', 'Front bar')}
-                              </div>
-                              <div className="flex gap-[2cqw]">
-                                {renderWeaponSlots(player.id, 'mainHandBackBar', 'offHandBackBar', 'Back bar')}
-                              </div>
-                            </div>
+                            {renderCopyPasteControls('sets', player.id, player.name, playerStuff, emptyPlayerStuff)}
                           </div>
-                        ) : (
-                          <ul className="w-full space-y-1 text-center text-sm text-yellow-100">
-                            {setSummary.length > 0 ? (
-                              setSummary.map(({ id, setName, pieceCount, requiredPieces }) => (
-                                <li key={id}>
-                                  <PortalTooltip content={<><SetHeadIcon setId={id} setName={setName} /><span className="mb-1 block font-bold text-[#f7e7ba]">{setName}</span>{catalogSets.find((set) => set.id === id)?.effects.map((effect) => <span key={`${effect.numberOfPiecesRequired}-${effect.description}`} className="mt-1 block">{effect.description.replace(/\|c[0-9a-fA-F]{6}|\|r/g, '')}</span>)}</>}>
-                                    <span>{setName}: {pieceCount}{requiredPieces !== null ? `/${requiredPieces}` : ''} {pieceCount === 1 ? 'piece' : 'pieces'}</span>
-                                  </PortalTooltip>
-                                </li>
-                              ))
-                            ) : (
-                              <li className="text-xs text-yellow-200">No sets selected</li>
+
+                          <div className={`mt-3 grid gap-2 ${isEditMode ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-1'}`}>
+                            {isEditMode && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setQuickGearSetup({
+                                    playerId: player.id,
+                                    replaceSetIds: [],
+                                    selectedSetId: null,
+                                    placement: null,
+                                    selectedSlots: [],
+                                    bodyEnchantment: '',
+                                    jewelryEnchantment: '',
+                                    bodyTrait: '',
+                                    jewelryTrait: '',
+                                  });
+                                  setQuickGearError(null);
+                                }}
+                                className="group flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#d6b46b] bg-[#d6b46b] px-3 py-2 text-xs font-bold text-[#17130b] shadow-md shadow-[#d6b46b]/10 transition hover:border-[#f7e7ba] hover:bg-[#f0d99f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f7e7ba]"
+                              >
+                                <span aria-hidden="true" className="text-lg leading-none">+</span>
+                                Quick gear
+                              </button>
                             )}
-                          </ul>
+                            <button
+                              type="button"
+                              aria-expanded={showSetDetailsByPlayer[player.id] ?? false}
+                              onClick={() => setShowSetDetailsByPlayer((current) => ({
+                                ...current,
+                                [player.id]: !(current[player.id] ?? false),
+                              }))}
+                              className={`flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f7e7ba] ${
+                                showSetDetailsByPlayer[player.id]
+                                  ? 'border-[#d6b46b] bg-[#d6b46b]/15 text-[#f7e7ba]'
+                                  : 'border-white/10 bg-white/[0.04] text-white/80 hover:border-[#d6b46b]/70 hover:bg-white/[0.08]'
+                              }`}
+                            >
+                              <span aria-hidden="true">▦</span>
+                              {showSetDetailsByPlayer[player.id] ? 'Hide slots' : 'View slots'}
+                            </button>
+                            {isEditMode && (
+                              <button
+                                type="button"
+                                aria-expanded={bulkEnchantmentPlayerId === player.id}
+                                onClick={() => {
+                                  setBulkEnchantmentPlayerId((current) => current === player.id ? null : player.id);
+                                  setBulkEnchantmentEditor(null);
+                                }}
+                                className={`col-span-2 flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f7e7ba] sm:col-span-1 ${
+                                  bulkEnchantmentPlayerId === player.id
+                                    ? 'border-[#d6b46b] bg-[#d6b46b]/15 text-[#f7e7ba]'
+                                    : 'border-white/10 bg-white/[0.04] text-white/80 hover:border-[#d6b46b]/70 hover:bg-white/[0.08]'
+                                }`}
+                              >
+                                <span aria-hidden="true">✦</span>
+                                Edit enchants
+                              </button>
+                            )}
+                          </div>
+
+                          {isEditMode && bulkEnchantmentPlayerId === player.id && (
+                            <div className="mt-3 rounded-xl border border-[#d6b46b]/30 bg-black/30 p-3">
+                              <div className="mb-3">
+                                <h3 className="text-xs font-semibold text-[#f8f7f2]">Bulk enchantment editor</h3>
+                                <p className="mt-1 text-[11px] leading-relaxed text-white/55">
+                                  Choose a gear group, then apply one glyph to every equipped piece in that group.
+                                </p>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2 rounded-lg bg-black/30 p-1">
+                                {(['body', 'jewelry'] as const).map((category) => {
+                                  const isSelected = bulkEnchantmentEditor?.playerId === player.id
+                                    && bulkEnchantmentEditor.category === category;
+                                  return (
+                                    <button
+                                      key={category}
+                                      type="button"
+                                      aria-pressed={isSelected}
+                                      onClick={() => setBulkEnchantmentEditor((current) => (
+                                        current?.playerId === player.id && current.category === category
+                                          ? null
+                                          : { playerId: player.id, category }
+                                      ))}
+                                      className={`rounded-md px-3 py-2 text-xs font-semibold transition ${
+                                        isSelected
+                                          ? 'bg-[#d6b46b] text-[#17130b] shadow'
+                                          : 'text-white/65 hover:bg-white/5 hover:text-white'
+                                      }`}
+                                    >
+                                      {category === 'body' ? 'Body armor' : 'Jewelry'}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                              {bulkEnchantmentEditor?.playerId === player.id && (
+                                <label className="mt-3 block text-xs font-medium text-white/75">
+                                  Apply to all equipped {bulkEnchantmentEditor.category === 'body' ? 'body armor' : 'jewelry'}
+                                  <select
+                                    aria-label={`Bulk ${bulkEnchantmentEditor.category} enchantment`}
+                                    value=""
+                                    onChange={(event) => applyBulkEnchantments(
+                                      player.id,
+                                      bulkEnchantmentEditor.category,
+                                      event.target.value === '__clear__' ? '' : event.target.value,
+                                    )}
+                                    className="mt-1.5 w-full rounded-lg border border-white/10 bg-[#181818] px-3 py-2.5 text-sm text-white outline-none transition focus:border-[#d6b46b] focus:ring-2 focus:ring-[#d6b46b]/20"
+                                  >
+                                    <option value="" disabled>Choose an enchantment…</option>
+                                    <option value="__clear__">Clear enchantments</option>
+                                    {ESO_ENCHANTS
+                                      .filter((enchant) => enchant.gearType === (bulkEnchantmentEditor.category === 'body' ? 'armor' : 'jewelry'))
+                                      .map((enchant) => <option key={enchant.id} value={String(enchant.id)}>{enchant.name}</option>)}
+                                  </select>
+                                </label>
+                              )}
+                            </div>
+                          )}
+                        </section>
+
+                        {renderSetSummary(setSummary)}
+
+                        {showSetDetailsByPlayer[player.id] && (
+                          <section className="@container/set-details rounded-2xl border border-white/10 bg-[#111111]/70 p-3 shadow-inner shadow-black/20">
+                            <div className="mb-3 flex items-center justify-between border-b border-white/10 pb-2">
+                              <h3 className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/65">Equipped slots</h3>
+                              <span className="text-[10px] text-white/40">Select a slot to edit</span>
+                            </div>
+                            <div className="grid w-full min-w-0 grid-cols-[minmax(0,0.7fr)_minmax(0,2fr)_minmax(0,1fr)] items-start gap-[2cqw]">
+                              <div className="flex min-w-0 flex-col items-center gap-[2cqw] pt-8">
+                                {renderSetSlot(player.id, 'necklace', 'Necklace')}
+                                {renderSetSlot(player.id, 'ring1', 'Ring1')}
+                                {renderSetSlot(player.id, 'ring2', 'Ring2')}
+                              </div>
+
+                              <div className="flex min-w-0 flex-col items-center gap-0.5">
+                                {SET_LAYOUT_ROWS.map((row, rowIndex) => (
+                                  <div
+                                    key={`set-row-${rowIndex}`}
+                                    className="flex items-end justify-center gap-[2cqw]"
+                                  >
+                                    {row.map((item) => (
+                                      <div
+                                        key={`${player.id}-set-${item.slot}`}
+                                        className={'colSpan' in item && item.colSpan ? 'mx-auto' : ''}
+                                      >
+                                        {renderSetSlot(player.id, item.slot, item.label)}
+                                      </div>
+                                    ))}
+                                  </div>
+                                ))}
+                              </div>
+
+                              <div className="flex min-w-0 flex-col items-center gap-[3cqw] pt-14">
+                                <div className="flex gap-[2cqw]">
+                                  {renderWeaponSlots(player.id, 'mainHandFrontBar', 'offHandFrontBar', 'Front bar')}
+                                </div>
+                                <div className="flex gap-[2cqw]">
+                                  {renderWeaponSlots(player.id, 'mainHandBackBar', 'offHandBackBar', 'Back bar')}
+                                </div>
+                              </div>
+                            </div>
+                          </section>
                         )}
                       </div>
                     </td>
@@ -3450,7 +3831,7 @@ export default function EncountersPage() {
       {quickGearSetup && createPortal(
         <div
           data-raid-theme={raidTheme || undefined}
-          className="raid-theme-portal encounters-page fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4"
+          className="raid-theme-portal encounters-page fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/70 p-2 sm:p-4"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget && !isApplyingQuickGear) {
               setQuickGearSetup(null);
@@ -3462,20 +3843,55 @@ export default function EncountersPage() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="quick-gear-setup-title"
-            className="flex w-full max-w-4xl flex-col overflow-y-auto rounded-lg border-2 border-[#d6b46b] bg-[#111111] p-6"
+            className="quick-gear-dialog flex w-full max-w-[96rem] flex-col overflow-y-auto rounded-lg border-2 border-[#d6b46b] bg-[#111111] p-3 sm:p-5"
             style={{
-              height: 'min(90vh, 900px)',
-              minHeight: 'min(90vh, 900px)',
-              maxHeight: 'min(90vh, 900px)',
-              flex: '0 0 min(90vh, 900px)',
+              height: 'calc(100dvh - 2rem)',
+              minHeight: 0,
+              maxHeight: '1080px',
+              flex: '0 1 auto',
             }}
           >
             {(() => {
               const quickPlayer = players.find((player) => player.id === quickGearSetup.playerId);
               const quickPlayerStuff = fight?.playersStuff.find((entry) => entry.id === quickGearSetup.playerId);
+              const quickRole = quickPlayerStuff?.role ?? RoleType.DPS;
               const equippedSets = quickPlayerStuff
                 ? getSetSummary(quickPlayerStuff.sets, catalogSets)
                 : [];
+              const selectedQuickSet = catalogSets.find((set) => set.id === quickGearSetup.selectedSetId);
+              const automaticBodyDefaults = getQuickGearAutomaticDefaults(quickGearTraitOptions.items, 'armor', quickRole);
+              const automaticJewelryDefaults = getQuickGearAutomaticDefaults(quickGearTraitOptions.items, 'jewelry', quickRole);
+              const selectedSlotCount = QUICK_GEAR_SLOT_ORDER.filter((slot) => {
+                if (quickGearSetup.selectedSlots.includes(slot)) return true;
+                const gear = quickPlayerStuff?.sets[slot];
+                const equippedSetId = getCachedCatalogItem(gear?.itemId, gear?.trait)?.setId;
+                return equippedSetId !== undefined && quickGearSetup.replaceSetIds.includes(equippedSetId);
+              }).length;
+              const renderQuickGearSlotChoice = (slot: SetSlot) => {
+                const gear = quickPlayerStuff?.sets[slot] ?? createEmptyGearForSlot(slot);
+                const equippedSetId = getCachedCatalogItem(gear.itemId, gear.trait)?.setId;
+                const isReplacedSet = equippedSetId !== undefined && quickGearSetup.replaceSetIds.includes(equippedSetId);
+                const isSelected = quickGearSetup.selectedSlots.includes(slot) || isReplacedSet;
+                return (
+                  <QuickGearSlotChoice
+                    key={slot}
+                    slot={slot}
+                    gear={gear}
+                    isSelected={isSelected}
+                    isReplacedSet={isReplacedSet}
+                    supportsSet={!selectedQuickSet || setSupportsSlot(selectedQuickSet, slot)}
+                    onChange={(changedSlot, checked) => setQuickGearSetup((current) => {
+                      if (!current) return current;
+                      const selectedSlots = checked
+                        ? current.selectedSlots.includes(changedSlot)
+                          ? current.selectedSlots
+                          : [...current.selectedSlots, changedSlot]
+                        : current.selectedSlots.filter((selectedSlot) => selectedSlot !== changedSlot);
+                      return { ...current, placement: null, selectedSlots };
+                    })}
+                  />
+                );
+              };
 
               return (
                 <>
@@ -3502,73 +3918,383 @@ export default function EncountersPage() {
                     </button>
                   </div>
 
-                  <section className="mb-5 max-h-[35%] shrink-0 overflow-y-auto">
-                    <h3 className="mb-2 text-sm font-semibold text-[#d6b46b]">Replace an equipped set (optional)</h3>
-                    <p className="mb-3 text-xs text-[#f8f7f2]/75">
-                      Select a set here, then choose its replacement below. Otherwise, the new set will use empty slots.
-                    </p>
-                    {equippedSets.length ? (
-                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                        {equippedSets.map((set) => (
+                  <div className="mb-4 shrink-0">
+                    {renderSetSummary(equippedSets)}
+                  </div>
+
+                  <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-y-auto pb-3 xl:grid-cols-[minmax(0,1.4fr)_minmax(20rem,0.8fr)] xl:grid-rows-1 xl:overflow-hidden">
+                    <div className="flex min-w-0 flex-col gap-3 xl:min-h-0 xl:overflow-y-auto xl:pb-2 xl:pr-2">
+                    <section className="min-w-0 border border-[#d6b46b]/70 bg-[#171717] p-3">
+                      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <h3 className="text-sm font-semibold text-[#f8f7f2]">Current equipment and placement</h3>
+                          <p className="mt-0.5 text-xs text-[#f8f7f2]/60">
+                            Select a set, then choose slots or a preset. Nothing changes until you apply.
+                          </p>
+                        </div>
+                        <span className="rounded-full border border-[#d6b46b]/40 bg-[#d6b46b]/10 px-2.5 py-1 text-xs font-semibold tabular-nums text-[#f7e7ba]">
+                          {selectedSlotCount} selected
+                        </span>
+                      </div>
+                      <div className="overflow-x-auto rounded-xl border border-white/10 bg-black/20 p-2">
+                        <div className="grid min-w-[35rem] grid-cols-[minmax(0,0.7fr)_minmax(0,2fr)_minmax(0,1fr)] items-start gap-2">
+                          <section className="flex min-w-0 flex-col items-center gap-2">
+                            {QUICK_GEAR_JEWEL_SLOTS.map((slot) => renderQuickGearSlotChoice(slot))}
+                          </section>
+                          <section className="flex min-w-0 flex-col items-center gap-1">
+                            {SET_LAYOUT_ROWS.map((row, rowIndex) => (
+                              <div key={`quick-slot-row-${rowIndex}`} className="flex items-start justify-center gap-1">
+                                {row.map((item) => (
+                                  <div key={item.slot} className={'colSpan' in item && item.colSpan ? 'mx-auto' : ''}>
+                                    {renderQuickGearSlotChoice(item.slot)}
+                                  </div>
+                                ))}
+                              </div>
+                            ))}
+                          </section>
+                          <section className="flex min-w-0 flex-col items-center gap-2">
+                            <div className="flex gap-1">{QUICK_GEAR_WEAPON_SLOTS.slice(0, 2).map((slot) => renderQuickGearSlotChoice(slot))}</div>
+                            <div className="flex gap-1">{QUICK_GEAR_WEAPON_SLOTS.slice(2).map((slot) => renderQuickGearSlotChoice(slot))}</div>
+                          </section>
+                        </div>
+                      </div>
+                    </section>
+
+                    {selectedQuickSet && quickGearSetup.selectedSetId !== null && (
+                      <section className="shrink-0 border border-[#d6b46b]/70 bg-[#171717] p-3">
+                        <div className="mb-3 flex items-center justify-between gap-3">
+                          <div>
+                            <h3 className="font-semibold text-[#f8f7f2]">{selectedQuickSet.setName}</h3>
+                            <p className="text-xs text-[#f8f7f2]/70">Default enchantments and traits.</p>
+                          </div>
                           <button
-                            key={set.id}
                             type="button"
                             disabled={isApplyingQuickGear}
-                            aria-pressed={quickGearSetup.replaceSetId === set.id}
-                            onClick={() => {
-                              setQuickGearSetup((current) => current
-                                ? { ...current, replaceSetId: current.replaceSetId === set.id ? null : set.id }
-                                : current);
-                              setQuickGearError(null);
-                            }}
-                            className={`flex min-w-0 items-center gap-3 rounded px-3 py-2 text-left text-sm transition disabled:opacity-50 ${
-                              quickGearSetup.replaceSetId === set.id
-                                ? 'border-2 border-[#f8f7f2] bg-[#d6b46b]/20 text-[#f8f7f2] ring-2 ring-[#d6b46b]/70'
-                                : 'border border-[#d6b46b] bg-[#171717] text-[#f8f7f2] hover:border-[#f8f7f2]'
-                            }`}
+                            onClick={() => setQuickGearSetup((current) => current
+                              ? {
+                                ...current,
+                                selectedSetId: null,
+                                placement: null,
+                                selectedSlots: [],
+                                bodyEnchantment: '',
+                                jewelryEnchantment: '',
+                                bodyTrait: '',
+                                jewelryTrait: '',
+                              }
+                              : current)}
+                            className="text-xs text-[#d6b46b] underline hover:text-[#f7e7ba] disabled:opacity-50"
                           >
-                            <SetHeadIcon
-                              setId={set.id}
-                              setName={set.setName}
-                              className="flex h-12 w-12 shrink-0 items-center justify-center border border-[#d6b46b]/70 bg-black/40 p-1"
-                            />
-                            <span className="min-w-0 flex-1">
-                              <span className="block [overflow-wrap:anywhere] font-semibold">{set.setName}</span>
-                              {quickGearSetup.replaceSetId === set.id && (
-                                <span className="mt-1 block text-xs font-bold uppercase tracking-wide text-[#f7e7ba]">
-                                  Selected to replace
-                                </span>
-                              )}
-                            </span>
-                            {quickGearSetup.replaceSetId === set.id && (
-                              <span aria-hidden="true" className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#d6b46b] text-sm font-bold text-black">
-                                ✓
-                              </span>
-                            )}
+                            Clear selection
                           </button>
-                        ))}
+                        </div>
+                        <div className="grid gap-3 border-t border-[#d6b46b]/50 pt-3 sm:grid-cols-2">
+                          {[
+                            { category: 'body' as const, label: 'Body armor', gearType: 'armor' as const, enchantment: quickGearSetup.bodyEnchantment, trait: quickGearSetup.bodyTrait, traits: quickGearTraitOptions.body, defaults: automaticBodyDefaults },
+                            { category: 'jewelry' as const, label: 'Jewelry', gearType: 'jewelry' as const, enchantment: quickGearSetup.jewelryEnchantment, trait: quickGearSetup.jewelryTrait, traits: quickGearTraitOptions.jewelry, defaults: automaticJewelryDefaults },
+                          ].filter(({ traits }) => traits.length > 0).map(({ category, label, gearType, enchantment, trait, traits, defaults }) => {
+                            const enchantmentField = category === 'body' ? 'bodyEnchantment' : 'jewelryEnchantment';
+                            const traitField = category === 'body' ? 'bodyTrait' : 'jewelryTrait';
+                            return (
+                              <fieldset key={category} className="min-w-0 rounded border border-white/10 p-2">
+                                <legend className="px-1 text-xs font-semibold text-[#d6b46b]">{label} defaults</legend>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <label className="min-w-0 text-[11px] text-[#f8f7f2]/80">
+                                    Enchantment
+                                    <select
+                                      aria-label={`${label} default enchantment`}
+                                      value={enchantment}
+                                      disabled={isApplyingQuickGear}
+                                      onChange={(event) => setQuickGearSetup((current) => current
+                                        ? { ...current, [enchantmentField]: event.target.value }
+                                        : current)}
+                                      className="mt-1 w-full border border-[#d6b46b]/60 bg-[#111111] p-1 text-[10px] text-[#f8f7f2]"
+                                    >
+                                      <option value="">Automatic</option>
+                                      {ESO_ENCHANTS.filter((entry) => entry.gearType === gearType).map((entry) => (
+                                        <option key={entry.id} value={String(entry.id)}>{entry.name}</option>
+                                      ))}
+                                    </select>
+                                    {!enchantment && (
+                                      <span className="mt-1 block text-[9px] leading-tight text-white/60">
+                                        Automatic (
+                                        {defaults.length ? defaults.map((entry, index) => (
+                                          <span key={`${entry.armorWeight}-${entry.trait}-${entry.enchantmentName}`}>
+                                            {index > 0 ? '; ' : ''}
+                                            {entry.armorWeight && (
+                                              <span className={getArmorWeightTextClass(entry.armorWeight)}>
+                                                {entry.armorWeight}:{' '}
+                                              </span>
+                                            )}
+                                            <span className={getEnchantmentColorClass(entry.enchantmentName)}>{entry.enchantmentName}</span>
+                                          </span>
+                                        )) : 'no automatic choice'}
+                                        )
+                                      </span>
+                                    )}
+                                  </label>
+                                  <label className="min-w-0 text-[11px] text-[#f8f7f2]/80">
+                                    Trait
+                                    <select
+                                      aria-label={`${label} default trait`}
+                                      value={trait}
+                                      disabled={isApplyingQuickGear}
+                                      onChange={(event) => setQuickGearSetup((current) => current
+                                        ? { ...current, [traitField]: event.target.value }
+                                        : current)}
+                                      className="mt-1 w-full border border-[#d6b46b]/60 bg-[#111111] p-1 text-[10px] text-[#f8f7f2]"
+                                    >
+                                      <option value="">Automatic</option>
+                                      {traits.map((entry) => (
+                                        <option key={entry || NO_TRAIT_VALUE} value={entry || NO_TRAIT_VALUE}>{entry || 'No trait'}</option>
+                                      ))}
+                                    </select>
+                                    {!trait && (
+                                      <span className="mt-1 block text-[9px] leading-tight text-white/60">
+                                        Automatic (
+                                        {defaults.length ? defaults.map((entry, index) => (
+                                          <span key={`${entry.armorWeight}-${entry.trait}-${entry.enchantmentName}`}>
+                                            {index > 0 ? '; ' : ''}
+                                            {entry.armorWeight && (
+                                              <span className={getArmorWeightTextClass(entry.armorWeight)}>
+                                                {entry.armorWeight}:{' '}
+                                              </span>
+                                            )}
+                                            <span className="text-amber-200">{entry.trait || 'No trait'}</span>
+                                          </span>
+                                        )) : 'no automatic choice'}
+                                        )
+                                      </span>
+                                    )}
+                                  </label>
+                                </div>
+                              </fieldset>
+                            );
+                          })}
+                        </div>
+                      </section>
+                    )}
+                    {quickGearError && (
+                      <p role="alert" className="border border-red-500/70 bg-red-950/40 p-3 text-sm text-red-200">
+                        {quickGearError}
+                      </p>
+                    )}
+                    {isApplyingQuickGear && (
+                      <p className="text-sm text-[#d6b46b]" role="status">Applying set...</p>
+                    )}
+                    </div>
+
+                    <div className="flex min-h-0 min-w-0 flex-col gap-3 xl:overflow-y-auto xl:pb-2 xl:pr-2">
+                  <section className="shrink-0 border border-[#d6b46b]/70 bg-[#171717] p-3">
+                    <h3 className="mb-2 text-sm font-semibold text-[#f8f7f2]">Choose a placement</h3>
+                    <p className="mb-3 text-xs text-[#f8f7f2]/70">
+                      Choose a preset or free slots by replacing an equipped set. Nothing changes until you apply.
+                    </p>
+                    <div className="grid gap-2 sm:grid-cols-2 2xl:grid-cols-4">
+                      <button
+                        type="button"
+                        disabled={isApplyingQuickGear}
+                        aria-pressed={quickGearSetup.placement === 'body'}
+                        onClick={() => {
+                          setQuickGearSetup((current) => {
+                            if (!current) return current;
+                            const placement = current.placement === 'body' ? null : 'body';
+                            return {
+                              ...current,
+                              placement,
+                              selectedSlots: placement
+                                ? getQuickGearPresetSlots(selectedQuickSet ?? null, placement, quickPlayerStuff, current.replaceSetIds)
+                                : [],
+                            };
+                          });
+                          setQuickGearError(null);
+                        }}
+                        className={`rounded border px-3 py-2 text-sm font-semibold transition disabled:opacity-50 ${
+                          quickGearSetup.placement === 'body'
+                            ? 'border-[#f8f7f2] bg-[#fff8e6] text-[#111111] ring-2 ring-[#f7e7ba] shadow-lg'
+                            : 'border-[#d6b46b] bg-black/40 text-[#f8f7f2] hover:border-[#f8f7f2]'
+                        }`}
+                      >
+                        Body
+                        <span className={`mt-1 block text-xs font-normal ${quickGearSetup.placement === 'body' ? 'text-[#111111]/75' : 'text-[#f8f7f2]/70'}`}>
+                          {quickGearSetup.placement === 'body' ? 'Selected · click to clear' : 'Always select the five body slots'}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isApplyingQuickGear}
+                        aria-pressed={quickGearSetup.placement === 'jewels-weapons'}
+                        onClick={() => {
+                          setQuickGearSetup((current) => {
+                            if (!current) return current;
+                            const placement = current.placement === 'jewels-weapons' ? null : 'jewels-weapons';
+                            return {
+                              ...current,
+                              placement,
+                              selectedSlots: placement
+                                ? getQuickGearPresetSlots(selectedQuickSet ?? null, placement, quickPlayerStuff, current.replaceSetIds)
+                                : [],
+                            };
+                          });
+                          setQuickGearError(null);
+                        }}
+                        className={`rounded border px-3 py-2 text-sm font-semibold transition disabled:opacity-50 ${
+                          quickGearSetup.placement === 'jewels-weapons'
+                            ? 'border-[#f8f7f2] bg-[#fff8e6] text-[#111111] ring-2 ring-[#f7e7ba] shadow-lg'
+                            : 'border-[#d6b46b] bg-black/40 text-[#f8f7f2] hover:border-[#f8f7f2]'
+                        }`}
+                      >
+                        Jewelry + weapons
+                        <span className={`mt-1 block text-xs font-normal ${quickGearSetup.placement === 'jewels-weapons' ? 'text-[#111111]/75' : 'text-[#f8f7f2]/70'}`}>
+                          {quickGearSetup.placement === 'jewels-weapons' ? 'Selected · click to clear' : 'All jewelry + front bar if free; otherwise a free back bar, or front bar'}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isApplyingQuickGear}
+                        aria-pressed={quickGearSetup.placement === 'head-shoulders'}
+                        onClick={() => {
+                          setQuickGearSetup((current) => {
+                            if (!current) return current;
+                            const placement = current.placement === 'head-shoulders' ? null : 'head-shoulders';
+                            return {
+                              ...current,
+                              placement,
+                              selectedSlots: placement
+                                ? getQuickGearPresetSlots(selectedQuickSet ?? null, placement, quickPlayerStuff, current.replaceSetIds)
+                                : [],
+                            };
+                          });
+                          setQuickGearError(null);
+                        }}
+                        className={`rounded border px-3 py-2 text-sm font-semibold transition disabled:opacity-50 ${
+                          quickGearSetup.placement === 'head-shoulders'
+                            ? 'border-[#f8f7f2] bg-[#fff8e6] text-[#111111] ring-2 ring-[#f7e7ba] shadow-lg'
+                            : 'border-[#d6b46b] bg-black/40 text-[#f8f7f2] hover:border-[#f8f7f2]'
+                        }`}
+                      >
+                        Head + shoulders
+                        <span className={`mt-1 block text-xs font-normal ${quickGearSetup.placement === 'head-shoulders' ? 'text-[#111111]/75' : 'text-[#f8f7f2]/70'}`}>
+                          {quickGearSetup.placement === 'head-shoulders' ? 'Selected · click to clear' : 'Always select head and shoulders'}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isApplyingQuickGear || equippedSets.length === 0}
+                        aria-pressed={quickGearSetup.placement === 'replace-set' || quickGearSetup.replaceSetIds.length > 0}
+                        onClick={() => setQuickGearSetup((current) => {
+                          if (!current) return current;
+                          const placement = current.placement === 'replace-set' ? null : 'replace-set';
+                          return {
+                            ...current,
+                            placement,
+                            selectedSlots: placement ? [] : current.selectedSlots,
+                          };
+                        })}
+                        className={`rounded border px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                          quickGearSetup.placement === 'replace-set' || quickGearSetup.replaceSetIds.length > 0
+                            ? 'border-[#f8f7f2] bg-[#fff8e6] text-[#111111] ring-2 ring-[#f7e7ba] shadow-lg'
+                            : 'border-[#d6b46b] bg-black/40 text-[#f8f7f2] hover:border-[#f8f7f2]'
+                        }`}
+                      >
+                        Replace a set
+                        <span className={`mt-1 block text-xs font-normal ${
+                          quickGearSetup.placement === 'replace-set' || quickGearSetup.replaceSetIds.length > 0
+                            ? 'text-[#111111]/75'
+                            : 'text-[#f8f7f2]/70'
+                        }`}>
+                          {quickGearSetup.replaceSetIds.length
+                            ? `${quickGearSetup.replaceSetIds.length} set${quickGearSetup.replaceSetIds.length === 1 ? '' : 's'} selected`
+                            : 'Choose equipped sets to free their slots'}
+                        </span>
+                      </button>
+                    </div>
+                    {(quickGearSetup.placement === 'replace-set' || quickGearSetup.replaceSetIds.length > 0) && (
+                      <div className="mt-3 border-t border-[#d6b46b]/40 pt-3">
+                        <h4 className="mb-2 text-xs font-semibold text-[#f8f7f2]">Equipped sets</h4>
+                        {equippedSets.length ? (
+                          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            {equippedSets.map((set) => {
+                              const isSelected = quickGearSetup.replaceSetIds.includes(set.id);
+                              return (
+                                <button
+                                  key={set.id}
+                                  type="button"
+                                  disabled={isApplyingQuickGear}
+                                  aria-pressed={isSelected}
+                                  onClick={() => {
+                                    setQuickGearSetup((current) => {
+                                      if (!current) return current;
+                                      const replaceSetIds = current.replaceSetIds.includes(set.id)
+                                        ? current.replaceSetIds.filter((setId) => setId !== set.id)
+                                        : [...current.replaceSetIds, set.id];
+                                      return { ...current, placement: 'replace-set', selectedSlots: [], replaceSetIds };
+                                    });
+                                    setQuickGearError(null);
+                                  }}
+                                  className={`flex min-w-0 items-center gap-3 rounded border px-3 py-2 text-left text-sm transition disabled:opacity-50 ${
+                                    isSelected
+                                      ? 'border-[#f8f7f2] bg-[#d6b46b]/20 text-[#f8f7f2] ring-2 ring-[#d6b46b]/70'
+                                      : 'border-[#d6b46b]/70 bg-black/30 text-[#f8f7f2] hover:border-[#f8f7f2]'
+                                  }`}
+                                >
+                                  <SetHeadIcon
+                                    setId={set.id}
+                                    setName={set.setName}
+                                    className="flex h-10 w-10 shrink-0 items-center justify-center border border-[#d6b46b]/70 bg-black/40 p-1"
+                                  />
+                                  <span className="min-w-0 flex-1 [overflow-wrap:anywhere] font-semibold">{set.setName}</span>
+                                  {isSelected && <span aria-hidden="true" className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#d6b46b] text-sm font-bold text-black">✓</span>}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-[#f8f7f2]/70">No equipped sets to replace.</p>
+                        )}
                       </div>
-                    ) : (
-                      <p className="text-sm text-[#f8f7f2]/70">No equipped sets to replace.</p>
                     )}
                   </section>
 
-                  {quickGearError && (
-                    <p role="alert" className="mb-3 border border-red-500/70 bg-red-950/40 p-3 text-sm text-red-200">
-                      {quickGearError}
-                    </p>
-                  )}
-
-                  <QuickGearSearchResults
-                    catalogSets={catalogSets}
-                    hasError={quickGearError !== null}
-                    isApplying={isApplyingQuickGear}
-                    onSelectSet={(setId) => void applyQuickGearSet(setId)}
-                    onSearchChange={() => setQuickGearError(null)}
-                  />
-
-                  {isApplyingQuickGear && (
-                    <p className="mt-3 text-sm text-[#d6b46b]" role="status">Applying set...</p>
+                    <section className="flex h-[min(42vh,32rem)] min-h-[16rem] min-w-0 shrink-0 flex-col border-t border-[#d6b46b]/40 pt-4 xl:min-h-0 xl:flex-1">
+                      <h3 className="mb-2 shrink-0 text-sm font-semibold text-[#d6b46b]">Search and select a set</h3>
+                      <QuickGearSearchResults
+                        catalogSets={catalogSets}
+                        hasError={quickGearError !== null}
+                        isApplying={isApplyingQuickGear}
+                        selectedSetId={quickGearSetup.selectedSetId}
+                        onSelectSet={(setId) => {
+                          const nextSet = catalogSets.find((set) => set.id === setId) ?? null;
+                          setQuickGearSetup((current) => current
+                            ? {
+                              ...current,
+                              selectedSetId: setId,
+                              selectedSlots: current.placement && current.placement !== 'replace-set' && nextSet
+                                ? getQuickGearPresetSlots(nextSet, current.placement, quickPlayerStuff, current.replaceSetIds)
+                                : current.selectedSlots,
+                              bodyEnchantment: '',
+                              jewelryEnchantment: '',
+                              bodyTrait: '',
+                              jewelryTrait: '',
+                            }
+                            : current);
+                          setQuickGearError(null);
+                        }}
+                        onSearchChange={() => setQuickGearError(null)}
+                      />
+                    </section>
+                  </div>
+                  </div>
+                  {selectedQuickSet && (
+                    <div className="mt-3 shrink-0 border-t border-emerald-400/40 pt-3">
+                      <button
+                        type="button"
+                        disabled={isApplyingQuickGear || (quickGearSetup.selectedSlots.length === 0 && quickGearSetup.replaceSetIds.length === 0)}
+                        onClick={() => void applyQuickGearSet(selectedQuickSet.id, quickGearSetup.selectedSlots)}
+                        className="w-full rounded-xl border-2 border-emerald-200 bg-emerald-400 px-4 py-3 text-base font-extrabold text-emerald-950 shadow-[0_0_24px_rgba(74,222,128,0.28)] transition hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111] disabled:cursor-not-allowed disabled:opacity-45"
+                      >
+                        {isApplyingQuickGear ? 'Applying set…' : `Apply ${selectedQuickSet.setName}`}
+                      </button>
+                    </div>
                   )}
                 </>
               );
@@ -3582,13 +4308,7 @@ export default function EncountersPage() {
         const gear = fight.playersStuff.find((entry) => entry.id === gearDetails.playerId)?.sets[gearDetails.slot];
         const item = gearDetails.item;
         const enchantment = ESO_ENCHANTS.find((entry) => String(entry.id) === gear?.enchantment);
-        const itemType = item
-          ? item.gearType === 'armor'
-            ? `${item.armorWeight ? `${item.armorWeight} ` : ''}armor • ${item.equipType}`
-            : item.gearType === 'weapon'
-              ? item.weaponType
-              : `Jewelry • ${item.equipType}`
-          : null;
+        const itemType = item ? getItemTypeLabel(item) : null;
 
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
@@ -3631,11 +4351,15 @@ export default function EncountersPage() {
                 </div>
                 <div>
                   <span className="text-[#d6b46b]">Item type:</span>{' '}
-                  {itemType ?? (gearDetailsError ? 'Unavailable' : 'Loading...')}
+                  <span className={item?.gearType === 'armor' ? getArmorWeightTextClass(item.armorWeight) : ''}>
+                    {itemType ?? (gearDetailsError ? 'Unavailable' : 'Loading...')}
+                  </span>
                 </div>
                 <div className="col-span-2">
                   <span className="text-[#d6b46b]">Enchantment:</span>{' '}
-                  {enchantment?.name ?? (gear?.enchantment ? `Unknown enchantment (${gear.enchantment})` : 'None')}
+                  <span className={getEnchantmentColorClass(enchantment?.name)}>
+                    {enchantment?.name ?? (gear?.enchantment ? `Unknown enchantment (${gear.enchantment})` : 'None')}
+                  </span>
                 </div>
                 {item?.gearType === 'weapon' && <div className="col-span-2">
                   <span className="text-[#d6b46b]">Poison:</span>{' '}
