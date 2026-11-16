@@ -1061,7 +1061,6 @@ export default function EncountersPage() {
   const [isOverview, setIsOverview] = useState(false);
   const [isDeleteFightConfirmationOpen, setIsDeleteFightConfirmationOpen] = useState(false);
   const [selectedSetupPlayerId, setSelectedSetupPlayerId] = useState<number | null>(null);
-  const [hasScrolled, setHasScrolled] = useState(false);
   const [skillEditor, setSkillEditor] = useState<SkillEditorState | null>(null);
   const [scribingDraft, setScribingDraft] = useState<ScribingDraft | null>(null);
   const [viewSkillDetails, setViewSkillDetails] = useState<SkillAbilityId | null>(null);
@@ -1266,13 +1265,6 @@ export default function EncountersPage() {
 
   const raidBackground = getRaidBackground(template.raid.selectedRaid);
   const raidTheme = getRaidTheme(template.raid.selectedRaid);
-
-  useEffect(() => {
-    const updateScrollState = () => setHasScrolled(window.scrollY > 72);
-    updateScrollState();
-    window.addEventListener('scroll', updateScrollState, { passive: true });
-    return () => window.removeEventListener('scroll', updateScrollState);
-  }, []);
 
   const activeFightName = template.fights.some((entry) => entry.name === selectedFightName)
     ? selectedFightName
@@ -2465,7 +2457,7 @@ export default function EncountersPage() {
       <div className="app-page__scrim" />
 
       <div className="app-page__content mx-auto flex max-w-[96rem] flex-col">
-        <div className="encounters-page__heading mx-auto mb-4 flex w-full max-w-[96rem] shrink-0 items-start justify-between gap-4">
+        <div className="encounters-page__heading mx-auto mb-4 flex w-full max-w-[96rem] shrink-0 items-start gap-4">
           <div className="min-w-0">
             <div className="page-heading !mb-0">
               <h1 className="page-heading__title">Encounters</h1>
@@ -2474,25 +2466,11 @@ export default function EncountersPage() {
               </p>
             </div>
           </div>
-          <div className={`app-page__actions flex shrink-0 flex-wrap items-center justify-end gap-2 ${hasScrolled ? 'is-fixed' : ''}`}>
-            <Link href="/players" className="raid-action-control inline-flex shrink-0 items-center gap-2 border px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f8f7f2]">
-              <span aria-hidden="true">←</span>Back to Players
-            </Link>
-            <EditModeToggle className="raid-action-control" />
-            <button type="button" aria-pressed={!isOverview} onClick={() => setIsOverview((value) => !value)} aria-label={isOverview ? 'See table' : 'See overview'} className={`raid-action-control inline-flex items-center border px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f8f7f2] ${!isOverview ? 'raid-selected-control' : ''}`}>
-              {isOverview ? 'See table' : 'See overview'}
-            </button>
-            <label className="shrink-0">
-              <select aria-label="Show setup for player" value={visibleSetupPlayerId ?? ''} onChange={(event) => setSelectedSetupPlayerId(event.target.value ? Number(event.target.value) : null)} className="raid-action-control max-w-56 border px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f8f7f2]">
-                <option value="">All players</option>
-                {players.map((player) => <option key={player.id} value={player.id}>{player.name}</option>)}
-              </select>
-            </label>
-          </div>
         </div>
 
-        <div className="app-page__sticky-toolbar">
-          <div className="encounters-page__fight-picker encounter-surface flex min-w-0 flex-1 shrink-0 flex-wrap items-center gap-2 rounded-2xl border border-white/10 bg-[#111720]/75 p-2.5 shadow-lg backdrop-blur-sm">
+        <div className="app-page__sticky-toolbar encounters-page__sticky-toolbar">
+          <div className="encounters-page__toolbar">
+            <div className="encounters-page__fight-picker flex min-w-0 flex-1 shrink-0 flex-wrap items-center gap-2">
             {template.fights.map((entry) => (
               <div key={entry.name} className="contents">
                 {isEditMode && dropTargetFightName === entry.name && draggedFightName !== entry.name && (
@@ -2597,6 +2575,22 @@ export default function EncountersPage() {
                 </svg>
               </button>
             )}
+            </div>
+            <div className="app-page__actions flex shrink-0 flex-wrap items-center justify-end gap-2">
+              <Link href="/players" className="raid-action-control inline-flex shrink-0 items-center gap-2 border px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f8f7f2]">
+                <span aria-hidden="true">←</span>Back to Players
+              </Link>
+              <EditModeToggle className="raid-action-control" />
+              <button type="button" aria-pressed={!isOverview} onClick={() => setIsOverview((value) => !value)} aria-label={isOverview ? 'See table' : 'See overview'} className={`raid-action-control inline-flex items-center border px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f8f7f2] ${!isOverview ? 'raid-selected-control' : ''}`}>
+                {isOverview ? 'See table' : 'See overview'}
+              </button>
+              <label className="shrink-0">
+                <select aria-label="Show setup for player" value={visibleSetupPlayerId ?? ''} onChange={(event) => setSelectedSetupPlayerId(event.target.value ? Number(event.target.value) : null)} className="raid-action-control max-w-56 border px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f8f7f2]">
+                  <option value="">All players</option>
+                  {players.map((player) => <option key={player.id} value={player.id}>{player.name}</option>)}
+                </select>
+              </label>
+            </div>
           </div>
         </div>
 

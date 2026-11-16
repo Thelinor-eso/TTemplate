@@ -2235,3 +2235,76 @@ textarea:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+.encounters-page__sticky-toolbar {
+  top: 8px;
+  z-index: 60;
+  isolation: isolate;
+}
+
+.encounters-page__toolbar {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid rgba(174, 187, 204, 0.18);
+  border-radius: 16px;
+  background: #0b1017;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+.encounters-page__toolbar .encounters-page__fight-picker {
+  width: auto;
+  flex: 1 1 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none;
+}
+
+.encounters-page__toolbar .app-page__actions {
+  position: static;
+  flex: 0 1 auto;
+  justify-content: flex-end;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+@media (max-width: 900px) {
+  .encounters-page__toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .encounters-page__toolbar .encounters-page__fight-picker {
+    width: 100%;
+    flex: none;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .encounters-page__toolbar .app-page__actions {
+    width: 100%;
+    align-self: stretch;
+    justify-content: stretch;
+  }
+
+  .encounters-page__toolbar .app-page__actions > * {
+    min-width: 0;
+    flex: 1 1 8rem;
+  }
+
+  .encounters-page__toolbar .app-page__actions > label select {
+    width: 100%;
+    max-width: none;
+  }
+}
