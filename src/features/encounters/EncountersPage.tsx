@@ -1209,14 +1209,19 @@ export default function EncountersPage() {
         const icon = line ? SKILL_LINE_ICON_MAP[line] : undefined;
         const open = playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'skill' && playerSetupEditor.index === index;
         const iconSize = size === 'small' ? 24 : 32;
-        return <PortalTooltip key={slot} content={<span className="block font-bold text-[#f7e7ba]">{line}</span>}>
-        <div ref={open ? playerSetupEditorRef : null} className="relative">
-          <button type="button" disabled={!isEditMode} aria-label={`${player.name} skill line ${index + 1}${line ? `: ${line}` : ': empty'}`} aria-expanded={isEditMode ? open : undefined} onClick={() => isEditMode && setPlayerSetupEditor(open ? null : { playerId: player.id, type: 'skill', index })} className={`raid-interactive-tile ${size === 'small' ? 'h-6 w-6' : 'h-8 w-8'} flex items-center justify-center rounded-full border ${line ? 'border-yellow-500 bg-black/30 p-1' : 'border-dashed border-yellow-600 bg-black/20'} ${isEditMode ? 'cursor-pointer hover:border-yellow-300' : 'cursor-default'}`}>
-            {icon ? <Image src={icon} alt="" width={iconSize} height={iconSize} className="h-full w-full rounded-full object-cover" /> : isEditMode ? <span className="text-sm leading-none text-yellow-300">+</span> : null}
-          </button>
-          {open && <div className={`absolute top-full z-50 mt-1 max-h-64 w-56 overflow-auto rounded border border-yellow-500 bg-gray-900 p-1 shadow-xl ${size === 'small' && index === 2 ? 'right-0' : 'left-0'}`}>{Object.entries(ESO_CLASS_SKILL_LINES).map(([name, options]) => <div key={name}><div className="sticky top-0 bg-gray-950 px-2 py-1 text-[10px] font-bold text-yellow-300">{name}</div>{options.map((option) => <button key={option} type="button" disabled={SKILL_CLASS_SLOTS.some((otherSlot, otherIndex) => otherIndex !== index && player.skillClasses[otherSlot] === option)} onClick={() => selectPlayerSkillLine(player.id, index, option)} className="flex w-full items-center gap-2 px-2 py-1 text-left text-xs text-yellow-100 hover:bg-yellow-800 disabled:opacity-40">{SKILL_LINE_ICON_MAP[option] && <Image src={SKILL_LINE_ICON_MAP[option]} alt="" width={24} height={24} className="h-6 w-6" />}<span>{option}</span></button>)}</div>)}</div>}
-        </div>
-        </PortalTooltip>;
+        const tile = (
+          <div key={slot} ref={open ? playerSetupEditorRef : null} className="relative">
+            <button type="button" disabled={!isEditMode} aria-label={`${player.name} skill line ${index + 1}${line ? `: ${line}` : ': empty'}`} aria-expanded={isEditMode ? open : undefined} onClick={() => isEditMode && setPlayerSetupEditor(open ? null : { playerId: player.id, type: 'skill', index })} className={`${line ? 'raid-interactive-tile' : ''} ${size === 'small' ? 'h-6 w-6' : 'h-8 w-8'} flex items-center justify-center rounded-full border ${line ? 'border-yellow-500 bg-black/30 p-1' : 'border-dashed border-yellow-600 bg-black/20'} ${isEditMode ? `cursor-pointer ${line ? 'hover:border-yellow-300' : ''}` : 'cursor-default'}`}>
+              {icon ? <Image src={icon} alt="" width={iconSize} height={iconSize} className="h-full w-full rounded-full object-cover" /> : isEditMode ? <span className="text-sm leading-none text-yellow-300">+</span> : null}
+            </button>
+            {open && <div className={`absolute top-full z-50 mt-1 max-h-64 w-56 overflow-auto rounded border border-yellow-500 bg-gray-900 p-1 shadow-xl ${size === 'small' && index === 2 ? 'right-0' : 'left-0'}`}>{Object.entries(ESO_CLASS_SKILL_LINES).map(([name, options]) => <div key={name}><div className="sticky top-0 bg-gray-950 px-2 py-1 text-[10px] font-bold text-yellow-300">{name}</div>{options.map((option) => <button key={option} type="button" disabled={SKILL_CLASS_SLOTS.some((otherSlot, otherIndex) => otherIndex !== index && player.skillClasses[otherSlot] === option)} onClick={() => selectPlayerSkillLine(player.id, index, option)} className="flex w-full items-center gap-2 px-2 py-1 text-left text-xs text-yellow-100 hover:bg-yellow-800 disabled:opacity-40">{SKILL_LINE_ICON_MAP[option] && <Image src={SKILL_LINE_ICON_MAP[option]} alt="" width={24} height={24} className="h-6 w-6" />}<span>{option}</span></button>)}</div>)}</div>}
+          </div>
+        );
+        return line ? (
+          <PortalTooltip key={slot} content={<span className="block font-bold text-[#f7e7ba]">{line}</span>}>
+            {tile}
+          </PortalTooltip>
+        ) : tile;
       })}
     </div>
   );
@@ -1833,7 +1838,7 @@ export default function EncountersPage() {
         <button
           type="button"
           onClick={() => setConsumableEditor({ playerId, type })}
-          className={`flex ${compact ? 'h-8 w-8' : 'h-12 w-12'} shrink-0 items-center justify-center self-center border-2 bg-black/60 p-0.5 transition hover:border-yellow-400 ${
+          className={`raid-interactive-tile flex ${compact ? 'h-8 w-8' : 'h-12 w-12'} shrink-0 cursor-pointer items-center justify-center self-center border-2 bg-black/60 p-0.5 transition ${
             value ? 'border-yellow-600' : 'border-dashed border-yellow-700'
           }`}
         >
@@ -2997,6 +3002,7 @@ export default function EncountersPage() {
                     </td>
                     <td className="relative z-0 px-4 py-6 text-sm text-yellow-100 align-top hover:z-20">
                       <div className="mx-auto flex w-full max-w-[48rem] min-w-0 flex-col gap-3">
+                        {isEditMode && (
                         <section className="rounded-2xl border border-[#d6b46b]/50 bg-gradient-to-br from-[#1a1916] via-[#111111] to-[#111111] p-3 shadow-lg shadow-black/20">
                           <div className="flex items-center justify-between gap-3">
                             <div className="min-w-0">
@@ -3125,10 +3131,11 @@ export default function EncountersPage() {
                             </div>
                           )}
                         </section>
+                        )}
 
                         {renderSetSummary(setSummary)}
 
-                        {showSetDetailsByPlayer[player.id] && (
+                        {isEditMode && showSetDetailsByPlayer[player.id] && (
                           <section className="@container/set-details rounded-2xl border border-white/10 bg-[#111111]/70 p-3 shadow-inner shadow-black/20">
                             <div className="mb-3 flex items-center justify-between border-b border-white/10 pb-2">
                               <h3 className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/65">Equipped slots</h3>
