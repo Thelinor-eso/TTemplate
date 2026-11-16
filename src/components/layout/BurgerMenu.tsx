@@ -236,7 +236,7 @@ export default function BurgerMenu({ onImport }: BurgerMenuProps) {
   ];
 
   return (
-    <div ref={menuRef} className="relative z-50">
+    <div ref={menuRef} className="site-menu relative z-50">
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}

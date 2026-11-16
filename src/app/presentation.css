@@ -1,0 +1,267 @@
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.app-page__content {
+  width: min(100%, var(--content-width));
+}
+
+.site-markers-action,
+.site-menu__trigger,
+.site-menu__nav-link,
+.site-menu__panel button,
+.site-menu__panel a,
+.players-page [role="alertdialog"] button,
+.encounters-page [role="dialog"] button {
+  min-height: var(--target-size);
+}
+
+.app-page__actions .raid-action-control,
+.app-page__actions select.raid-action-control,
+.encounters-page__fight-picker > .contents > button:first-of-type {
+  min-height: var(--target-size);
+}
+
+.encounters-page__fight-picker > .contents > button:not(:first-of-type),
+.encounters-page__fight-picker > button[aria-label="New Encounter"] {
+  width: var(--target-size);
+  height: var(--target-size);
+  min-height: var(--target-size);
+}
+
+.encounter-setup-actions button,
+.encounter-overview__cp-button {
+  width: var(--target-size);
+  height: var(--target-size);
+  min-width: var(--target-size);
+  min-height: var(--target-size);
+}
+
+.site-menu__trigger {
+  width: var(--target-size);
+  min-width: var(--target-size);
+}
+
+.site-menu__panel {
+  max-height: min(calc(100svh - 6rem), 48rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.site-context {
+  text-wrap: pretty;
+}
+
+.site-context__group,
+.site-context__raid {
+  min-width: 0;
+}
+
+.players-page .player-card__actions {
+  top: 12px;
+  right: 12px;
+  gap: var(--space-2);
+}
+
+.players-page .player-card__actions button {
+  width: var(--target-size);
+  height: var(--target-size);
+  min-width: var(--target-size);
+}
+
+.player-card__identity.has-actions {
+  padding-top: 3.75rem;
+}
+
+.player-card__role-race {
+  align-items: flex-start;
+  flex-wrap: wrap;
+  row-gap: var(--space-3);
+}
+
+.player-card__role {
+  flex: 1 1 10rem;
+}
+
+.player-card__role > div:last-child {
+  flex-wrap: wrap;
+}
+
+.player-card__race {
+  margin-left: auto;
+}
+
+.player-card__masteries,
+.player-card__mundus {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+[role="dialog"],
+[role="alertdialog"] {
+  max-height: min(calc(100svh - 2rem), 52rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+[role="dialog"] button,
+[role="alertdialog"] button {
+  min-height: var(--target-size);
+}
+
+.encounters-page__table-shell {
+  max-width: 100%;
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-card);
+}
+
+.legal-page {
+  padding-block: clamp(2.5rem, 7vh, 5rem);
+}
+
+.legal-page__content {
+  width: min(100%, var(--reading-width));
+  margin-inline: auto;
+}
+
+@media (max-width: 720px) {
+  .landing-page__layout {
+    width: min(100%, 42rem);
+    grid-template-columns: minmax(0, 1fr);
+    margin-inline: auto;
+  }
+
+  .landing-card {
+    min-width: 0;
+  }
+
+  .landing-card__raid-picker {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .site-header__inner {
+    display: grid;
+    grid-template-areas:
+      "brand menu"
+      "markers context";
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-2) var(--space-3);
+    padding-block: var(--space-2);
+  }
+
+  .site-brand {
+    grid-area: brand;
+  }
+
+  .site-markers-actions {
+    grid-area: markers;
+    align-self: center;
+  }
+
+  .site-context {
+    grid-area: context;
+    width: auto;
+    max-width: 100%;
+    flex: none;
+    padding: 0;
+    border: 0;
+    text-align: right;
+  }
+
+  .site-context__group,
+  .site-context__raid {
+    overflow: visible;
+    white-space: normal;
+  }
+
+  .site-context__group span,
+  .site-context__raid span {
+    overflow: visible;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .site-menu {
+    grid-area: menu;
+    justify-self: end;
+  }
+
+  .site-menu__panel {
+    max-height: calc(100svh - 7rem);
+  }
+
+  .site-markers-action {
+    width: var(--target-size);
+    min-width: var(--target-size);
+    min-height: var(--target-size);
+    padding: 0;
+  }
+
+  .site-markers-action span {
+    display: none;
+  }
+
+  .players-page .player-card__actions {
+    gap: 6px;
+  }
+
+  .players-page .player-card__actions button {
+    width: var(--target-size);
+    height: var(--target-size);
+  }
+
+  .player-card__skill-menu,
+  .player-card__mundus-menu,
+  .player-card__class-menu,
+  .player-card__race-menu {
+    max-width: calc(100vw - 2rem);
+    max-height: min(18rem, calc(100svh - 4rem));
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  .player-card__skill-menu .max-h-80,
+  .player-card__class-menu .max-h-80,
+  .player-card__race-menu .max-h-80 {
+    max-height: min(14rem, calc(100svh - 8rem));
+  }
+
+  .player-card__race-menu {
+    right: 0;
+    left: auto;
+  }
+
+  .encounters-page__table-shell {
+    scrollbar-gutter: stable;
+  }
+}
+
+@media (max-width: 720px) and (max-height: 720px) {
+  .players-page .player-card__skill-menu,
+  .players-page .player-card__mundus-menu,
+  .players-page .player-card__class-menu,
+  .players-page .player-card__race-menu {
+    top: auto;
+    bottom: calc(100% + var(--space-2));
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .site-context__file-status-copy {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .player-card__identity.has-actions {
+    padding-top: 3.5rem;
+  }
+}

@@ -344,7 +344,7 @@ export default function PlayersPage() {
                 className={`player-card relative bg-[#111111] border-2 border-[#d6b46b] rounded-lg p-4 sm:p-5 ${hasOpenDropdown ? 'z-40' : 'z-0'}`}
               >
                 {isEditMode && (
-                  <div className="absolute top-3 right-3 z-10 flex items-center gap-1">
+                  <div className="player-card__actions absolute top-3 right-3 z-10 flex items-center gap-1">
                     <button
                       type="button"
                       aria-label={`Copy ${player.name}'s setup`}
@@ -389,7 +389,7 @@ export default function PlayersPage() {
                   </div>
                 )}
 
-                <div className="mb-3 pt-7">
+                <div className={`player-card__identity mb-3 pt-7${isEditMode ? ' has-actions' : ''}`}>
                   <label className="text-xs font-bold text-[#f8f7f2] uppercase block mb-1">Name</label>
                   {isEditMode ? (
                     <input
@@ -405,8 +405,8 @@ export default function PlayersPage() {
                   )}
                 </div>
 
-                <div className="mb-3 flex items-end justify-between gap-3">
-                  <div className="min-w-0">
+                <div className="player-card__role-race mb-3 flex items-end justify-between gap-3">
+                  <div className="player-card__role min-w-0">
                     <label className="text-xs font-bold text-yellow-400 uppercase block mb-2">Role</label>
                     <div className="flex gap-2">
                     {ROLE_OPTIONS.map((role) => {
@@ -469,7 +469,7 @@ export default function PlayersPage() {
                     })}
                     </div>
                   </div>
-                  <div className="shrink-0">
+                  <div className="player-card__race shrink-0">
                     <label className="text-xs font-bold text-yellow-400 uppercase block mb-2 text-right">Race</label>
                     <div ref={activeDropdownKey === `${player.id}-race` ? activeDropdownRef : null} className="relative">
                       <button
@@ -705,7 +705,7 @@ export default function PlayersPage() {
                   </div>
                 </div>
 
-                  <div className="mt-3">
+                  <div className="player-card__masteries mt-3">
                     <label className="text-[10px] font-bold uppercase tracking-wide text-yellow-300 block mb-1">
                       Class Masteries
                     </label>
@@ -722,7 +722,7 @@ export default function PlayersPage() {
                         ))}
                     </div>
 
-                  <div className="mt-3">
+                  <div className="player-card__mundus mt-3">
                     <label className="text-[10px] font-bold uppercase tracking-wide text-yellow-300 block mb-1">Mundus Stone</label>
                     {isEditMode ? (
                       <div ref={activeDropdownKey === `${player.id}-mundus` ? activeDropdownRef : null} className="relative min-h-8">
@@ -802,7 +802,7 @@ export default function PlayersPage() {
             );
           })}
           {isEditMode && (
-            <div className="flex min-h-[24rem] items-center justify-center">
+            <div className="players-page__add-player flex min-h-[24rem] items-center justify-center">
               <button
                 type="button"
                 onClick={addPlayer}

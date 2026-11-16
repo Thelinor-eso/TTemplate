@@ -1638,7 +1638,7 @@ export default function EncountersPage() {
       && copiedSetup.category === category;
 
     return isEditMode ? (
-      <div className="flex justify-center gap-1">
+      <div className="encounter-setup-actions flex justify-center gap-1">
         <button
           type="button"
           aria-label={`Copy ${COPY_CATEGORY_LABELS[category]}`}
@@ -2892,7 +2892,7 @@ export default function EncountersPage() {
                   </div>
                   <div className="mt-2 flex justify-center gap-3 border-t border-white/10 pt-2">
                     {CHAMPION_DISCIPLINE_GROUPS.map((group) => (
-                      <button key={group.discipline} type="button" aria-label={`${player.name}: ${group.label} Champion Points`} onClick={() => setViewChampionDiscipline({ playerId: player.id, playerName: player.name, discipline: group.discipline })} className="group/cp relative rounded p-1 transition hover:z-30 hover:scale-110 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">
+                      <button key={group.discipline} type="button" aria-label={`${player.name}: ${group.label} Champion Points`} onClick={() => setViewChampionDiscipline({ playerId: player.id, playerName: player.name, discipline: group.discipline })} className="encounter-overview__cp-button group/cp relative rounded p-1 transition hover:z-30 hover:scale-110 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">
                         <Image src={CHAMPION_DISCIPLINE_ICON[group.discipline]} alt={group.label} width={28} height={28} className="h-7 w-7 object-contain" />
                         <span className="cp-tooltip pointer-events-none absolute bottom-full left-1/2 z-40 mb-2 hidden w-52 -translate-x-1/2 rounded-lg border border-[#d6b46b] bg-[#111111] p-2 text-left text-xs text-white shadow-2xl group-hover/cp:block group-focus-visible/cp:block">
                           <span className="mb-1 flex justify-center">

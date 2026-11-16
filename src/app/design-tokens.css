@@ -1,0 +1,92 @@
+:root {
+  color-scheme: dark;
+  --background: #090c11;
+  --foreground: #f3f4f6;
+  --panel: #111720;
+  --panel-raised: #171f2b;
+  --line: rgba(174, 187, 204, 0.16);
+  --muted: #98a3b3;
+  --gold: #d3b475;
+  --gold-bright: #f0d69c;
+  --font-body: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --raid-accent: #d3b475;
+  --raid-highlight: #f0d69c;
+  --line-strong: rgba(174, 187, 204, 0.24);
+  --radius-card: 18px;
+  --shadow-card: 0 18px 48px rgba(0, 0, 0, 0.32), inset 0 1px rgba(255, 255, 255, 0.045);
+  --focus-ring: var(--gold-bright);
+  --target-size: 44px;
+  --content-width: 96rem;
+  --reading-width: 72ch;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+}
+
+[data-raid-theme="hel-ra-citadel"] {
+  --raid-accent: #d99543;
+  --raid-highlight: #f5d18b;
+}
+
+[data-raid-theme="aetherian-archive"] {
+  --raid-accent: #9a76e8;
+  --raid-highlight: #9ce5a8;
+}
+
+[data-raid-theme="sanctum-ophidia"] {
+  --raid-accent: #4caf73;
+  --raid-highlight: #a6e6aa;
+}
+
+[data-raid-theme="maw-of-lorkhaj"] {
+  --raid-accent: #8b5cf6;
+  --raid-highlight: #f0d69c;
+}
+
+[data-raid-theme="halls-of-fabrication"],
+[data-raid-theme="asylum-sanctorium"] {
+  --raid-accent: #c5a96a;
+  --raid-highlight: #dce4ec;
+}
+
+[data-raid-theme="sunspire"] {
+  --raid-accent: #ed744e;
+  --raid-highlight: #a9ddf5;
+}
+
+[data-raid-theme="cloudrest"] {
+  --raid-accent: #a181dc;
+  --raid-highlight: #f0eaff;
+}
+
+[data-raid-theme="rockgrove"] {
+  --raid-accent: #e75a38;
+  --raid-highlight: #ffb354;
+}
+
+[data-raid-theme="kynes-aegis"] {
+  --raid-accent: #aa4652;
+  --raid-highlight: #c7cbd1;
+}
+
+[data-raid-theme="dreadsail-reef"] {
+  --raid-accent: #62b5d8;
+  --raid-highlight: #ffd1cb;
+}
+
+[data-raid-theme="sanitys-edge"] {
+  --raid-accent: #956bdd;
+  --raid-highlight: #d4baff;
+}
+
+[data-raid-theme="lucent-citadel"] {
+  --raid-accent: #c7d9ed;
+  --raid-highlight: #ffffff;
+}
+
+[data-raid-theme="ossein-cage"] {
+  --raid-accent: #456d9d;
+  --raid-highlight: #8cb7e7;
+}
