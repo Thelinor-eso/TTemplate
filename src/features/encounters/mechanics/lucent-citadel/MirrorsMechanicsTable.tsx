@@ -126,12 +126,23 @@ export default function MirrorsMechanicsTable({
                                 if (!/^\d+$/.test(event.target.value)) return;
                                 const playerId = Number(event.target.value);
                                 if (!Number.isSafeInteger(playerId) || !players.some((player) => player.id === playerId)) return;
-                                if (cellPlayers.length > 0 && !assignedPlayerIds.has(playerId)) return;
                                 const nextDirections = mirrorsByPlayerId.get(playerId)?.[field] ?? [];
                                 if (nextDirections.some((assignedDirection) => assignedDirection !== direction)) return;
                                 const updatedDirections = nextDirections.includes(direction)
                                   ? nextDirections.filter((assignedDirection) => assignedDirection !== direction)
                                   : [...nextDirections, direction];
+                                for (const { player: assignedPlayer } of cellPlayers) {
+                                  if (assignedPlayer.id === playerId) continue;
+                                  const assignedDirections = mirrorsByPlayerId.get(assignedPlayer.id)?.[field] ?? [];
+                                  const remainingDirections = assignedDirections.filter(
+                                    (assignedDirection) => assignedDirection !== direction,
+                                  );
+                                  onPlayerMirrorMechanicsChange(
+                                    assignedPlayer.id,
+                                    field,
+                                    remainingDirections.length > 0 ? remainingDirections : null,
+                                  );
+                                }
                                 onPlayerMirrorMechanicsChange(
                                   playerId,
                                   field,
@@ -155,8 +166,8 @@ export default function MirrorsMechanicsTable({
                                   key={player.id}
                                   value={player.id}
                                   disabled={
-                                    (cellPlayers.length > 0 && !assignedPlayerIds.has(player.id))
-                                    || (assignedDirectionByPlayerId.has(player.id) && assignedDirectionByPlayerId.get(player.id) !== direction)
+                                    assignedDirectionByPlayerId.has(player.id)
+                                    && assignedDirectionByPlayerId.get(player.id) !== direction
                                   }
                                 >
                                   {assignedPlayerIds.has(player.id) ? `✓ ${player.name}` : player.name}
