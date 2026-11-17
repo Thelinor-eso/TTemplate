@@ -32,7 +32,9 @@ For each player in an encounter, configure:
 - **Champion Points:** select slottable CP options in the blue, red, and green disciplines, with up to four selected in each discipline.
 - **Description:** add player-specific notes for the encounter.
 
-Copy and paste controls let you reuse a player's gear, skills and consumables, or Champion Points. The encounter view also provides an overview/table switch, a player filter, gear set summaries, and a calculated critical-damage total with a breakdown. Encounter-level required-set checks can be added to track which sets and how many players are expected to use them.
+Copy and paste controls let you reuse a player's gear, skills and consumables, or Champion Points. The encounter view provides table, overview, and mechanics views; the table and overview include a player filter, gear set summaries, and a calculated critical-damage total with a breakdown. Encounter-level required-set checks can be added to track which sets and how many players are expected to use them.
+
+Mechanics data is stored separately under `mechanics` on each encounter and each encounter player, so boss-specific fields do not affect gear or player setup. Older templates without these objects load with empty mechanics data. Lucent Citadel has distinct mechanics pages for Count Ryelaz & Zilyesset, Cavot, and Orphic. Orphic uses a circular arena with cardinal labels and a Mirrors table for White Trash, Red Trash, White Trash 2, Red Trash 2, and Mirrors 90/60/40/20. Each `mechanics.mirrors` field stores one or more cardinal directions per player. The reusable Slayer stack table is shown on encounter mechanics pages. Switch to **Edit Mode** to assign players to positions, mirror directions, or Slayer stacks.
 
 Use **Back to Players** to return to the roster. The **Edit Mode** control enables editing on the player and encounter pages; when edit mode is off, those pages present the current setup for viewing. The header also lets you edit raid markers in edit mode or copy the markers for sharing.
 

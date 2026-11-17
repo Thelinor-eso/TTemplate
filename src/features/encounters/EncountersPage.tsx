@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type DragEvent, type FormEvent, type ReactNode } from 'react';
 import { useRaid } from '@/features/template/RaidContext';
 import EditModeToggle from '@/components/layout/EditModeToggle';
+import EncounterMechanicsView from '@/features/encounters/EncounterMechanicsView';
 import { CLASS_ICON_MAP, DEFAULT_FOOD_ICON, DEFAULT_POTION_ICON, FOOD_ICON_MAP, POTION_ICON_MAP, MUNDUS_ICON_MAP, ROLE_ICON_MAP, SKILL_LINE_ICON_MAP } from '@/data/iconMaps';
 import { ESO_CLASS_SKILL_LINES, getClassForSkillLine } from '@/data/esoClasses';
 import { ESO_FOODS } from '@/data/esoFoods';
@@ -47,6 +48,9 @@ import {
   createEmptyGearPiece,
   createEmptyGearForSlot,
   createEmptyFightPlayerStuff,
+  isMechanicsDirection,
+  isMechanicsNumber,
+  isMechanicsPosition,
   getPairedWeaponSlot,
   getChampionPointDisciplineFromSlot,
   requiresTwoWeaponSlots,
@@ -55,6 +59,12 @@ import {
   MUNDUS_STONE_OPTIONS,
   type FightPlayerStuff,
   type FightPlayerSetup,
+  type MechanicsSide,
+  type MechanicsNumber,
+  type MechanicsNumberField,
+  type MechanicsPosition,
+  type MechanicsDirection,
+  type MechanicsMirrorField,
   type GearPiece,
   type GearDraft,
   type GearSlotPiece,
@@ -1075,11 +1085,11 @@ function countPlayersWithCompleteRequiredSet(
 }
 
 export default function EncountersPage() {
-  const { template, players, updatePlayerClasses, updatePlayerClassMasteries, updatePlayerRole, updateFightPlayerStuff, updatePlayerMundus, pasteFightPlayerSetup, pasteFightSetup, addFight, duplicateFight, renameFight, removeFight, swapFights, updateFightRequiredSets, isEditMode } = useRaid();
+  const { template, players, updatePlayerClasses, updatePlayerClassMasteries, updatePlayerRole, updateFightPlayerStuff, updateFightPlayerMechanics, updatePlayerMundus, pasteFightPlayerSetup, pasteFightSetup, addFight, duplicateFight, renameFight, removeFight, swapFights, updateFightRequiredSets, isEditMode } = useRaid();
   const [selectedFightName, setSelectedFightName] = useState(template.fights[0]?.name ?? '');
   const requiredSetSearchRef = useRef<HTMLDivElement>(null);
   const playerSetupEditorRef = useRef<HTMLDivElement>(null);
-  const [isOverview, setIsOverview] = useState(false);
+  const [activeView, setActiveView] = useState<'table' | 'overview' | 'mechanics'>('table');
   const [isDeleteFightConfirmationOpen, setIsDeleteFightConfirmationOpen] = useState(false);
   const [selectedSetupPlayerId, setSelectedSetupPlayerId] = useState<number | null>(null);
   const [skillEditor, setSkillEditor] = useState<SkillEditorState | null>(null);
@@ -1327,6 +1337,57 @@ export default function EncountersPage() {
     ? selectedFightName
     : template.fights[0]?.name ?? '';
   const fight = template.fights.find((entry) => entry.name === activeFightName) ?? template.fights[0];
+  const updatePlayerMechanicsAssignment = (
+    playerId: number,
+    field: 'side' | 'slayerStack' | 'position' | MechanicsNumberField,
+    value: MechanicsSide | MechanicsPosition | MechanicsNumber | null,
+  ) => {
+    const currentMechanics = fight.playersStuff.find((entry) => entry.id === playerId)?.mechanics ?? {};
+    const mechanics = { ...currentMechanics };
+    if (field === 'position') {
+      if (value === null) delete mechanics.position;
+      else if (isMechanicsPosition(value)) mechanics.position = value;
+      else throw new Error('Invalid position assignment: expected an integer from 1 to 6.');
+    } else if (field === 'current' || field === 'knot') {
+      if (value === null) delete mechanics[field];
+      else if (isMechanicsNumber(value)) {
+        const isNumberAlreadyAssigned = fight.playersStuff.some((entry) => (
+          entry.id !== playerId && entry.mechanics[field] === value
+        ));
+        if (isNumberAlreadyAssigned) {
+          throw new Error(`Invalid ${field} assignment: number ${value} is already assigned.`);
+        }
+        mechanics[field] = value;
+      } else throw new Error(`Invalid ${field} assignment: expected an integer from 1 to 12.`);
+    } else if (value === null) delete mechanics[field];
+    else if (value === 'left' || value === 'right') mechanics[field] = value;
+    else throw new Error(`Invalid ${field} assignment: expected left or right.`);
+    if (field === 'side' && value !== currentMechanics.side) delete mechanics.position;
+    updateFightPlayerMechanics(fight.name, playerId, mechanics);
+  };
+  const updatePlayerMirrorMechanicsAssignment = (
+    playerId: number,
+    field: MechanicsMirrorField,
+    directions: MechanicsDirection[] | null,
+  ) => {
+    const currentMechanics = fight.playersStuff.find((entry) => entry.id === playerId)?.mechanics ?? {};
+    const mirrors = { ...currentMechanics.mirrors };
+    if (directions === null) delete mirrors[field];
+    else if (
+      directions.length <= 1
+      && directions.every(isMechanicsDirection)
+      && new Set(directions).size === directions.length
+    ) mirrors[field] = directions;
+    else throw new Error('Invalid mirror assignment: each player can have at most one direction per mechanic.');
+    const mechanics = { ...currentMechanics };
+    if (Object.keys(mirrors).length > 0) mechanics.mirrors = mirrors;
+    else delete mechanics.mirrors;
+    updateFightPlayerMechanics(fight.name, playerId, mechanics);
+  };
+  const assignPlayerToMechanicsPosition = (playerId: number, side: MechanicsSide, position: MechanicsPosition) => {
+    const currentMechanics = fight.playersStuff.find((entry) => entry.id === playerId)?.mechanics ?? {};
+    updateFightPlayerMechanics(fight.name, playerId, { ...currentMechanics, side, position });
+  };
   useEffect(() => {
     setIsRequiredSetsExpanded(true);
   }, [activeFightName]);
@@ -2665,7 +2726,7 @@ export default function EncountersPage() {
             <div className="page-heading !mb-0">
               <h1 className="page-heading__title">Encounters</h1>
               <p className="page-heading__description min-h-[4.95em]">
-                Prepare each encounter with player-specific gear, skills, Champion Points, food, and potions.
+                Plan player setups and review encounter-specific mechanics for each boss.
               </p>
             </div>
           </div>
@@ -2784,15 +2845,31 @@ export default function EncountersPage() {
                 <span aria-hidden="true">←</span>Back to Players
               </Link>
               <EditModeToggle className="raid-action-control" />
-              <button type="button" aria-pressed={!isOverview} onClick={() => setIsOverview((value) => !value)} aria-label={isOverview ? 'See table' : 'See overview'} className={`raid-action-control inline-flex items-center border px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f8f7f2] ${!isOverview ? 'raid-selected-control' : ''}`}>
-                {isOverview ? 'See table' : 'See overview'}
-              </button>
-              <label className="shrink-0">
-                <select aria-label="Show setup for player" value={visibleSetupPlayerId ?? ''} onChange={(event) => setSelectedSetupPlayerId(event.target.value ? Number(event.target.value) : null)} className="raid-action-control max-w-56 border px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f8f7f2]">
-                  <option value="">All players</option>
-                  {players.map((player) => <option key={player.id} value={player.id}>{player.name}</option>)}
-                </select>
-              </label>
+              <div role="group" aria-label="Encounter view" className="flex flex-wrap gap-1">
+                {([
+                  ['table', 'Table'],
+                  ['overview', 'Overview'],
+                  ['mechanics', 'Mechanics'],
+                ] as const).map(([view, label]) => (
+                  <button
+                    key={view}
+                    type="button"
+                    aria-pressed={activeView === view}
+                    onClick={() => setActiveView(view)}
+                    className={`raid-action-control inline-flex items-center border px-3 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f8f7f2] ${activeView === view ? 'raid-selected-control' : ''}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {activeView !== 'mechanics' && (
+                <label className="shrink-0">
+                  <select aria-label="Show setup for player" value={visibleSetupPlayerId ?? ''} onChange={(event) => setSelectedSetupPlayerId(event.target.value ? Number(event.target.value) : null)} className="raid-action-control max-w-56 border px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f8f7f2]">
+                    <option value="">All players</option>
+                    {players.map((player) => <option key={player.id} value={player.id}>{player.name}</option>)}
+                  </select>
+                </label>
+              )}
             </div>
           </div>
         </div>
@@ -2827,6 +2904,7 @@ export default function EncountersPage() {
           </form>
         )}
 
+        {activeView !== 'mechanics' && (
         <section
           aria-label="Encounter required sets"
           className="encounter-surface mb-4 rounded-lg border border-[#d6b46b] bg-[#111111]/95 p-4 text-[#f8f7f2] shadow-lg shadow-black/20"
@@ -2971,8 +3049,9 @@ export default function EncountersPage() {
             </div>
           )}
         </section>
+        )}
 
-        {setTransferError && (
+        {activeView !== 'mechanics' && setTransferError && (
           <div role="alert" className="mb-3 flex shrink-0 items-center justify-between gap-3 rounded border border-red-700 bg-red-950/80 px-3 py-2 text-sm text-red-200">
             <span>{setTransferError}</span>
             <button type="button" onClick={() => setSetTransferError(null)} aria-label="Dismiss set transfer message">×</button>
@@ -3022,20 +3101,31 @@ export default function EncountersPage() {
           </form>
         )}
 
-        <div className="mb-4 h-1 shrink-0 bg-gradient-to-r from-transparent via-[#d6b46b] to-transparent" />
+        {activeView !== 'mechanics' && <div className="mb-4 h-1 shrink-0 bg-gradient-to-r from-transparent via-[#d6b46b] to-transparent" />}
 
-        {isEditMode && copiedSetup && (
+        {activeView !== 'mechanics' && isEditMode && copiedSetup && (
           <div className="encounter-surface mb-4 shrink-0 rounded-lg border border-[#d6b46b] bg-black/65 px-4 py-2 text-sm text-yellow-100">
             Copied to clipboard: <span className="font-bold text-[#f7e7ba]">{COPY_CATEGORY_LABELS[copiedSetup.category]}</span> from <span className="font-bold text-[#f7e7ba]">{copiedSetup.playerName}</span> in <span className="font-bold text-[#f7e7ba]">{copiedSetup.fightName}</span>. Use the paste icon in the same column on another player or encounter to apply only this category.
           </div>
         )}
-        {copiedEncounterName && (
+        {activeView !== 'mechanics' && copiedEncounterName && (
           <div className="encounter-surface mb-4 shrink-0 rounded-lg border border-[#d6b46b] bg-black/65 px-4 py-2 text-sm text-yellow-100">
             Encounter <span className="font-bold text-[#f7e7ba]">{copiedEncounterName}</span> copied. Use Ctrl+V on another Encounter page to paste the players’ setups.
           </div>
         )}
 
-        {isOverview ? (
+        {activeView === 'mechanics' ? (
+          <EncounterMechanicsView
+            raidName={template.raid.selectedRaid}
+            fightName={fight.name}
+            players={players}
+            playersStuff={fight.playersStuff}
+            isEditMode={isEditMode}
+            onPlayerMechanicsChange={updatePlayerMechanicsAssignment}
+            onPlayerMirrorMechanicsChange={updatePlayerMirrorMechanicsAssignment}
+            onAssignPlayerToPosition={assignPlayerToMechanicsPosition}
+          />
+        ) : activeView === 'overview' ? (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
             {visiblePlayers.map((player) => {
               const playerStuff = fight.playersStuff.find((entry) => entry.id === player.id) ?? createEmptyFightPlayerStuff(player);

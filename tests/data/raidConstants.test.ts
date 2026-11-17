@@ -63,4 +63,24 @@ describe('default raid templates', () => {
       }
     }
   });
+
+  it('adds empty mechanics objects to every default encounter and player', () => {
+    for (const asset of Object.values(defaultTemplateAssetByRaid)) {
+      const filePath = join(process.cwd(), 'public', 'default-templates', asset);
+      const template = JSON.parse(readFileSync(filePath, 'utf8')) as {
+        fights: Array<{
+          name: string;
+          mechanics?: unknown;
+          playersStuff: Array<{ name: string; mechanics?: unknown }>;
+        }>;
+      };
+      for (const fight of template.fights) {
+        expect(fight.mechanics, `${asset}: ${fight.name}`).toEqual({});
+        expect(fight.playersStuff).toHaveLength(12);
+        for (const player of fight.playersStuff) {
+          expect(player.mechanics, `${asset}: ${fight.name}: ${player.name}`).toEqual({});
+        }
+      }
+    }
+  });
 });

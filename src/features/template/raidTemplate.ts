@@ -606,6 +606,7 @@ export type FightPlayerStuff = {
   id: number;
   name: string;
   role: RoleType;
+  mechanics: MechanicsData;
   sets: SetSlots;
   competencies: Skills;
   championPoints: ChampionPoints;
@@ -613,6 +614,26 @@ export type FightPlayerStuff = {
   potion: string;
   description: string;
 }
+
+export type MechanicsValue = string | number | boolean | null | MechanicsValue[] | { [key: string]: MechanicsValue };
+export type MechanicsSide = 'left' | 'right';
+export type MechanicsPosition = 1 | 2 | 3 | 4 | 5 | 6;
+export const MECHANICS_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const;
+export type MechanicsNumber = typeof MECHANICS_NUMBERS[number];
+export type MechanicsNumberField = 'current' | 'knot';
+export const MECHANICS_DIRECTIONS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'] as const;
+export type MechanicsDirection = typeof MECHANICS_DIRECTIONS[number];
+export const MECHANICS_MIRROR_FIELDS = ['whiteTrash', 'redTrash', 'whiteTrash2', 'redTrash2', 'mirror90', 'mirror60', 'mirror40', 'mirror20'] as const;
+export type MechanicsMirrorField = typeof MECHANICS_MIRROR_FIELDS[number];
+export type MechanicsMirrors = Partial<Record<MechanicsMirrorField, MechanicsDirection[]>>;
+export type MechanicsData = Record<string, MechanicsValue> & {
+  side?: MechanicsSide;
+  slayerStack?: MechanicsSide;
+  position?: MechanicsPosition;
+  current?: MechanicsNumber;
+  knot?: MechanicsNumber;
+  mirrors?: MechanicsMirrors;
+};
 
 export type FightPlayerSetup = Pick<
   FightPlayerStuff,
@@ -641,6 +662,7 @@ export function pasteFightPlayerSetup(playerStuff: FightPlayerStuff, setup: Figh
 export type FightDefinition = {
   name: string;
   requiredSetChecks: Array<{ key: string; setIds: number[]; requiredPlayers: number }>;
+  mechanics: MechanicsData;
   playersStuff: FightPlayerStuff[];
 }
 
@@ -687,6 +709,7 @@ export function createEmptyFightPlayerStuff(player: RaidPlayer): FightPlayerStuf
     id: player.id,
     name: player.name,
     role: player.role,
+    mechanics: {},
     sets: createEmptySetSlots(),
     competencies: {
       MainBar1: '',
@@ -741,6 +764,7 @@ export function createEmptyTemplateDocument(): RaidTemplateDocument {
       {
         name: 'Encounter 1',
         requiredSetChecks: [],
+        mechanics: {},
         playersStuff: players.map((player) => createEmptyFightPlayerStuff(player)),
       },
     ],
@@ -750,6 +774,69 @@ export function createEmptyTemplateDocument(): RaidTemplateDocument {
 const isRecord = (value: unknown): value is Record<string, unknown> => (
   typeof value === 'object' && value !== null && !Array.isArray(value)
 );
+
+const isMechanicsValue = (value: unknown): value is MechanicsValue => {
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') return true;
+  if (typeof value === 'number') return Number.isFinite(value);
+  if (Array.isArray(value)) return value.every(isMechanicsValue);
+  return isRecord(value) && Object.values(value).every(isMechanicsValue);
+};
+
+const isMechanicsSide = (value: unknown): value is MechanicsSide => value === 'left' || value === 'right';
+export const isMechanicsDirection = (value: unknown): value is MechanicsDirection => (
+  typeof value === 'string' && MECHANICS_DIRECTIONS.includes(value as MechanicsDirection)
+);
+const isMechanicsMirrors = (value: unknown): value is MechanicsMirrors => (
+  isRecord(value)
+  && Object.entries(value).every(([field, direction]) => (
+    MECHANICS_MIRROR_FIELDS.includes(field as MechanicsMirrorField)
+    && Array.isArray(direction)
+    && direction.every(isMechanicsDirection)
+    && new Set(direction).size === direction.length
+  ))
+);
+export const isMechanicsPosition = (value: unknown): value is MechanicsPosition => (
+  Number.isInteger(value) && typeof value === 'number' && value >= 1 && value <= 6
+);
+export const isMechanicsNumber = (value: unknown): value is MechanicsNumber => (
+  Number.isInteger(value) && typeof value === 'number' && value >= 1 && value <= 12
+);
+
+const isMechanicsData = (value: unknown): value is MechanicsData => (
+  isRecord(value)
+  && Object.values(value).every(isMechanicsValue)
+  && (value.side === undefined || isMechanicsSide(value.side))
+  && (value.slayerStack === undefined || isMechanicsSide(value.slayerStack))
+  && (value.position === undefined || isMechanicsPosition(value.position))
+  && (value.current === undefined || isMechanicsNumber(value.current))
+  && (value.knot === undefined || isMechanicsNumber(value.knot))
+  && (value.mirrors === undefined || isMechanicsMirrors(value.mirrors))
+);
+
+function normalizeMechanicsData(value: unknown, field: string): MechanicsData {
+  if (value === undefined) return {};
+  if (!isMechanicsData(value)) {
+    throw new Error(`Invalid ${field}: expected a JSON object.`);
+  }
+  return value;
+}
+
+function normalizePlayerMechanicsData(value: unknown, field: string): MechanicsData {
+  const mechanics = normalizeMechanicsData(value, field);
+  if (!mechanics.mirrors) return mechanics;
+
+  const mirrors: MechanicsMirrors = { ...mechanics.mirrors };
+  let hasLegacyMultipleDirections = false;
+  for (const mirrorField of MECHANICS_MIRROR_FIELDS) {
+    const directions = mirrors[mirrorField];
+    if (!directions || directions.length <= 1) continue;
+    const mostRecentDirection = directions[directions.length - 1];
+    if (mostRecentDirection !== undefined) mirrors[mirrorField] = [mostRecentDirection];
+    hasLegacyMultipleDirections = true;
+  }
+
+  return hasLegacyMultipleDirections ? { ...mechanics, mirrors } : mechanics;
+}
 
 const isEnumValue = <T extends string>(enumObject: Record<string, T>, value: unknown): value is T => (
   typeof value === 'string' && Object.values(enumObject).includes(value as T)
@@ -793,7 +880,7 @@ export function normalizeTemplateDocument(input: unknown): RaidTemplateDocument 
     const fightName = typeof fightRecord.name === 'string' ? fightRecord.name : `Fight ${fightIndex + 1}`;
     const fightPlayers = Array.isArray(fightRecord.playersStuff) ? fightRecord.playersStuff : [];
 
-    return {
+    const normalizedFight: FightDefinition = {
       name: fightName,
       requiredSetChecks: Array.isArray(fightRecord.requiredSetChecks)
         ? fightRecord.requiredSetChecks.filter((check) => isRecord(check) && typeof check.key === 'string' && Array.isArray(check.setIds))
@@ -801,6 +888,7 @@ export function normalizeTemplateDocument(input: unknown): RaidTemplateDocument 
         : Array.isArray(fightRecord.requiredSetIds)
           ? fightRecord.requiredSetIds.filter((id): id is number => typeof id === 'number' && Number.isSafeInteger(id) && id > 0).map((id) => ({ key: String(id), setIds: [id], requiredPlayers: 1 }))
           : [],
+      mechanics: normalizeMechanicsData(fightRecord.mechanics, `mechanics for encounter "${fightName}"`),
       playersStuff: fightPlayers.map((entry, index) => {
         const entryRecord = isRecord(entry) ? entry : {};
         const player = players[index] ?? createEmptyPlayer(index + 1);
@@ -811,6 +899,7 @@ export function normalizeTemplateDocument(input: unknown): RaidTemplateDocument 
           id: typeof entryRecord.id === 'number' ? entryRecord.id : player.id,
           name: typeof entryRecord.name === 'string' ? entryRecord.name : player.name,
           role: isEnumValue(RoleType, entryRecord.role) ? entryRecord.role : playerRole,
+          mechanics: normalizePlayerMechanicsData(entryRecord.mechanics, `mechanics for player "${player.name}" in encounter "${fightName}"`),
           sets: SET_SLOT_OPTIONS.reduce<SetSlots>((sets, slot) => {
             const mutableSets = sets as Record<SetSlot, GearSlotPiece>;
             const rawSet = isRecord(entryRecord.sets) ? entryRecord.sets[slot] : undefined;
@@ -872,6 +961,7 @@ export function normalizeTemplateDocument(input: unknown): RaidTemplateDocument 
         };
       }),
     };
+    return normalizedFight;
   });
 
   return {

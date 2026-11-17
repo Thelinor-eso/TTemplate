@@ -25,6 +25,7 @@ import {
   updateSetSlot,
   type SetSlot,
   type FightPlayerSetup,
+  type MechanicsData,
   copyFightPlayerSetup,
   pasteFightPlayerSetup,
 } from '@/features/template/raidTemplate';
@@ -55,6 +56,8 @@ interface RaidContextType {
   removeFight: (fightName: string) => string | null;
   swapFights: (firstFightName: string, secondFightName: string) => void;
   updateFightRequiredSets: (fightName: string, checks: Array<{ key: string; setIds: number[]; requiredPlayers: number }>) => void;
+  updateFightMechanics: (fightName: string, mechanics: MechanicsData) => void;
+  updateFightPlayerMechanics: (fightName: string, playerId: number, mechanics: MechanicsData) => void;
   updatePlayer: (id: number, updater: (player: RaidPlayer) => RaidPlayer) => void;
   updatePlayerName: (id: number, newName: string) => void;
   updatePlayerRole: (id: number, newRole: RoleType) => void;
@@ -175,6 +178,7 @@ export function RaidProvider({ children }: { children: ReactNode }) {
       const newFight = {
         name: candidate,
         requiredSetChecks: [],
+        mechanics: {},
         playersStuff: prev.raid.players.map((player) => createEmptyFightPlayerStuff(player)),
       };
 
@@ -207,9 +211,11 @@ export function RaidProvider({ children }: { children: ReactNode }) {
       const duplicatedFight = {
         name: duplicatedName,
         requiredSetChecks: (currentSource.requiredSetChecks ?? []).map((check) => ({ ...check, setIds: [...check.setIds] })),
+        mechanics: structuredClone(currentSource.mechanics),
         playersStuff: currentSource.playersStuff.map((playerStuff) => ({
           ...playerStuff,
           ...copyFightPlayerSetup(playerStuff),
+          mechanics: structuredClone(playerStuff.mechanics),
         })),
       };
 
@@ -275,6 +281,23 @@ export function RaidProvider({ children }: { children: ReactNode }) {
       fights: prev.fights.map((fight) => fight.name === fightName
         ? { ...fight, requiredSetChecks: checks.map((check) => ({ ...check, setIds: [...new Set(check.setIds.filter((id) => Number.isSafeInteger(id) && id > 0))], requiredPlayers: Math.max(1, Math.floor(check.requiredPlayers)) })) }
         : fight),
+    }));
+  }, []);
+
+  const updateFightMechanics = useCallback((fightName: string, mechanics: MechanicsData) => {
+    setTemplateState((prev) => ({
+      ...prev,
+      fights: prev.fights.map((fight) => fight.name === fightName ? { ...fight, mechanics } : fight),
+    }));
+  }, []);
+
+  const updateFightPlayerMechanics = useCallback((fightName: string, playerId: number, mechanics: MechanicsData) => {
+    setTemplateState((prev) => ({
+      ...prev,
+      fights: prev.fights.map((fight) => fight.name !== fightName ? fight : ({
+        ...fight,
+        playersStuff: fight.playersStuff.map((item) => item.id === playerId ? { ...item, mechanics } : item),
+      })),
     }));
   }, []);
 
@@ -550,6 +573,8 @@ export function RaidProvider({ children }: { children: ReactNode }) {
       removeFight,
       swapFights,
       updateFightRequiredSets,
+      updateFightMechanics,
+      updateFightPlayerMechanics,
       updatePlayer,
       updatePlayerName,
       updatePlayerRole,

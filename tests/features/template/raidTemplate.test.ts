@@ -78,6 +78,7 @@ describe('fight player setup copy and paste', () => {
     id,
     name,
     role: 'DPS' as const,
+    mechanics: {},
     sets: emptySlots(),
     competencies: {
       MainBar1: '', MainBar2: '', MainBar3: '', MainBar4: '', MainBar5: '', MainBarUlt: '',
@@ -212,16 +213,134 @@ describe('template gear and skill schema', () => {
     template.fights[0].playersStuff.push(fifthPlayerSetup);
     template.fights.push({
       name: 'Tideborn Taleria',
+      requiredSetChecks: [],
+      mechanics: {},
       playersStuff: structuredClone(template.fights[0].playersStuff),
     });
     template.fights[1].playersStuff[4].potion = 'Heroism Potion';
+    template.fights[0].mechanics = { phase: 'final', markers: ['A', 'B'] };
+    template.fights[0].playersStuff[4].mechanics = { side: 'right', slayerStack: 'left', position: 5, stack: 2 };
 
     const restored = parseTemplateDocument(exportTemplateDocument(template));
 
     expect(restored.raid.players).toHaveLength(5);
     expect(restored.fights.map((fight) => fight.name)).toEqual(['Encounter 1', 'Tideborn Taleria']);
     expect(restored.fights[0].playersStuff[4].food).toBe('Longfin Pasty');
+    expect(restored.fights[0].mechanics).toEqual({ phase: 'final', markers: ['A', 'B'] });
+    expect(restored.fights[0].playersStuff[4].mechanics).toEqual({ side: 'right', slayerStack: 'left', position: 5, stack: 2 });
     expect(restored.fights[1].playersStuff[4].potion).toBe('Heroism Potion');
+  });
+
+  it('adds empty mechanics objects when loading older templates', () => {
+    const restored = parseTemplateDocument({
+      raid: { players: [{ id: 1, name: 'Player 1' }] },
+      fights: [{ name: 'Encounter 1', playersStuff: [{ id: 1, name: 'Player 1' }] }],
+    });
+
+    expect(restored.fights[0].mechanics).toEqual({});
+    expect(restored.fights[0].playersStuff[0].mechanics).toEqual({});
+  });
+
+  it('accepts only left or right for slayerStack assignments', () => {
+    const invalidTemplate = {
+      raid: { players: [] },
+      fights: [{ name: 'Encounter 1', playersStuff: [], mechanics: { slayerStack: 'center' } }],
+    };
+
+    expect(() => parseTemplateDocument(invalidTemplate)).toThrow(/Invalid mechanics/);
+  });
+
+  it('round-trips mirror mechanic direction assignments', () => {
+    const template = createEmptyTemplateDocument();
+    template.fights[0].playersStuff[0].mechanics = {
+      mirrors: { whiteTrash: ['NE'], redTrash2: ['E'], mirror90: ['SW'], mirror40: ['W'], mirror20: ['NW'] },
+    };
+
+    const restored = parseTemplateDocument(exportTemplateDocument(template));
+
+    expect(restored.fights[0].playersStuff[0].mechanics.mirrors).toEqual({
+      whiteTrash: ['NE'],
+      redTrash2: ['E'],
+      mirror90: ['SW'],
+      mirror40: ['W'],
+      mirror20: ['NW'],
+    });
+  });
+
+  it('migrates legacy mirror rows with multiple directions to the latest assignment', () => {
+    const restored = parseTemplateDocument({
+      raid: { players: [{ id: 1, name: 'Xenus' }] },
+      fights: [{
+        name: 'Orphic',
+        playersStuff: [{
+          id: 1,
+          name: 'Xenus',
+          mechanics: { mirrors: { mirror60: ['N', 'SW'] } },
+        }],
+      }],
+    });
+
+    expect(restored.fights[0].playersStuff[0].mechanics.mirrors?.mirror60).toEqual(['SW']);
+  });
+
+  it.each([
+    { whiteTrash: ['center'] },
+    { unknownMechanic: ['N'] },
+    { mirror60: ['N', 'N'] },
+  ])('rejects invalid mirror mechanic assignments: %o', (mirrors) => {
+    const invalidTemplate = {
+      raid: { players: [{ id: 1, name: 'Player 1' }] },
+      fights: [{
+        name: 'Encounter 1',
+        playersStuff: [{ id: 1, name: 'Player 1', mechanics: { mirrors } }],
+      }],
+    };
+
+    expect(() => parseTemplateDocument(invalidTemplate)).toThrow(/Invalid mechanics/);
+  });
+
+  it('accepts only integer positions from 1 through 6', () => {
+    for (const position of [0, 7, 1.5, '1']) {
+      const invalidTemplate = {
+        raid: { players: [{ id: 1, name: 'Player 1' }] },
+        fights: [{
+          name: 'Encounter 1',
+          playersStuff: [{ id: 1, name: 'Player 1', mechanics: { position } }],
+        }],
+      };
+
+      expect(() => parseTemplateDocument(invalidTemplate)).toThrow(/Invalid mechanics/);
+    }
+  });
+
+  it('round-trips Current and Knot numbers from 1 through 12', () => {
+    const template = createEmptyTemplateDocument();
+    template.fights[0].playersStuff[0].mechanics = { current: 1, knot: 12 };
+
+    const restored = parseTemplateDocument(exportTemplateDocument(template));
+
+    expect(restored.fights[0].playersStuff[0].mechanics).toEqual({ current: 1, knot: 12 });
+  });
+
+  it.each([
+    { current: 0 },
+    { current: 13 },
+    { current: 1.5 },
+    { current: '1' },
+    { knot: 0 },
+    { knot: 13 },
+    { knot: 1.5 },
+    { knot: '12' },
+  ])('rejects invalid Current or Knot numbers: %o', (mechanics) => {
+    const invalidTemplate = {
+      raid: { players: [{ id: 1, name: 'Player 1' }] },
+      fights: [{
+        name: 'Xoryn',
+        playersStuff: [{ id: 1, name: 'Player 1', mechanics }],
+      }],
+    };
+
+    expect(() => parseTemplateDocument(invalidTemplate)).toThrow(/Invalid mechanics/);
   });
 
   it('creates empty slots with itemId null and the existing enchantment field', () => {
