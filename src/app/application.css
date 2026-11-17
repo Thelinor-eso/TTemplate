@@ -1789,12 +1789,12 @@ textarea:focus-visible {
 }
 
 .landing-card__section-label img {
-  width: 24px;
-  height: 24px;
-  padding: 3px;
-  border: 1px solid color-mix(in srgb, var(--raid-accent) 36%, transparent);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--raid-accent) 10%, #10151c);
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
 }
 
 .landing-card input {

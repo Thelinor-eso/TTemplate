@@ -7,7 +7,8 @@ import { useRaid } from '@/features/template/RaidContext';
 import { defaultTemplateAssetByRaid, esoRaids } from '@/data/raidConstants';
 import { createEmptyTemplateDocument } from '@/features/template/raidTemplate';
 import DriveTemplatePicker from '@/features/template/DriveTemplatePicker';
-import { triggerJsonImport } from '@/features/template/templateFileIO';
+import { triggerJsonImport, type ImportedTemplateFile } from '@/features/template/templateFileIO';
+import { useTemplateImport } from '@/features/template/useTemplateImport';
 import { getRaidBackground, getRaidTheme } from '@/lib/raidDisplay';
 import { withBasePath } from '@/lib/staticAssets';
 
@@ -17,6 +18,7 @@ const groupMenuIcon = withBasePath('/game-assets/storage/menu/gp_tutorial_idexic
 export default function LandingPage() {
   const router = useRouter();
   const { setSelectedRaid, setGroupName, loadTemplate, template } = useRaid();
+  const importTemplate = useTemplateImport();
 
   const [raidChoice, setRaidChoice] = useState(template.raid.selectedRaid ?? '');
   const [startError, setStartError] = useState<string | null>(null);
@@ -65,15 +67,16 @@ export default function LandingPage() {
     router.push('/players');
   };
 
+  const onTemplateImported = (json: string | object, source: ImportedTemplateFile | null) => {
+    const imported = importTemplate(json, source);
+    setRaidChoice(imported.raid.selectedRaid ?? '');
+  };
+
   const onImportJson = () => {
     setImportError(null);
     triggerJsonImport((text, source) => {
       try {
-        const parsed = loadTemplate(text, source);
-        const selected = parsed.raid.selectedRaid ?? '';
-        setRaidChoice(selected);
-        setSelectedRaid(selected);
-        router.push('/players');
+        onTemplateImported(text, source);
       } catch (error) {
         setImportError(error instanceof Error ? error.message : 'The JSON file could not be imported.');
       }
@@ -81,14 +84,10 @@ export default function LandingPage() {
   };
 
   const onDriveTemplateImported = (
-    importedTemplate: ReturnType<typeof loadTemplate>,
+    importedTemplate: string | object,
     file: { id: string; name: string },
   ) => {
-    loadTemplate(importedTemplate, { mode: 'drive', id: file.id, name: file.name });
-    const selected = importedTemplate.raid.selectedRaid ?? '';
-    setRaidChoice(selected);
-    setSelectedRaid(selected);
-    router.push('/players');
+    onTemplateImported(importedTemplate, { mode: 'drive', id: file.id, name: file.name });
   };
 
   const raidTheme = getRaidTheme(raidChoice);
@@ -121,7 +120,13 @@ export default function LandingPage() {
             <div className="landing-card__fields">
               <div>
                 <label htmlFor="group-name" className="landing-card__section-label">
-                  <Image src={groupMenuIcon} alt="" width={24} height={24} />
+                  <Image
+                    src={groupMenuIcon}
+                    alt=""
+                    width={30}
+                    height={30}
+                    style={{ padding: 0, border: 'none', borderRadius: 0, background: 'transparent' }}
+                  />
                   <span>Group name</span>
                 </label>
                 <input
@@ -134,7 +139,13 @@ export default function LandingPage() {
               </div>
               <div>
                 <p className="landing-card__section-label">
-                  <Image src={raidMenuIcon} alt="" width={24} height={24} />
+                  <Image
+                    src={raidMenuIcon}
+                    alt=""
+                    width={30}
+                    height={30}
+                    style={{ padding: 0, border: 'none', borderRadius: 0, background: 'transparent' }}
+                  />
                   <span>Trial</span>
                 </p>
                 <div className="landing-card__raid-picker" role="group" aria-label="Choose an ESO trial">

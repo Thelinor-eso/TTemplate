@@ -7,6 +7,7 @@ import { createPortal } from 'react-dom';
 import { useRaid } from '@/features/template/RaidContext';
 import { isGoogleOAuthPopupClosed, useGoogleDrive } from '@/features/template/GoogleDriveContext';
 import useOutsideClick from '@/hooks/useOutsideClick';
+import { useTemplateImport } from '@/features/template/useTemplateImport';
 import {
   createTemplateFilename,
   ensureJsonFilename,
@@ -16,10 +17,6 @@ import {
   type ImportedTemplateFile,
 } from '@/features/template/templateFileIO';
 import DriveTemplatePicker from '@/features/template/DriveTemplatePicker';
-
-interface BurgerMenuProps {
-  onImport?: () => void;
-}
 
 function TemplateSourceIcon({ mode }: { mode: 'drive' | 'local' }) {
   if (mode === 'drive') {
@@ -49,7 +46,7 @@ function SaveIcon() {
   );
 }
 
-export default function BurgerMenu({ onImport }: BurgerMenuProps) {
+export default function BurgerMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [driveMessage, setDriveMessage] = useState<string | null>(null);
@@ -66,7 +63,8 @@ export default function BurgerMenu({ onImport }: BurgerMenuProps) {
   const [groupNameDraft, setGroupNameDraft] = useState('');
   const [raidNameDraft, setRaidNameDraft] = useState('');
   const pathname = usePathname();
-  const { template, importedTemplateFile, loadTemplate, markTemplateSaved, requestHomeNavigation, setGroupName, setSelectedRaid } = useRaid();
+  const { template, importedTemplateFile, markTemplateSaved, requestHomeNavigation, setGroupName, setSelectedRaid } = useRaid();
+  const importTemplate = useTemplateImport();
   const { isConnected, disconnect, pickDriveFolder, saveTemplate, updateTemplateFile } = useGoogleDrive();
 
   const closeMenu = useCallback(() => setIsOpen(false), []);
@@ -99,13 +97,7 @@ export default function BurgerMenu({ onImport }: BurgerMenuProps) {
 
   const handleImport = () => {
     setIsOpen(false);
-    if (onImport) {
-      onImport();
-      return;
-    }
-    triggerJsonImport((text, source) => {
-      loadTemplate(text, source);
-    });
+    triggerJsonImport(importTemplate);
   };
 
   const handleSaveNewFile = async (event: FormEvent<HTMLFormElement>) => {
@@ -325,7 +317,7 @@ export default function BurgerMenu({ onImport }: BurgerMenuProps) {
 
             <DriveTemplatePicker
               onImported={(importedTemplate, file) => {
-                loadTemplate(importedTemplate, { mode: 'drive', id: file.id, name: file.name });
+                importTemplate(importedTemplate, { mode: 'drive', id: file.id, name: file.name });
                 setIsOpen(false);
               }}
               className="mb-2 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white"
