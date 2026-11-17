@@ -1136,6 +1136,42 @@ export default function EncountersPage() {
   useOutsideClick(playerSetupEditorRef, playerSetupEditor !== null, closePlayerSetupEditor);
   useOutsideClick(requiredSetSearchRef, isRequiredSetSearchOpen && Boolean(requiredSetSearch.trim()), closeRequiredSetSearch);
 
+  const hasOpenSelection = Boolean(
+    isDeleteFightConfirmationOpen || skillEditor || viewSkillDetails || viewChampionDiscipline
+    || overviewSetPlayerId !== null || mundusEditorPlayerId !== null || setEditor || gearDetails
+    || consumableEditor || championPointEditor || playerSetupEditor || isRequiredSetSearchOpen
+    || quickGearSetup || bulkEnchantmentPlayerId !== null,
+  );
+
+  useEffect(() => {
+    if (!hasOpenSelection) return;
+
+    const root = document.documentElement;
+    const body = document.body;
+    const scrollY = window.scrollY;
+    const previousBodyStyles = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      width: body.style.width,
+    };
+
+    root.classList.add('encounter-selection-open');
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.left = '0';
+    body.style.width = '100%';
+
+    return () => {
+      root.classList.remove('encounter-selection-open');
+      body.style.position = previousBodyStyles.position;
+      body.style.top = previousBodyStyles.top;
+      body.style.left = previousBodyStyles.left;
+      body.style.width = previousBodyStyles.width;
+      window.scrollTo(0, scrollY);
+    };
+  }, [hasOpenSelection]);
+
   const selectPlayerSkillLine = (playerId: number, index: number, skillLine: ClassSkillLine) => {
     if (!isEditMode) return;
     const player = players.find((entry) => entry.id === playerId);

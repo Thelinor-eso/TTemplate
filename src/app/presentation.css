@@ -110,6 +110,12 @@ textarea:focus-visible {
   scrollbar-gutter: stable;
 }
 
+html.encounter-selection-open,
+html.encounter-selection-open body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 [role="dialog"] button,
 [role="alertdialog"] button {
   min-height: var(--target-size);
