@@ -87,13 +87,16 @@ type ScribingDraft = {
   affixScriptId: number | '';
 };
 type SetEditorState = { playerId: number; slot: SetSlot };
-type QuickGearPlacement = 'body' | 'jewels-weapons' | 'head-shoulders' | 'replace-set';
+type QuickGearSlotPreset = 'body' | 'jewelry' | 'head-shoulders' | 'front-bar' | 'back-bar';
+type QuickGearArmorWeight = Exclude<CatalogSetItem['armorWeight'], null>;
 type QuickGearSetupState = {
   playerId: number;
   replaceSetIds: number[];
   selectedSetId: number | null;
-  placement: QuickGearPlacement | null;
+  isReplaceSetPickerOpen: boolean;
   selectedSlots: SetSlot[];
+  draggedItems: Partial<Record<SetSlot, GearSlotPiece>>;
+  bodyArmorWeight: QuickGearArmorWeight | '';
   bodyEnchantment: string;
   jewelryEnchantment: string;
   bodyTrait: string;
@@ -159,7 +162,13 @@ const COPY_CATEGORY_LABELS: Record<CopyCategory, string> = {
 };
 const NO_TRAIT_VALUE = '__no_trait__';
 type SetSlotCategory = CatalogSetItem['gearType'];
-type DraggedSetSlot = { playerId: number; slot: SetSlot; itemId: number; category: SetSlotCategory };
+type DraggedSetSlot = {
+  playerId: number;
+  slot: SetSlot;
+  itemId: number;
+  category: SetSlotCategory;
+  sourceGear?: GearSlotPiece;
+};
 
 const QUICK_GEAR_BODY_SLOTS: readonly SetSlot[] = ['chest', 'waist', 'boots', 'gloves', 'legs'];
 const QUICK_GEAR_HEAD_SHOULDER_SLOTS: readonly SetSlot[] = ['head', 'shoulders'];
@@ -260,6 +269,23 @@ type QuickGearAutomaticDefault = {
   enchantmentName: string;
 };
 
+function getQuickGearArmorWeights(items: CatalogSetItem[]): QuickGearArmorWeight[] {
+  return (['light', 'medium', 'heavy'] as const).filter((weight) => (
+    items.some((item) => item.gearType === 'armor' && item.armorWeight === weight)
+  ));
+}
+
+function getQuickGearDefaultArmorWeight(
+  role: RoleType,
+  availableWeights: QuickGearArmorWeight[],
+): QuickGearArmorWeight | '' {
+  const preferredWeight = role === RoleType.Tank ? 'heavy'
+    : role === RoleType.Heal ? 'light' : 'medium';
+  return availableWeights.includes(preferredWeight)
+    ? preferredWeight
+    : availableWeights[0] ?? '';
+}
+
 function getQuickGearAutomaticDefaults(
   items: CatalogSetItem[],
   gearType: 'armor' | 'jewelry',
@@ -298,38 +324,18 @@ function setSupportsSlot(set: CatalogSetSummary, slot: SetSlot): boolean {
 }
 
 function getQuickGearPresetSlots(
-  set: CatalogSetSummary | null,
-  placement: QuickGearPlacement,
-  playerStuff: FightPlayerStuff | undefined,
-  replaceSetIds: readonly number[],
+  placement: QuickGearSlotPreset,
 ): SetSlot[] {
-  if (placement === 'replace-set') return [];
   if (placement === 'body') {
-    return set ? QUICK_GEAR_BODY_SLOTS.filter((slot) => setSupportsSlot(set, slot)) : [...QUICK_GEAR_BODY_SLOTS];
+    return [...QUICK_GEAR_BODY_SLOTS];
+  }
+  if (placement === 'jewelry') {
+    return [...QUICK_GEAR_JEWEL_SLOTS];
   }
   if (placement === 'head-shoulders') {
-    return set
-      ? QUICK_GEAR_HEAD_SHOULDER_SLOTS.filter((slot) => setSupportsSlot(set, slot))
-      : [...QUICK_GEAR_HEAD_SHOULDER_SLOTS];
+    return [...QUICK_GEAR_HEAD_SHOULDER_SLOTS];
   }
-
-  const isAvailable = (slot: SetSlot) => {
-    const gear = playerStuff?.sets[slot];
-    if (!gear || gear.itemId === null) return true;
-    const equippedSetId = getCachedCatalogItem(gear.itemId, gear.trait)?.setId;
-    return equippedSetId !== undefined && replaceSetIds.includes(equippedSetId);
-  };
-  const frontBarIsAvailable = QUICK_GEAR_FRONT_BAR_SLOTS.some((slot) => (
-    isAvailable(slot) && (!set || setSupportsSlot(set, slot))
-  ));
-  const backBarIsAvailable = QUICK_GEAR_BACK_BAR_SLOTS.some((slot) => (
-    isAvailable(slot) && (!set || setSupportsSlot(set, slot))
-  ));
-  const weaponSlots = frontBarIsAvailable || !backBarIsAvailable
-    ? QUICK_GEAR_FRONT_BAR_SLOTS
-    : QUICK_GEAR_BACK_BAR_SLOTS;
-  const slots = [...QUICK_GEAR_JEWEL_SLOTS, ...weaponSlots];
-  return set ? slots.filter((slot) => setSupportsSlot(set, slot)) : slots;
+  return placement === 'front-bar' ? [...QUICK_GEAR_FRONT_BAR_SLOTS] : [...QUICK_GEAR_BACK_BAR_SLOTS];
 }
 const SKILL_BAR_SLOTS = [
   ...MAIN_BAR_SLOTS,
@@ -619,7 +625,12 @@ type QuickGearSlotChoiceProps = {
   isSelected: boolean;
   isReplacedSet: boolean;
   supportsSet: boolean;
+  draggable: boolean;
   onChange: (slot: SetSlot, checked: boolean) => void;
+  onDragStart: (event: DragEvent<HTMLButtonElement>) => void;
+  onDragEnd: () => void;
+  onDragOver: (event: DragEvent<HTMLButtonElement>) => void;
+  onDrop: (event: DragEvent<HTMLButtonElement>) => void;
 };
 
 const QuickGearSlotChoice = memo(function QuickGearSlotChoice({
@@ -628,7 +639,12 @@ const QuickGearSlotChoice = memo(function QuickGearSlotChoice({
   isSelected,
   isReplacedSet,
   supportsSet,
+  draggable,
   onChange,
+  onDragStart,
+  onDragEnd,
+  onDragOver,
+  onDrop,
 }: QuickGearSlotChoiceProps) {
   const isOccupied = gear.itemId !== null;
   const occupyingItem = isOccupied ? getCachedCatalogItem(gear.itemId, gear.trait) : null;
@@ -640,11 +656,16 @@ const QuickGearSlotChoice = memo(function QuickGearSlotChoice({
       type="button"
       aria-label={`Select ${getSetSlotLabel(slot)} slot${occupiedBy ? `, ${occupiedBy}` : isOccupied ? ', occupied' : ', free'}`}
       aria-pressed={isSelected}
-      disabled={!supportsSet || isReplacedSet}
-      onClick={() => onChange(slot, !isSelected)}
+      aria-disabled={isReplacedSet}
+      draggable={draggable}
+      onClick={() => { if (!isReplacedSet) onChange(slot, !isSelected); }}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
       className={`flex w-[clamp(3rem,5vw,4.75rem)] shrink-0 flex-col items-center gap-1 rounded-lg p-1 text-center transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f7e7ba] ${
       isSelected ? 'bg-[#d6b46b]/10 ring-1 ring-[#d6b46b]/50' : 'hover:bg-white/[0.04]'
-    } ${!supportsSet || isReplacedSet ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
+    } ${draggable ? 'cursor-grab active:cursor-grabbing' : isReplacedSet ? 'cursor-copy opacity-70' : 'cursor-pointer'}`}>
       <span className="block">
         <span className={`block h-[clamp(2rem,4vw,3rem)] w-[clamp(2rem,4vw,3rem)] overflow-hidden rounded border-2 bg-black/60 p-0.5 ${
           isSelected ? 'border-[#f7e7ba]' : isOccupied ? 'border-white/35' : 'border-dashed border-yellow-700'
@@ -665,7 +686,7 @@ const QuickGearSlotChoice = memo(function QuickGearSlotChoice({
       <span className={`w-full break-words text-[8px] leading-tight ${
         !supportsSet ? 'text-white/35' : isReplacedSet || isSelected ? 'text-amber-200' : isOccupied ? 'text-orange-200/80' : 'text-emerald-200/70'
       }`}>
-        {!supportsSet ? 'Unavailable' : status}
+        {!supportsSet ? 'Unsupported' : status}
       </span>
     </button>
   );
@@ -2112,18 +2133,117 @@ export default function EncountersPage() {
     }
   };
 
+  const handleQuickGearSlotDrop = async (
+    event: DragEvent<HTMLButtonElement>,
+    targetSlot: SetSlot,
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const source = draggedSetSlot.current;
+    const setup = quickGearSetup;
+    if (!isEditMode || !source || !setup || source.playerId !== setup.playerId) return;
+
+    const playerStuff = fight.playersStuff.find((entry) => entry.id === setup.playerId);
+    const equippedSourceGear = playerStuff?.sets[source.slot];
+    const sourceGear = source.sourceGear ?? equippedSourceGear;
+    if (
+      !playerStuff
+      || sourceGear?.itemId !== source.itemId
+      || (!source.sourceGear && equippedSourceGear?.itemId !== source.itemId)
+    ) return;
+
+    try {
+      const sourceItem = await ensureCatalogItemLoaded(source.itemId, sourceGear.trait);
+      if (!sourceItem || sourceItem.gearType !== source.category) {
+        throw new Error('Unable to identify the dragged set item.');
+      }
+
+      const targetItems = await getSlotItemOptions(targetSlot, sourceItem.setId);
+      const choices = groupCatalogItems(targetItems);
+      const role = playerStuff.role ?? RoleType.DPS;
+      const sameSetPreferences = setup.selectedSetId === sourceItem.setId ? setup : undefined;
+      const targetChoice = choices.find((choice) => getDefaultSetItemSelection(
+        choice,
+        targetSlot,
+        role,
+        sameSetPreferences,
+      ).item) ?? choices[0];
+      const defaults = getDefaultSetItemSelection(targetChoice, targetSlot, role, sameSetPreferences);
+      const compatibleItem = findCompatibleSlotItem(sourceItem, targetItems);
+      const targetItem = compatibleItem ?? defaults.item ?? targetChoice?.variants[0];
+      if (!targetItem) {
+        setQuickGearError(`This set has no item available for the ${getSetSlotLabel(targetSlot)} slot.`);
+        return;
+      }
+
+      const selectedItemDefaults = getDefaultSetItemSelection(
+        choices.find((choice) => choice.variants.some((item) => item.id === targetItem.id && item.trait === targetItem.trait)),
+        targetSlot,
+        role,
+        sameSetPreferences,
+      );
+      const preserveSourceDetails = compatibleItem !== null;
+      const shouldPairWeapon = targetItem.gearType === 'weapon'
+        && (targetItem.equipType === 'Two Hand' || Boolean(
+          preserveSourceDetails && 'poison' in sourceGear ? sourceGear.poison : selectedItemDefaults.poison,
+        ));
+      const pairSlot = shouldPairWeapon ? getPairedWeaponSlot(targetSlot) : null;
+      const pairItem = pairSlot
+        ? findCompatibleSlotItem(targetItem, await getSlotItemOptions(pairSlot, sourceItem.setId))
+        : null;
+      const targetGear: GearSlotPiece = {
+        itemId: targetItem.id,
+        trait: targetItem.trait,
+        enchantment: preserveSourceDetails ? sourceGear.enchantment : selectedItemDefaults.enchantment,
+        ...(getPairedWeaponSlot(targetSlot) !== null
+          ? {
+            poison: preserveSourceDetails && 'poison' in sourceGear
+              ? sourceGear.poison
+              : selectedItemDefaults.poison,
+          }
+          : {}),
+      };
+      const pairedGear: GearSlotPiece | null = pairSlot && pairItem
+        ? { ...targetGear, itemId: pairItem.id, trait: pairItem.trait }
+        : null;
+
+      setQuickGearSetup((current) => {
+        if (!current || current.playerId !== setup.playerId) return current;
+        const isChangingSet = current.selectedSetId !== sourceItem.setId;
+        const draggedItems = isChangingSet ? {} : current.draggedItems;
+        const slotsToSelect = pairSlot && pairedGear ? [targetSlot, pairSlot] : [targetSlot];
+        return {
+          ...current,
+          selectedSetId: sourceItem.setId,
+          selectedSlots: [...new Set([...current.selectedSlots, ...slotsToSelect])],
+          draggedItems: {
+            ...draggedItems,
+            [targetSlot]: targetGear,
+            ...(pairSlot && pairedGear ? { [pairSlot]: pairedGear } : {}),
+          },
+          bodyArmorWeight: targetItem.gearType === 'armor'
+            ? targetItem.armorWeight ?? ''
+            : isChangingSet ? '' : current.bodyArmorWeight,
+          bodyEnchantment: isChangingSet ? '' : current.bodyEnchantment,
+          jewelryEnchantment: isChangingSet ? '' : current.jewelryEnchantment,
+          bodyTrait: isChangingSet ? '' : current.bodyTrait,
+          jewelryTrait: isChangingSet ? '' : current.jewelryTrait,
+        };
+      });
+      setQuickGearError(null);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setQuickGearError(`Unable to transfer set item: ${message}`);
+    }
+  };
+
   const applyQuickGearSet = async (setId: number, selectedSlots: SetSlot[]) => {
     if (!quickGearSetup || !fight || isApplyingQuickGear) return;
 
     setIsApplyingQuickGear(true);
     setQuickGearError(null);
     try {
-      const selectedSet = catalogSets.find((set) => set.id === setId);
-      const requiredPieces = getSetMaxPiecesRequired(selectedSet?.effects ?? []);
-      if (requiredPieces === null) {
-        throw new Error('This set does not have a piece requirement that can be equipped automatically.');
-      }
-
       const playerStuff = fight.playersStuff.find((entry) => entry.id === quickGearSetup.playerId);
       if (!playerStuff) throw new Error('Unable to find this player in the selected encounter.');
       await ensureCatalogItemsLoaded(
@@ -2134,6 +2254,10 @@ export default function EncountersPage() {
 
       const setEntry = await fetchSetById(setId);
       if (!setEntry) throw new Error('Unable to load the selected set.');
+      const role = playerStuff.role ?? RoleType.DPS;
+      const availableArmorWeights = getQuickGearArmorWeights(setEntry.items);
+      const armorWeight = quickGearSetup.bodyArmorWeight
+        || getQuickGearDefaultArmorWeight(role, availableArmorWeights);
 
       const replacedSlots = QUICK_GEAR_SLOT_ORDER.filter((slot) => {
         const equippedSetId = getCachedCatalogItem(
@@ -2142,82 +2266,77 @@ export default function EncountersPage() {
         )?.setId;
         return equippedSetId !== undefined && quickGearSetup.replaceSetIds.includes(equippedSetId);
       });
-      const missingSetIds = quickGearSetup.replaceSetIds.filter((setId) => !replacedSlots.some((slot) => (
-          getCachedCatalogItem(playerStuff.sets[slot].itemId, playerStuff.sets[slot].trait)?.setId
-          === setId
-      )));
-      if (missingSetIds.length > 0) {
-        throw new Error('One or more selected equipped sets are no longer available to replace.');
-      }
 
-      const placementSlots = QUICK_GEAR_SLOT_ORDER.filter((slot) => (
+      const targetSlots = QUICK_GEAR_SLOT_ORDER.filter((slot) => (
         selectedSlots.includes(slot) || replacedSlots.includes(slot)
       ));
-      const slotsToReplace = new Set(replacedSlots);
-      placementSlots.forEach((slot) => slotsToReplace.add(slot));
-      const availableSlots = placementSlots.filter((slot) => (
-        playerStuff.sets[slot].itemId === null || slotsToReplace.has(slot)
-      ));
-      const simulatedSets: Record<string, GearPiece> = { ...playerStuff.sets };
-      for (const slot of slotsToReplace) simulatedSets[slot] = createEmptyGearForSlot(slot);
-
       const plannedGear = new Map<SetSlot, GearSlotPiece>();
-      const role = playerStuff.role ?? RoleType.DPS;
 
-      for (const slot of availableSlots) {
-        if ((getSetSummary(simulatedSets, catalogSets).find((set) => set.id === setId)?.pieceCount ?? 0) >= requiredPieces) {
-          break;
-        }
+      for (const slot of targetSlots) {
         if (plannedGear.has(slot)) continue;
 
         const slotItems = await getSlotItemOptions(slot, setId);
         const choices = groupCatalogItems(slotItems);
-        const choice = choices.find((itemChoice) => getDefaultSetItemSelection(
-          itemChoice,
-          slot,
-          role,
-          quickGearSetup,
-        ).item);
+        const draggedGear = quickGearSetup.draggedItems[slot];
+        const draggedItem = draggedGear
+          ? slotItems.find((item) => item.id === draggedGear.itemId && item.trait === draggedGear.trait)
+          : undefined;
+        const isUsableChoice = (itemChoice: ReturnType<typeof groupCatalogItems>[number]) => (
+          (!armorWeight
+            || itemChoice.representative.gearType !== 'armor'
+            || itemChoice.representative.armorWeight === armorWeight)
+          && getDefaultSetItemSelection(itemChoice, slot, role, quickGearSetup).item
+        );
+        const isPreferredWeaponChoice = (itemChoice: ReturnType<typeof groupCatalogItems>[number]) => (
+          itemChoice.representative.gearType === 'weapon'
+          && (
+            (itemChoice.representative.equipType === 'One Hand'
+              && itemChoice.representative.weaponType === 'Dagger')
+            || (itemChoice.representative.equipType === 'Two Hand'
+              && itemChoice.representative.weaponType === 'Two Handed Sword')
+          )
+        );
+        const choice = draggedItem
+          ? choices.find((itemChoice) => itemChoice.variants.some((item) => (
+            item.id === draggedItem.id && item.trait === draggedItem.trait
+          )))
+          : choices.find((itemChoice) => (
+            isPreferredWeaponChoice(itemChoice) && isUsableChoice(itemChoice)
+          )) ?? choices.find(isUsableChoice);
         if (!choice) continue;
 
         const defaults = getDefaultSetItemSelection(choice, slot, role, quickGearSetup);
-        if (!defaults.item) continue;
+        const selectedItem = draggedItem ?? defaults.item;
+        if (!selectedItem) continue;
+        const enchantment = draggedItem && draggedGear ? draggedGear.enchantment : defaults.enchantment;
+        const poison = draggedItem && draggedGear && 'poison' in draggedGear
+          ? draggedGear.poison
+          : defaults.poison;
 
-        const pairSlot = defaults.item.gearType === 'weapon'
-          && (defaults.item.equipType === 'Two Hand' || Boolean(defaults.poison))
+        const pairSlot = selectedItem.gearType === 'weapon'
+          && (selectedItem.equipType === 'Two Hand' || Boolean(poison))
           ? getPairedWeaponSlot(slot)
           : null;
         if (
           pairSlot
           && (
-            !availableSlots.includes(pairSlot)
+            !targetSlots.includes(pairSlot)
             || plannedGear.has(pairSlot)
-            || (playerStuff.sets[pairSlot].itemId !== null && !slotsToReplace.has(pairSlot))
           )
         ) continue;
 
         const gear: GearSlotPiece = {
-          itemId: defaults.item.id,
-          trait: defaults.item.trait,
-          enchantment: defaults.poison ? '' : defaults.enchantment,
-          ...(getPairedWeaponSlot(slot) !== null ? { poison: defaults.poison } : {}),
+          itemId: selectedItem.id,
+          trait: selectedItem.trait,
+          enchantment: poison ? '' : enchantment,
+          ...(getPairedWeaponSlot(slot) !== null ? { poison } : {}),
         };
         plannedGear.set(slot, gear);
-        simulatedSets[slot] = gear;
 
         if (pairSlot) {
-          const pairedGear: GearSlotPiece = { ...gear, poison: defaults.poison };
+          const pairedGear = quickGearSetup.draggedItems[pairSlot] ?? { ...gear, poison };
           plannedGear.set(pairSlot, pairedGear);
-          simulatedSets[pairSlot] = pairedGear;
         }
-      }
-
-      const equippedPieces = getSetSummary(simulatedSets, catalogSets)
-        .find((set) => set.id === setId)?.pieceCount ?? 0;
-      if (equippedPieces < requiredPieces) {
-        throw new Error(
-          `Not enough available compatible slots to equip ${requiredPieces} pieces of ${selectedSet?.setName ?? setEntry.setName}. No changes were made.`,
-        );
       }
 
       for (const slot of replacedSlots) {
@@ -2232,8 +2351,10 @@ export default function EncountersPage() {
           ...current,
           replaceSetIds: [],
           selectedSetId: null,
-          placement: null,
+          isReplaceSetPickerOpen: false,
           selectedSlots: [],
+          draggedItems: {},
+          bodyArmorWeight: '',
           bodyEnchantment: '',
           jewelryEnchantment: '',
           bodyTrait: '',
@@ -2268,7 +2389,7 @@ export default function EncountersPage() {
     }
   };
 
-  const renderSetSlot = (playerId: number, slot: SetSlot, label: string, showSlotLabel = true, detailPreview = false) => {
+  const renderSetSlot = (playerId: number, slot: SetSlot, label: string, showSlotLabel = true, detailPreview = false, compact = false) => {
     const playerStuff = fight.playersStuff.find((entry) => entry.id === playerId);
     const gear = playerStuff?.sets[slot as keyof typeof playerStuff.sets];
     const gearItemId = gear?.itemId;
@@ -2281,12 +2402,20 @@ export default function EncountersPage() {
     const tileBorderClass = gearItemId == null
       ? 'border-dashed border-yellow-700'
       : 'border-yellow-600';
+    const compactLabel = slot === 'necklace' ? 'Neck'
+      : slot === 'ring1' ? 'Ring 1'
+        : slot === 'ring2' ? 'Ring 2'
+          : slot === 'mainHandFrontBar' ? 'Front MH'
+            : slot === 'offHandFrontBar' ? 'Front OH'
+              : slot === 'mainHandBackBar' ? 'Back MH'
+                : slot === 'offHandBackBar' ? 'Back OH'
+                  : label;
 
     return (
-      <div className={`flex min-w-0 flex-col items-center gap-1 ${detailPreview ? 'w-16' : 'w-12'}`}>
+      <div className={`flex min-w-0 flex-col items-center gap-1 ${detailPreview ? 'w-16' : compact ? 'w-9' : 'w-12'}`}>
         {showSlotLabel && (
-          <span className={`inline-flex w-full min-w-0 items-center justify-center gap-1 text-center text-[clamp(8px,2.2cqw,10px)] font-semibold uppercase tracking-wide ${armorWeightTextClass}`}>
-            <span className="min-w-0 truncate">{label}</span>
+          <span className={`inline-flex w-full min-w-0 items-center justify-center gap-1 text-center ${compact ? 'text-[8px]' : 'text-[clamp(8px,2.2cqw,10px)]'} font-semibold uppercase tracking-wide ${armorWeightTextClass}`}>
+            <span className="min-w-0 truncate">{compact ? compactLabel : label}</span>
             <EnchantmentIndicator gear={gear} />
           </span>
         )}
@@ -2339,7 +2468,7 @@ export default function EncountersPage() {
             onDrop={(event) => {
               void handleSetSlotDrop(event, playerId, slot);
             }}
-            className={`raid-interactive-tile group relative flex shrink-0 items-center justify-center overflow-visible border-2 bg-black/60 p-1 transition ${detailPreview ? 'h-16 w-16' : 'h-12 w-12 p-0.5'} ${tileBorderClass} cursor-grab active:cursor-grabbing`}
+            className={`raid-interactive-tile group relative flex shrink-0 items-center justify-center overflow-visible border-2 bg-black/60 transition ${detailPreview ? 'h-16 w-16 p-1' : compact ? 'h-8 w-8 p-0.5' : 'h-12 w-12 p-0.5'} ${tileBorderClass} cursor-grab active:cursor-grabbing`}
           >
             <GearIcon key={`${gear?.itemId ?? ''}-${slot}`} gear={gear} slot={slot} fallbackSrc={placeholderImage} alt={value} className="h-full w-full object-cover opacity-90" />
             {!value && (
@@ -2366,14 +2495,14 @@ export default function EncountersPage() {
                 });
               }}
               aria-label={`Show details for ${value || label}`}
-              className={`raid-interactive-tile group relative flex shrink-0 cursor-pointer items-center justify-center overflow-visible border-2 border-yellow-600 bg-black/60 p-1 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 ${detailPreview ? 'h-16 w-16' : 'h-12 w-12 p-0.5'}`}
+              className={`raid-interactive-tile group relative flex shrink-0 cursor-pointer items-center justify-center overflow-visible border-2 border-yellow-600 bg-black/60 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 ${detailPreview ? 'h-16 w-16 p-1' : compact ? 'h-8 w-8 p-0.5' : 'h-12 w-12 p-0.5'}`}
             >
               <GearIcon key={`${gearItemId}-${slot}`} gear={gear} slot={slot} fallbackSrc={placeholderImage} alt={value} className="h-full w-full object-cover" />
             </button>
             </PortalTooltip>
           ) : (
             <div
-                className={`flex shrink-0 items-center justify-center overflow-hidden border-2 border-dashed border-yellow-700 bg-black/60 ${detailPreview ? 'h-16 w-16 p-1' : 'h-12 w-12 p-0.5'}`}
+                className={`flex shrink-0 items-center justify-center overflow-hidden border-2 border-dashed border-yellow-700 bg-black/60 ${detailPreview ? 'h-16 w-16 p-1' : compact ? 'h-8 w-8 p-0.5' : 'h-12 w-12 p-0.5'}`}
             >
               <GearIcon key={`${gear?.itemId ?? ''}-${slot}`} gear={gear} slot={slot} fallbackSrc={placeholderImage} alt={value} className="h-full w-full object-cover opacity-40" />
             </div>
@@ -2390,6 +2519,7 @@ export default function EncountersPage() {
     barLabel: string,
     showSlotLabel = true,
     detailPreview = false,
+    compact = false,
   ) => {
     const playerStuff = fight.playersStuff.find((entry) => entry.id === playerId);
     const firstItem = getCachedCatalogItem(playerStuff?.sets[firstSlot].itemId ?? null);
@@ -2401,13 +2531,13 @@ export default function EncountersPage() {
         : null;
 
     if (twoHandedSlot) {
-      return renderSetSlot(playerId, twoHandedSlot, barLabel, showSlotLabel, detailPreview);
+      return renderSetSlot(playerId, twoHandedSlot, barLabel, showSlotLabel, detailPreview, compact);
     }
 
     return (
       <>
-        {renderSetSlot(playerId, firstSlot, `${barLabel} Main Hand`, showSlotLabel, detailPreview)}
-        {renderSetSlot(playerId, secondSlot, `${barLabel} Off Hand`, showSlotLabel, detailPreview)}
+        {renderSetSlot(playerId, firstSlot, `${barLabel} Main Hand`, showSlotLabel, detailPreview, compact)}
+        {renderSetSlot(playerId, secondSlot, `${barLabel} Off Hand`, showSlotLabel, detailPreview, compact)}
       </>
     );
   };
@@ -2451,6 +2581,43 @@ export default function EncountersPage() {
       )}
     </section>
   );
+
+  const renderCompactSetDetails = (playerId: number) => {
+    return (
+      <section
+        id={`setup-details-${playerId}`}
+        aria-label="Equipped setup details"
+        className="@container/set-details rounded-lg border border-white/10 bg-[#111111]/70 p-2"
+      >
+        <div className="grid w-full min-w-0 grid-cols-[minmax(0,0.7fr)_minmax(0,2fr)_minmax(0,1fr)] items-start gap-[2cqw]">
+          <div className="flex min-w-0 flex-col items-center gap-[2cqw] pt-5">
+            {renderSetSlot(playerId, 'necklace', 'Necklace', true, false, true)}
+            {renderSetSlot(playerId, 'ring1', 'Ring 1', true, false, true)}
+            {renderSetSlot(playerId, 'ring2', 'Ring 2', true, false, true)}
+          </div>
+          <div className="flex min-w-0 flex-col items-center gap-0.5">
+            {SET_LAYOUT_ROWS.map((row, rowIndex) => (
+              <div key={`compact-set-row-${rowIndex}`} className="flex items-end justify-center gap-[2cqw]">
+                {row.map((item) => (
+                  <div key={`${playerId}-compact-set-${item.slot}`} className={'colSpan' in item && item.colSpan ? 'mx-auto' : ''}>
+                    {renderSetSlot(playerId, item.slot, item.label, true, false, true)}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+          <div className="flex min-w-0 flex-col items-center gap-[3cqw] pt-9">
+            <div className="flex gap-[2cqw]">
+              {renderWeaponSlots(playerId, 'mainHandFrontBar', 'offHandFrontBar', 'Front bar', true, false, true)}
+            </div>
+            <div className="flex gap-[2cqw]">
+              {renderWeaponSlots(playerId, 'mainHandBackBar', 'offHandBackBar', 'Back bar', true, false, true)}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  };
 
   return (
     <div
@@ -3053,8 +3220,10 @@ export default function EncountersPage() {
                                     playerId: player.id,
                                     replaceSetIds: [],
                                     selectedSetId: null,
-                                    placement: null,
+                                    isReplaceSetPickerOpen: false,
                                     selectedSlots: [],
+                                    draggedItems: {},
+                                    bodyArmorWeight: '',
                                     bodyEnchantment: '',
                                     jewelryEnchantment: '',
                                     bodyTrait: '',
@@ -3164,6 +3333,26 @@ export default function EncountersPage() {
                         )}
 
                         {renderSetSummary(setSummary)}
+
+                        {!isEditMode && (
+                          <button
+                            type="button"
+                            aria-expanded={showSetDetailsByPlayer[player.id] ?? false}
+                            onClick={() => setShowSetDetailsByPlayer((current) => ({
+                              ...current,
+                              [player.id]: !(current[player.id] ?? false),
+                            }))}
+                            className={`flex min-h-8 w-full items-center justify-center gap-1.5 rounded-lg border px-2 py-1 text-[11px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f7e7ba] ${
+                              showSetDetailsByPlayer[player.id]
+                                ? 'border-[#d6b46b] bg-[#d6b46b]/15 text-[#f7e7ba]'
+                                : 'border-white/10 bg-white/[0.03] text-white/70 hover:border-[#d6b46b]/70 hover:bg-white/[0.07]'
+                            }`}
+                          >
+                            <span aria-hidden="true">▦</span>
+                            {showSetDetailsByPlayer[player.id] ? 'Hide setup details' : 'View setup details'}
+                          </button>
+                        )}
+                        {!isEditMode && showSetDetailsByPlayer[player.id] && renderCompactSetDetails(player.id)}
 
                         {isEditMode && showSetDetailsByPlayer[player.id] && (
                           <section className="@container/set-details rounded-2xl border border-white/10 bg-[#111111]/70 p-3 shadow-inner shadow-black/20">
@@ -3898,6 +4087,31 @@ export default function EncountersPage() {
               const selectedQuickSet = catalogSets.find((set) => set.id === quickGearSetup.selectedSetId);
               const automaticBodyDefaults = getQuickGearAutomaticDefaults(quickGearTraitOptions.items, 'armor', quickRole);
               const automaticJewelryDefaults = getQuickGearAutomaticDefaults(quickGearTraitOptions.items, 'jewelry', quickRole);
+              const availableArmorWeights = getQuickGearArmorWeights(quickGearTraitOptions.items);
+              const defaultArmorWeight = getQuickGearDefaultArmorWeight(quickRole, availableArmorWeights);
+              const selectedArmorWeight = quickGearSetup.bodyArmorWeight || defaultArmorWeight;
+              const slotPresets: { preset: QuickGearSlotPreset; label: string; description: string }[] = [
+                { preset: 'body', label: 'Body', description: 'Select or clear the five body slots' },
+                { preset: 'jewelry', label: 'Jewelry', description: 'Select or clear the three jewelry slots' },
+                { preset: 'head-shoulders', label: 'Head + shoulders', description: 'Select or clear head and shoulders' },
+                { preset: 'front-bar', label: 'Front bar', description: 'Select or clear front-bar weapons' },
+                { preset: 'back-bar', label: 'Back bar', description: 'Select or clear back-bar weapons' },
+              ];
+              const isPresetSelected = (preset: QuickGearSlotPreset) => {
+                const slots = getQuickGearPresetSlots(preset);
+                return slots.every((slot) => quickGearSetup.selectedSlots.includes(slot));
+              };
+              const togglePreset = (preset: QuickGearSlotPreset) => setQuickGearSetup((current) => {
+                if (!current) return current;
+                const slots = getQuickGearPresetSlots(preset);
+                const isSelected = slots.every((slot) => current.selectedSlots.includes(slot));
+                return {
+                  ...current,
+                  selectedSlots: isSelected
+                    ? current.selectedSlots.filter((slot) => !slots.includes(slot))
+                    : [...new Set([...current.selectedSlots, ...slots])],
+                };
+              });
               const selectedSlotCount = QUICK_GEAR_SLOT_ORDER.filter((slot) => {
                 if (quickGearSetup.selectedSlots.includes(slot)) return true;
                 const gear = quickPlayerStuff?.sets[slot];
@@ -3905,8 +4119,9 @@ export default function EncountersPage() {
                 return equippedSetId !== undefined && quickGearSetup.replaceSetIds.includes(equippedSetId);
               }).length;
               const renderQuickGearSlotChoice = (slot: SetSlot) => {
-                const gear = quickPlayerStuff?.sets[slot] ?? createEmptyGearForSlot(slot);
-                const equippedSetId = getCachedCatalogItem(gear.itemId, gear.trait)?.setId;
+                const currentGear = quickPlayerStuff?.sets[slot] ?? createEmptyGearForSlot(slot);
+                const gear = quickGearSetup.draggedItems[slot] ?? currentGear;
+                const equippedSetId = getCachedCatalogItem(currentGear.itemId, currentGear.trait)?.setId;
                 const isReplacedSet = equippedSetId !== undefined && quickGearSetup.replaceSetIds.includes(equippedSetId);
                 const isSelected = quickGearSetup.selectedSlots.includes(slot) || isReplacedSet;
                 return (
@@ -3917,6 +4132,7 @@ export default function EncountersPage() {
                     isSelected={isSelected}
                     isReplacedSet={isReplacedSet}
                     supportsSet={!selectedQuickSet || setSupportsSlot(selectedQuickSet, slot)}
+                    draggable={isEditMode && gear.itemId !== null && getCachedCatalogItem(gear.itemId, gear.trait) !== null}
                     onChange={(changedSlot, checked) => setQuickGearSetup((current) => {
                       if (!current) return current;
                       const selectedSlots = checked
@@ -3924,8 +4140,38 @@ export default function EncountersPage() {
                           ? current.selectedSlots
                           : [...current.selectedSlots, changedSlot]
                         : current.selectedSlots.filter((selectedSlot) => selectedSlot !== changedSlot);
-                      return { ...current, placement: null, selectedSlots };
+                      const draggedItems = { ...current.draggedItems };
+                      if (!checked) delete draggedItems[changedSlot];
+                      return { ...current, selectedSlots, draggedItems };
                     })}
+                    onDragStart={(event) => {
+                      const itemId = gear.itemId;
+                      const itemMeta = getCachedCatalogItem(itemId, gear.trait);
+                      if (!isEditMode || itemId === null || !itemMeta) return;
+                      draggedSetSlot.current = {
+                        playerId: quickGearSetup.playerId,
+                        slot,
+                        itemId,
+                        category: itemMeta.gearType,
+                        sourceGear: gear,
+                      };
+                      event.dataTransfer.setData('text/plain', JSON.stringify({
+                        playerId: quickGearSetup.playerId,
+                        slot,
+                        itemId,
+                      }));
+                      event.dataTransfer.effectAllowed = 'copy';
+                      setQuickGearError(null);
+                    }}
+                    onDragEnd={() => { draggedSetSlot.current = null; }}
+                    onDragOver={(event) => {
+                      const source = draggedSetSlot.current;
+                      if (!isEditMode || !source || source.playerId !== quickGearSetup.playerId) return;
+                      event.preventDefault();
+                      event.stopPropagation();
+                      event.dataTransfer.dropEffect = 'copy';
+                    }}
+                    onDrop={(event) => { void handleQuickGearSlotDrop(event, slot); }}
                   />
                 );
               };
@@ -3955,18 +4201,39 @@ export default function EncountersPage() {
                     </button>
                   </div>
 
-                  <div className="mb-4 shrink-0">
-                    {renderSetSummary(equippedSets)}
-                  </div>
-
                   <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-y-auto pb-3 xl:grid-cols-[minmax(0,1.4fr)_minmax(20rem,0.8fr)] xl:grid-rows-1 xl:overflow-hidden">
                     <div className="flex min-w-0 flex-col gap-3 xl:min-h-0 xl:overflow-y-auto xl:pb-2 xl:pr-2">
+                    <section className="flex h-[min(36vh,28rem)] min-h-[14rem] min-w-0 shrink-0 flex-col border border-[#d6b46b]/70 bg-[#171717] p-3 xl:min-h-0">
+                      <h3 className="mb-2 shrink-0 text-sm font-semibold text-[#d6b46b]">1. Choose a set</h3>
+                      <QuickGearSearchResults
+                        catalogSets={catalogSets}
+                        hasError={quickGearError !== null}
+                        isApplying={isApplyingQuickGear}
+                        selectedSetId={quickGearSetup.selectedSetId}
+                        onSelectSet={(setId) => {
+                          setQuickGearSetup((current) => current
+                            ? {
+                              ...current,
+                              selectedSetId: setId,
+                              draggedItems: {},
+                              bodyArmorWeight: '',
+                              bodyEnchantment: '',
+                              jewelryEnchantment: '',
+                              bodyTrait: '',
+                              jewelryTrait: '',
+                            }
+                            : current);
+                          setQuickGearError(null);
+                        }}
+                        onSearchChange={() => setQuickGearError(null)}
+                      />
+                    </section>
                     <section className="min-w-0 border border-[#d6b46b]/70 bg-[#171717] p-3">
                       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                         <div>
-                          <h3 className="text-sm font-semibold text-[#f8f7f2]">Current equipment and placement</h3>
+                          <h3 className="text-sm font-semibold text-[#f8f7f2]">2. Choose slots</h3>
                           <p className="mt-0.5 text-xs text-[#f8f7f2]/60">
-                            Select a set, then choose slots or a preset. Nothing changes until you apply.
+                            Check the slots to receive this set. Selected slots replace their current items.
                           </p>
                         </div>
                         <span className="rounded-full border border-[#d6b46b]/40 bg-[#d6b46b]/10 px-2.5 py-1 text-xs font-semibold tabular-nums text-[#f7e7ba]">
@@ -3997,119 +4264,6 @@ export default function EncountersPage() {
                       </div>
                     </section>
 
-                    {selectedQuickSet && quickGearSetup.selectedSetId !== null && (
-                      <section className="shrink-0 border border-[#d6b46b]/70 bg-[#171717] p-3">
-                        <div className="mb-3 flex items-center justify-between gap-3">
-                          <div>
-                            <h3 className="font-semibold text-[#f8f7f2]">{selectedQuickSet.setName}</h3>
-                            <p className="text-xs text-[#f8f7f2]/70">Default enchantments and traits.</p>
-                          </div>
-                          <button
-                            type="button"
-                            disabled={isApplyingQuickGear}
-                            onClick={() => setQuickGearSetup((current) => current
-                              ? {
-                                ...current,
-                                selectedSetId: null,
-                                placement: null,
-                                selectedSlots: [],
-                                bodyEnchantment: '',
-                                jewelryEnchantment: '',
-                                bodyTrait: '',
-                                jewelryTrait: '',
-                              }
-                              : current)}
-                            className="text-xs text-[#d6b46b] underline hover:text-[#f7e7ba] disabled:opacity-50"
-                          >
-                            Clear selection
-                          </button>
-                        </div>
-                        <div className="grid gap-3 border-t border-[#d6b46b]/50 pt-3 sm:grid-cols-2">
-                          {[
-                            { category: 'body' as const, label: 'Body armor', gearType: 'armor' as const, enchantment: quickGearSetup.bodyEnchantment, trait: quickGearSetup.bodyTrait, traits: quickGearTraitOptions.body, defaults: automaticBodyDefaults },
-                            { category: 'jewelry' as const, label: 'Jewelry', gearType: 'jewelry' as const, enchantment: quickGearSetup.jewelryEnchantment, trait: quickGearSetup.jewelryTrait, traits: quickGearTraitOptions.jewelry, defaults: automaticJewelryDefaults },
-                          ].filter(({ traits }) => traits.length > 0).map(({ category, label, gearType, enchantment, trait, traits, defaults }) => {
-                            const enchantmentField = category === 'body' ? 'bodyEnchantment' : 'jewelryEnchantment';
-                            const traitField = category === 'body' ? 'bodyTrait' : 'jewelryTrait';
-                            return (
-                              <fieldset key={category} className="min-w-0 rounded border border-white/10 p-2">
-                                <legend className="px-1 text-xs font-semibold text-[#d6b46b]">{label} defaults</legend>
-                                <div className="grid grid-cols-2 gap-2">
-                                  <label className="min-w-0 text-[11px] text-[#f8f7f2]/80">
-                                    Enchantment
-                                    <select
-                                      aria-label={`${label} default enchantment`}
-                                      value={enchantment}
-                                      disabled={isApplyingQuickGear}
-                                      onChange={(event) => setQuickGearSetup((current) => current
-                                        ? { ...current, [enchantmentField]: event.target.value }
-                                        : current)}
-                                      className="mt-1 w-full border border-[#d6b46b]/60 bg-[#111111] p-1 text-[10px] text-[#f8f7f2]"
-                                    >
-                                      <option value="">Automatic</option>
-                                      {ESO_ENCHANTS.filter((entry) => entry.gearType === gearType).map((entry) => (
-                                        <option key={entry.id} value={String(entry.id)}>{entry.name}</option>
-                                      ))}
-                                    </select>
-                                    {!enchantment && (
-                                      <span className="mt-1 block text-[9px] leading-tight text-white/60">
-                                        Automatic (
-                                        {defaults.length ? defaults.map((entry, index) => (
-                                          <span key={`${entry.armorWeight}-${entry.trait}-${entry.enchantmentName}`}>
-                                            {index > 0 ? '; ' : ''}
-                                            {entry.armorWeight && (
-                                              <span className={getArmorWeightTextClass(entry.armorWeight)}>
-                                                {entry.armorWeight}:{' '}
-                                              </span>
-                                            )}
-                                            <span className={getEnchantmentColorClass(entry.enchantmentName)}>{entry.enchantmentName}</span>
-                                          </span>
-                                        )) : 'no automatic choice'}
-                                        )
-                                      </span>
-                                    )}
-                                  </label>
-                                  <label className="min-w-0 text-[11px] text-[#f8f7f2]/80">
-                                    Trait
-                                    <select
-                                      aria-label={`${label} default trait`}
-                                      value={trait}
-                                      disabled={isApplyingQuickGear}
-                                      onChange={(event) => setQuickGearSetup((current) => current
-                                        ? { ...current, [traitField]: event.target.value }
-                                        : current)}
-                                      className="mt-1 w-full border border-[#d6b46b]/60 bg-[#111111] p-1 text-[10px] text-[#f8f7f2]"
-                                    >
-                                      <option value="">Automatic</option>
-                                      {traits.map((entry) => (
-                                        <option key={entry || NO_TRAIT_VALUE} value={entry || NO_TRAIT_VALUE}>{entry || 'No trait'}</option>
-                                      ))}
-                                    </select>
-                                    {!trait && (
-                                      <span className="mt-1 block text-[9px] leading-tight text-white/60">
-                                        Automatic (
-                                        {defaults.length ? defaults.map((entry, index) => (
-                                          <span key={`${entry.armorWeight}-${entry.trait}-${entry.enchantmentName}`}>
-                                            {index > 0 ? '; ' : ''}
-                                            {entry.armorWeight && (
-                                              <span className={getArmorWeightTextClass(entry.armorWeight)}>
-                                                {entry.armorWeight}:{' '}
-                                              </span>
-                                            )}
-                                            <span className="text-amber-200">{entry.trait || 'No trait'}</span>
-                                          </span>
-                                        )) : 'no automatic choice'}
-                                        )
-                                      </span>
-                                    )}
-                                  </label>
-                                </div>
-                              </fieldset>
-                            );
-                          })}
-                        </div>
-                      </section>
-                    )}
                     {quickGearError && (
                       <p role="alert" className="border border-red-500/70 bg-red-950/40 p-3 text-sm text-red-200">
                         {quickGearError}
@@ -4122,120 +4276,53 @@ export default function EncountersPage() {
 
                     <div className="flex min-h-0 min-w-0 flex-col gap-3 xl:overflow-y-auto xl:pb-2 xl:pr-2">
                   <section className="shrink-0 border border-[#d6b46b]/70 bg-[#171717] p-3">
-                    <h3 className="mb-2 text-sm font-semibold text-[#f8f7f2]">Choose a placement</h3>
+                    <h3 className="mb-2 text-sm font-semibold text-[#f8f7f2]">Slot selection helpers</h3>
                     <p className="mb-3 text-xs text-[#f8f7f2]/70">
-                      Choose a preset or free slots by replacing an equipped set. Nothing changes until you apply.
+                      These options only check or clear their slots; you can also select slots manually.
                     </p>
-                    <div className="grid gap-2 sm:grid-cols-2 2xl:grid-cols-4">
-                      <button
-                        type="button"
-                        disabled={isApplyingQuickGear}
-                        aria-pressed={quickGearSetup.placement === 'body'}
-                        onClick={() => {
-                          setQuickGearSetup((current) => {
-                            if (!current) return current;
-                            const placement = current.placement === 'body' ? null : 'body';
-                            return {
-                              ...current,
-                              placement,
-                              selectedSlots: placement
-                                ? getQuickGearPresetSlots(selectedQuickSet ?? null, placement, quickPlayerStuff, current.replaceSetIds)
-                                : [],
-                            };
-                          });
-                          setQuickGearError(null);
-                        }}
-                        className={`rounded border px-3 py-2 text-sm font-semibold transition disabled:opacity-50 ${
-                          quickGearSetup.placement === 'body'
-                            ? 'border-[#f8f7f2] bg-[#fff8e6] text-[#111111] ring-2 ring-[#f7e7ba] shadow-lg'
-                            : 'border-[#d6b46b] bg-black/40 text-[#f8f7f2] hover:border-[#f8f7f2]'
-                        }`}
-                      >
-                        Body
-                        <span className={`mt-1 block text-xs font-normal ${quickGearSetup.placement === 'body' ? 'text-[#111111]/75' : 'text-[#f8f7f2]/70'}`}>
-                          {quickGearSetup.placement === 'body' ? 'Selected · click to clear' : 'Always select the five body slots'}
-                        </span>
-                      </button>
-                      <button
-                        type="button"
-                        disabled={isApplyingQuickGear}
-                        aria-pressed={quickGearSetup.placement === 'jewels-weapons'}
-                        onClick={() => {
-                          setQuickGearSetup((current) => {
-                            if (!current) return current;
-                            const placement = current.placement === 'jewels-weapons' ? null : 'jewels-weapons';
-                            return {
-                              ...current,
-                              placement,
-                              selectedSlots: placement
-                                ? getQuickGearPresetSlots(selectedQuickSet ?? null, placement, quickPlayerStuff, current.replaceSetIds)
-                                : [],
-                            };
-                          });
-                          setQuickGearError(null);
-                        }}
-                        className={`rounded border px-3 py-2 text-sm font-semibold transition disabled:opacity-50 ${
-                          quickGearSetup.placement === 'jewels-weapons'
-                            ? 'border-[#f8f7f2] bg-[#fff8e6] text-[#111111] ring-2 ring-[#f7e7ba] shadow-lg'
-                            : 'border-[#d6b46b] bg-black/40 text-[#f8f7f2] hover:border-[#f8f7f2]'
-                        }`}
-                      >
-                        Jewelry + weapons
-                        <span className={`mt-1 block text-xs font-normal ${quickGearSetup.placement === 'jewels-weapons' ? 'text-[#111111]/75' : 'text-[#f8f7f2]/70'}`}>
-                          {quickGearSetup.placement === 'jewels-weapons' ? 'Selected · click to clear' : 'All jewelry + front bar if free; otherwise a free back bar, or front bar'}
-                        </span>
-                      </button>
-                      <button
-                        type="button"
-                        disabled={isApplyingQuickGear}
-                        aria-pressed={quickGearSetup.placement === 'head-shoulders'}
-                        onClick={() => {
-                          setQuickGearSetup((current) => {
-                            if (!current) return current;
-                            const placement = current.placement === 'head-shoulders' ? null : 'head-shoulders';
-                            return {
-                              ...current,
-                              placement,
-                              selectedSlots: placement
-                                ? getQuickGearPresetSlots(selectedQuickSet ?? null, placement, quickPlayerStuff, current.replaceSetIds)
-                                : [],
-                            };
-                          });
-                          setQuickGearError(null);
-                        }}
-                        className={`rounded border px-3 py-2 text-sm font-semibold transition disabled:opacity-50 ${
-                          quickGearSetup.placement === 'head-shoulders'
-                            ? 'border-[#f8f7f2] bg-[#fff8e6] text-[#111111] ring-2 ring-[#f7e7ba] shadow-lg'
-                            : 'border-[#d6b46b] bg-black/40 text-[#f8f7f2] hover:border-[#f8f7f2]'
-                        }`}
-                      >
-                        Head + shoulders
-                        <span className={`mt-1 block text-xs font-normal ${quickGearSetup.placement === 'head-shoulders' ? 'text-[#111111]/75' : 'text-[#f8f7f2]/70'}`}>
-                          {quickGearSetup.placement === 'head-shoulders' ? 'Selected · click to clear' : 'Always select head and shoulders'}
-                        </span>
-                      </button>
+                    <div className="grid gap-2 sm:grid-cols-2 2xl:grid-cols-3">
+                      {slotPresets.map(({ preset, label, description }) => {
+                        const selected = isPresetSelected(preset);
+                        return (
+                          <button
+                            key={preset}
+                            type="button"
+                            disabled={isApplyingQuickGear}
+                            aria-pressed={selected}
+                            onClick={() => { togglePreset(preset); setQuickGearError(null); }}
+                            className={`rounded border px-3 py-2 text-sm font-semibold transition disabled:opacity-50 ${
+                              selected
+                                ? 'border-[#f8f7f2] bg-[#fff8e6] text-[#111111] ring-2 ring-[#f7e7ba] shadow-lg'
+                                : 'border-[#d6b46b] bg-black/40 text-[#f8f7f2] hover:border-[#f8f7f2]'
+                            }`}
+                          >
+                            {label}
+                            <span className={`mt-1 block text-xs font-normal ${selected ? 'text-[#111111]/75' : 'text-[#f8f7f2]/70'}`}>
+                              {description}
+                            </span>
+                          </button>
+                        );
+                      })}
                       <button
                         type="button"
                         disabled={isApplyingQuickGear || equippedSets.length === 0}
-                        aria-pressed={quickGearSetup.placement === 'replace-set' || quickGearSetup.replaceSetIds.length > 0}
+                        aria-pressed={quickGearSetup.isReplaceSetPickerOpen || quickGearSetup.replaceSetIds.length > 0}
                         onClick={() => setQuickGearSetup((current) => {
                           if (!current) return current;
-                          const placement = current.placement === 'replace-set' ? null : 'replace-set';
                           return {
                             ...current,
-                            placement,
-                            selectedSlots: placement ? [] : current.selectedSlots,
+                            isReplaceSetPickerOpen: !current.isReplaceSetPickerOpen,
                           };
                         })}
                         className={`rounded border px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                          quickGearSetup.placement === 'replace-set' || quickGearSetup.replaceSetIds.length > 0
+                          quickGearSetup.isReplaceSetPickerOpen || quickGearSetup.replaceSetIds.length > 0
                             ? 'border-[#f8f7f2] bg-[#fff8e6] text-[#111111] ring-2 ring-[#f7e7ba] shadow-lg'
                             : 'border-[#d6b46b] bg-black/40 text-[#f8f7f2] hover:border-[#f8f7f2]'
                         }`}
                       >
                         Replace a set
                         <span className={`mt-1 block text-xs font-normal ${
-                          quickGearSetup.placement === 'replace-set' || quickGearSetup.replaceSetIds.length > 0
+                          quickGearSetup.isReplaceSetPickerOpen || quickGearSetup.replaceSetIds.length > 0
                             ? 'text-[#111111]/75'
                             : 'text-[#f8f7f2]/70'
                         }`}>
@@ -4245,7 +4332,7 @@ export default function EncountersPage() {
                         </span>
                       </button>
                     </div>
-                    {(quickGearSetup.placement === 'replace-set' || quickGearSetup.replaceSetIds.length > 0) && (
+                    {(quickGearSetup.isReplaceSetPickerOpen || quickGearSetup.replaceSetIds.length > 0) && (
                       <div className="mt-3 border-t border-[#d6b46b]/40 pt-3">
                         <h4 className="mb-2 text-xs font-semibold text-[#f8f7f2]">Equipped sets</h4>
                         {equippedSets.length ? (
@@ -4264,7 +4351,7 @@ export default function EncountersPage() {
                                       const replaceSetIds = current.replaceSetIds.includes(set.id)
                                         ? current.replaceSetIds.filter((setId) => setId !== set.id)
                                         : [...current.replaceSetIds, set.id];
-                                      return { ...current, placement: 'replace-set', selectedSlots: [], replaceSetIds };
+                                      return { ...current, isReplaceSetPickerOpen: true, replaceSetIds };
                                     });
                                     setQuickGearError(null);
                                   }}
@@ -4292,33 +4379,122 @@ export default function EncountersPage() {
                     )}
                   </section>
 
-                    <section className="flex h-[min(42vh,32rem)] min-h-[16rem] min-w-0 shrink-0 flex-col border-t border-[#d6b46b]/40 pt-4 xl:min-h-0 xl:flex-1">
-                      <h3 className="mb-2 shrink-0 text-sm font-semibold text-[#d6b46b]">Search and select a set</h3>
-                      <QuickGearSearchResults
-                        catalogSets={catalogSets}
-                        hasError={quickGearError !== null}
-                        isApplying={isApplyingQuickGear}
-                        selectedSetId={quickGearSetup.selectedSetId}
-                        onSelectSet={(setId) => {
-                          const nextSet = catalogSets.find((set) => set.id === setId) ?? null;
-                          setQuickGearSetup((current) => current
+                  {selectedQuickSet && quickGearSetup.selectedSetId !== null && (
+                    <section className="shrink-0 border border-[#d6b46b]/70 bg-[#171717] p-3">
+                      <div className="mb-3 flex items-center justify-between gap-3">
+                        <div>
+                          <h3 className="font-semibold text-[#f8f7f2]">3. Review item types and defaults</h3>
+                          <p className="text-xs text-[#f8f7f2]/70">{selectedQuickSet.setName}: change any automatic armor type, trait, or enchantment before applying.</p>
+                        </div>
+                        <button
+                          type="button"
+                          disabled={isApplyingQuickGear}
+                          onClick={() => setQuickGearSetup((current) => current
                             ? {
                               ...current,
-                              selectedSetId: setId,
-                              selectedSlots: current.placement && current.placement !== 'replace-set' && nextSet
-                                ? getQuickGearPresetSlots(nextSet, current.placement, quickPlayerStuff, current.replaceSetIds)
-                                : current.selectedSlots,
+                              selectedSetId: null,
+                              isReplaceSetPickerOpen: false,
+                              selectedSlots: [],
+                              draggedItems: {},
+                              bodyArmorWeight: '',
                               bodyEnchantment: '',
                               jewelryEnchantment: '',
                               bodyTrait: '',
                               jewelryTrait: '',
                             }
-                            : current);
-                          setQuickGearError(null);
-                        }}
-                        onSearchChange={() => setQuickGearError(null)}
-                      />
+                            : current)}
+                          className="text-xs text-[#d6b46b] underline hover:text-[#f7e7ba] disabled:opacity-50"
+                        >
+                          Clear selection
+                        </button>
+                      </div>
+                      <div className="grid gap-3 border-t border-[#d6b46b]/50 pt-3 sm:grid-cols-2">
+                        {availableArmorWeights.length > 0 && (
+                          <label className="min-w-0 text-[11px] text-[#f8f7f2]/80">
+                            Armor type
+                            <select
+                              aria-label="Armor item type"
+                              value={selectedArmorWeight}
+                              disabled={isApplyingQuickGear}
+                              onChange={(event) => {
+                                const weight = availableArmorWeights.find((option) => option === event.target.value) ?? '';
+                                setQuickGearSetup((current) => current
+                                  ? { ...current, bodyArmorWeight: weight }
+                                  : current);
+                              }}
+                              className="mt-1 w-full border border-[#d6b46b]/60 bg-[#111111] p-1 text-[10px] text-[#f8f7f2]"
+                            >
+                              {availableArmorWeights.map((weight) => (
+                                <option key={weight} value={weight}>{weight}</option>
+                              ))}
+                            </select>
+                          </label>
+                        )}
+                        {[
+                          { category: 'body' as const, label: 'Body armor', gearType: 'armor' as const, enchantment: quickGearSetup.bodyEnchantment, trait: quickGearSetup.bodyTrait, traits: quickGearTraitOptions.body, defaults: automaticBodyDefaults },
+                          { category: 'jewelry' as const, label: 'Jewelry', gearType: 'jewelry' as const, enchantment: quickGearSetup.jewelryEnchantment, trait: quickGearSetup.jewelryTrait, traits: quickGearTraitOptions.jewelry, defaults: automaticJewelryDefaults },
+                        ].filter(({ traits }) => traits.length > 0).map(({ category, label, gearType, enchantment, trait, traits, defaults }) => {
+                          const enchantmentField = category === 'body' ? 'bodyEnchantment' : 'jewelryEnchantment';
+                          const traitField = category === 'body' ? 'bodyTrait' : 'jewelryTrait';
+                          return (
+                            <fieldset key={category} className="min-w-0 rounded border border-white/10 p-2">
+                              <legend className="px-1 text-xs font-semibold text-[#d6b46b]">{label} defaults</legend>
+                              <div className="grid grid-cols-2 gap-2">
+                                <label className="min-w-0 text-[11px] text-[#f8f7f2]/80">
+                                  Enchantment
+                                  <select
+                                    aria-label={`${label} default enchantment`}
+                                    value={enchantment}
+                                    disabled={isApplyingQuickGear}
+                                    onChange={(event) => setQuickGearSetup((current) => current
+                                      ? { ...current, [enchantmentField]: event.target.value }
+                                      : current)}
+                                    className="mt-1 w-full border border-[#d6b46b]/60 bg-[#111111] p-1 text-[10px] text-[#f8f7f2]"
+                                  >
+                                    <option value="">Automatic</option>
+                                    {ESO_ENCHANTS.filter((entry) => entry.gearType === gearType).map((entry) => (
+                                      <option key={entry.id} value={String(entry.id)}>{entry.name}</option>
+                                    ))}
+                                  </select>
+                                  {!enchantment && (
+                                    <span className="mt-1 block text-[9px] leading-tight text-white/60">
+                                      Automatic ({defaults.length ? defaults.map((entry) => entry.enchantmentName).join(', ') : 'no automatic choice'})
+                                    </span>
+                                  )}
+                                </label>
+                                <label className="min-w-0 text-[11px] text-[#f8f7f2]/80">
+                                  Trait
+                                  <select
+                                    aria-label={`${label} default trait`}
+                                    value={trait}
+                                    disabled={isApplyingQuickGear}
+                                    onChange={(event) => setQuickGearSetup((current) => current
+                                      ? { ...current, [traitField]: event.target.value }
+                                      : current)}
+                                    className="mt-1 w-full border border-[#d6b46b]/60 bg-[#111111] p-1 text-[10px] text-[#f8f7f2]"
+                                  >
+                                    <option value="">Automatic</option>
+                                    {traits.map((entry) => (
+                                      <option key={entry || NO_TRAIT_VALUE} value={entry || NO_TRAIT_VALUE}>{entry || 'No trait'}</option>
+                                    ))}
+                                  </select>
+                                  {!trait && (
+                                    <span className="mt-1 block text-[9px] leading-tight text-white/60">
+                                      Automatic ({defaults.length ? defaults.map((entry) => entry.trait || 'No trait').join(', ') : 'no automatic choice'})
+                                    </span>
+                                  )}
+                                </label>
+                              </div>
+                            </fieldset>
+                          );
+                        })}
+                      </div>
                     </section>
+                  )}
+
+                  <div className="shrink-0">
+                    {renderSetSummary(equippedSets)}
+                  </div>
                   </div>
                   </div>
                   {selectedQuickSet && (
@@ -4329,7 +4505,7 @@ export default function EncountersPage() {
                         onClick={() => void applyQuickGearSet(selectedQuickSet.id, quickGearSetup.selectedSlots)}
                         className="w-full rounded-xl border-2 border-emerald-200 bg-emerald-400 px-4 py-3 text-base font-extrabold text-emerald-950 shadow-[0_0_24px_rgba(74,222,128,0.28)] transition hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111] disabled:cursor-not-allowed disabled:opacity-45"
                       >
-                        {isApplyingQuickGear ? 'Applying set…' : `Apply ${selectedQuickSet.setName}`}
+                        {isApplyingQuickGear ? 'Applying set…' : `4. Apply ${selectedQuickSet.setName}`}
                       </button>
                     </div>
                   )}
