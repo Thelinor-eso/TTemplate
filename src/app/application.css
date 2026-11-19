@@ -424,10 +424,6 @@ textarea:focus-visible {
   transform: translateY(1px);
 }
 
-:is(.players-page, .encounters-page) :is(button, a):disabled {
-  cursor: not-allowed;
-}
-
 :is(.players-page, .encounters-page) :is(input, select, textarea) {
   min-height: 2.5rem;
   padding-inline: 0.75rem;

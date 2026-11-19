@@ -720,7 +720,7 @@ const SetEditorSetList = memo(function SetEditorSetList({
                     disabled={!supportsSelectedSlot}
                     onClick={() => onSelectSet(set.id)}
                     title={!supportsSelectedSlot ? 'This set cannot be equipped in the selected slot.' : undefined}
-                    className="flex h-full min-h-32 min-w-0 flex-col rounded border border-[#d6b46b] bg-[#171717] px-3 py-2 text-left text-sm [overflow-wrap:anywhere] text-[#f8f7f2] transition hover:border-[#f8f7f2] hover:bg-[#242424] disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:border-[#d6b46b] disabled:hover:bg-[#171717]"
+                    className="flex h-full min-h-32 min-w-0 flex-col rounded border border-[#d6b46b] bg-[#171717] px-3 py-2 text-left text-sm [overflow-wrap:anywhere] text-[#f8f7f2] transition hover:border-[#f8f7f2] hover:bg-[#242424] disabled:opacity-45 disabled:hover:border-[#d6b46b] disabled:hover:bg-[#171717]"
                   >
                     <span className="line-clamp-2 min-h-10 font-semibold">{set.setName}</span>
                     <span aria-hidden="true" className="my-2 block border-t border-[#d6b46b]/50" />
@@ -1226,7 +1226,7 @@ export default function EncountersPage() {
     if (!isEditMode) return <span className="font-semibold text-white/50">Class Masteries</span>;
     return <div className="relative">
         <button type="button" disabled={!completeClass} aria-expanded={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery'} onClick={() => toggleMasteryMenu(player.id)} className="font-semibold text-white/50 hover:text-yellow-200 hover:underline disabled:cursor-default">Class Masteries</button>
-        {playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery' && className && completeClass && <div className="absolute left-0 top-full z-50 mt-1 max-h-80 w-56 overflow-y-auto rounded border-2 border-yellow-500 bg-gray-800 shadow-2xl">{CLASS_MASTERY_OPTIONS_BY_CLASS[className].map((mastery) => { const selected = player.classMasteries.firstClassMastery === mastery || player.classMasteries.secondClassMastery === mastery; const full = !!player.classMasteries.firstClassMastery && !!player.classMasteries.secondClassMastery; return <button key={mastery} type="button" disabled={!selected && full} onClick={() => togglePlayerMastery(player.id, className, mastery)} className={`block w-full px-3 py-2 text-left text-xs transition ${selected ? 'bg-yellow-700 font-semibold text-yellow-50' : 'text-yellow-200 hover:bg-yellow-700 disabled:cursor-not-allowed disabled:opacity-40'}`}>{selected ? '✓ ' : ''}{mastery}</button>; })}</div>}
+        {playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery' && className && completeClass && <div className="absolute left-0 top-full z-50 mt-1 max-h-80 w-56 overflow-y-auto rounded border-2 border-yellow-500 bg-gray-800 shadow-2xl">{CLASS_MASTERY_OPTIONS_BY_CLASS[className].map((mastery) => { const selected = player.classMasteries.firstClassMastery === mastery || player.classMasteries.secondClassMastery === mastery; const full = !!player.classMasteries.firstClassMastery && !!player.classMasteries.secondClassMastery; return <button key={mastery} type="button" disabled={!selected && full} onClick={() => togglePlayerMastery(player.id, className, mastery)} className={`block w-full px-3 py-2 text-left text-xs transition ${selected ? 'bg-yellow-700 font-semibold text-yellow-50' : 'text-yellow-200 hover:bg-yellow-700 disabled:opacity-40'}`}>{selected ? '✓ ' : ''}{mastery}</button>; })}</div>}
       </div>;
   };
 
@@ -3724,7 +3724,7 @@ export default function EncountersPage() {
                         setScribingDraft(null);
                         setSkillEditor(null);
                       }}
-                      className="rounded border border-[#d6b46b] bg-[#d6b46b] px-4 py-2 text-sm font-bold text-black hover:bg-[#f7e7ba] disabled:cursor-not-allowed disabled:opacity-40"
+                      className="rounded border border-[#d6b46b] bg-[#d6b46b] px-4 py-2 text-sm font-bold text-black hover:bg-[#f7e7ba] disabled:opacity-40"
                     >
                       Confirm ability
                     </button>
@@ -3758,7 +3758,7 @@ export default function EncountersPage() {
                           updateFightPlayerStuff(fight.name, skillEditor.playerId, skillEditor.field, parent.abilityId);
                           setSkillEditor(null);
                         }}
-                        className="group relative flex w-full items-center gap-3 rounded border border-[#d6b46b] bg-[#202020] p-2 text-left transition hover:border-[#f8f7f2] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[#d6b46b]"
+                        className="group relative flex w-full items-center gap-3 rounded border border-[#d6b46b] bg-[#202020] p-2 text-left transition hover:border-[#f8f7f2] disabled:opacity-40 disabled:hover:border-[#d6b46b]"
                       >
                         <div className="flex h-12 w-12 items-center justify-center">
                           <Image src={getAbilityImagePath(activeSkillCategory, parent.skillName)} alt={parent.skillName} width={40} height={40} className="h-10 w-10 object-cover" />
@@ -3776,7 +3776,7 @@ export default function EncountersPage() {
                                 updateFightPlayerStuff(fight.name, skillEditor.playerId, skillEditor.field, morph.abilityId);
                                 setSkillEditor(null);
                               }}
-                              className="group relative flex items-center gap-2 rounded border border-[#8c7645] bg-[#111111] p-2 text-left transition hover:border-[#f8f7f2] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[#8c7645]"
+                              className="group relative flex items-center gap-2 rounded border border-[#8c7645] bg-[#111111] p-2 text-left transition hover:border-[#f8f7f2] disabled:opacity-40 disabled:hover:border-[#8c7645]"
                             >
                               <Image src={getAbilityImagePath(activeSkillCategory, morph.skillName)} alt={morph.skillName} width={36} height={36} className="h-9 w-9 object-cover" />
                               <span className="text-xs font-semibold text-[#f8f7f2]">{morph.skillName}</span>
@@ -3961,7 +3961,7 @@ export default function EncountersPage() {
                       }}
                       aria-pressed={selectedChampionPoints.includes(championPoint)}
                       disabled={!selectedChampionPoints.includes(championPoint) && selectedChampionPoints.length >= 4}
-                      className={`rounded border px-3 py-2 text-left text-sm font-semibold transition hover:border-[#f8f7f2] hover:bg-[#242424] disabled:cursor-not-allowed disabled:opacity-40 ${selectedChampionPoints.includes(championPoint) ? 'ring-2 ring-yellow-300 ring-offset-2 ring-offset-black' : ''}`}
+                      className={`rounded border px-3 py-2 text-left text-sm font-semibold transition hover:border-[#f8f7f2] hover:bg-[#242424] disabled:opacity-40 ${selectedChampionPoints.includes(championPoint) ? 'ring-2 ring-yellow-300 ring-offset-2 ring-offset-black' : ''}`}
                       style={{
                         borderColor: discipline === ChampionPointDiscipline.TheMage
                           ? '#60a5fa'
@@ -4377,7 +4377,7 @@ export default function EncountersPage() {
                             isReplaceSetPickerOpen: !current.isReplaceSetPickerOpen,
                           };
                         })}
-                        className={`rounded border px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                        className={`rounded border px-3 py-2 text-sm font-semibold transition disabled:opacity-50 ${
                           quickGearSetup.isReplaceSetPickerOpen || quickGearSetup.replaceSetIds.length > 0
                             ? 'border-[#f8f7f2] bg-[#fff8e6] text-[#111111] ring-2 ring-[#f7e7ba] shadow-lg'
                             : 'border-[#d6b46b] bg-black/40 text-[#f8f7f2] hover:border-[#f8f7f2]'
@@ -4566,7 +4566,7 @@ export default function EncountersPage() {
                         type="button"
                         disabled={isApplyingQuickGear || (quickGearSetup.selectedSlots.length === 0 && quickGearSetup.replaceSetIds.length === 0)}
                         onClick={() => void applyQuickGearSet(selectedQuickSet.id, quickGearSetup.selectedSlots)}
-                        className="w-full rounded-xl border-2 border-emerald-200 bg-emerald-400 px-4 py-3 text-base font-extrabold text-emerald-950 shadow-[0_0_24px_rgba(74,222,128,0.28)] transition hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111] disabled:cursor-not-allowed disabled:opacity-45"
+                        className="w-full rounded-xl border-2 border-emerald-200 bg-emerald-400 px-4 py-3 text-base font-extrabold text-emerald-950 shadow-[0_0_24px_rgba(74,222,128,0.28)] transition hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111] disabled:opacity-45"
                       >
                         {isApplyingQuickGear ? 'Applying set…' : `4. Apply ${selectedQuickSet.setName}`}
                       </button>

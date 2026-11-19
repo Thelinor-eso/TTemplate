@@ -486,7 +486,7 @@ export default function PlayersPage() {
                           onDragStart={(event) => startPlayerDrag(event, 'race', player.id)}
                           onDragOver={allowPlayerDrop}
                           onDrop={(event) => dropPlayerSetup(event, player.id, 'race')}
-                          className={`raid-interactive-tile h-14 w-14 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition ${isEditMode ? `${player.race !== null ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}` : 'cursor-default'}`}
+                          className={`raid-interactive-tile h-14 w-14 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition disabled:cursor-default ${isEditMode ? `${player.race !== null ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}` : 'cursor-default'}`}
                         >
                           {player.race !== null && RACE_ICON_MAP[player.race] ? (
                             <Image src={RACE_ICON_MAP[player.race]} alt={raceName ?? ''} width={52} height={52} className="h-12 w-12 object-contain" />
@@ -579,7 +579,7 @@ export default function PlayersPage() {
                                               selectClass(player.id, index, skillLine);
                                             }
                                           }}
-                                          className={`w-full px-3 py-2 text-sm text-left flex items-center gap-2 transition ${disabled ? 'text-gray-500 cursor-not-allowed opacity-60' : 'text-yellow-200 hover:bg-yellow-700'}`}
+                                          className={`w-full px-3 py-2 text-sm text-left flex items-center gap-2 transition ${disabled ? 'text-gray-500 opacity-60' : 'text-yellow-200 hover:bg-yellow-700'}`}
                                         >
                                           {skillLineIconMap[skillLine] && (
                                             <Image
@@ -618,7 +618,7 @@ export default function PlayersPage() {
                           onDragStart={(event) => startPlayerDrag(event, 'class', player.id)}
                           onDragOver={allowPlayerDrop}
                           onDrop={(event) => dropPlayerSetup(event, player.id, 'class')}
-                          className={`player-card__class-tile raid-interactive-tile w-16 h-16 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition ${isEditMode ? `${primaryClass ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} hover:border-yellow-400 hover:scale-110 transform` : 'cursor-default'}`}
+                          className={`player-card__class-tile raid-interactive-tile w-16 h-16 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition disabled:cursor-default ${isEditMode ? `${primaryClass ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} hover:border-yellow-400 hover:scale-110 transform` : 'cursor-default'}`}
                         >
                           {primaryClass && classIconMap[primaryClass] ? (
                             <Image

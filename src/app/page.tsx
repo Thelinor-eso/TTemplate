@@ -191,7 +191,7 @@ export default function LandingPage() {
                   Start trial
                 </button>
               ) : (
-                <div className="flex min-h-12 w-full cursor-not-allowed items-center justify-center rounded-xl bg-white/6 px-4 py-3 text-center text-sm font-semibold text-slate-500">
+                <div className="flex min-h-12 w-full items-center justify-center rounded-xl bg-white/6 px-4 py-3 text-center text-sm font-semibold text-slate-500">
                   Choose a trial
                 </div>
               )}
