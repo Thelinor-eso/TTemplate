@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState, type DragEvent } from 'react'
 import { getRaidBackground, getRaidTheme } from '@/lib/raidDisplay';
 import { MUNDUS_ICON_MAP, SKILL_LINE_ICON_MAP, ROLE_ICON_MAP, CLASS_ICON_MAP, RACE_ICON_MAP } from '@/data/iconMaps';
 import EditModeToggle from '@/components/layout/EditModeToggle';
+import PortalTooltip from '@/components/ui/PortalTooltip';
 import { ESO_CLASS_SKILL_LINES, getClassForSkillLine } from '@/data/esoClasses';
 import { ESO_RACES } from '@/data/esoRaces';
 import { CLASS_MASTERY_OPTIONS_BY_CLASS, ClassName, MUNDUS_STONE_OPTIONS, ROLE_OPTIONS, SKILL_CLASS_SLOTS, copyPlayerSetup, pastePlayerSetup, type ClassMasteries, type ClassSkillLine, type PlayerSetup } from '@/features/template/raidTemplate';
@@ -330,6 +331,9 @@ export default function PlayersPage() {
             const currentPlayerClasses = SKILL_CLASS_SLOTS.map((slot) => player.skillClasses[slot]);
             const firstFilledIndex = currentPlayerClasses.findIndex(Boolean);
             const primaryClass = firstFilledIndex >= 0 ? getClassForSkillLine(currentPlayerClasses[firstFilledIndex]) : null;
+            const raceName = player.race !== null
+              ? ESO_RACES.find(({ id }) => id === player.race)?.name ?? 'Unknown race'
+              : null;
             const sameClassMasteries = !!primaryClass && currentPlayerClasses.filter(Boolean).length === SKILL_CLASS_SLOTS.length && currentPlayerClasses.filter(Boolean).every(skillLine => getClassForSkillLine(skillLine) === primaryClass);
             const hasOpenDropdown = Boolean(
               activeDropdownKey === `${player.id}-class`
@@ -345,47 +349,50 @@ export default function PlayersPage() {
               >
                 {isEditMode && (
                   <div className="player-card__actions absolute top-3 right-3 z-10 flex items-center gap-1">
-                    <button
-                      type="button"
-                      aria-label={`Copy ${player.name}'s setup`}
-                      title={`Copy ${player.name}'s setup`}
-                      onClick={() => setCopiedPlayerSetup({
-                        playerId: player.id,
-                        playerName: player.name,
-                        setup: copyPlayerSetup(player),
-                      })}
-                      className={`flex h-7 w-7 items-center justify-center rounded border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#f8f7f2] ${
-                        copiedPlayerSetup?.playerId === player.id
-                          ? 'border-[#f7e7ba] bg-[#d6b46b] text-black'
-                          : 'border-[#d6b46b] bg-[#1c1c1f] text-white hover:bg-[#333]'
-                      }`}
-                    >
-                      <CopyIcon />
-                    </button>
-                    <button
-                      type="button"
-                      disabled={!copiedPlayerSetup || copiedPlayerSetup.playerId === player.id}
-                      aria-label={`Paste ${copiedPlayerSetup?.playerName ?? 'copied player'}'s setup`}
-                      title={`Paste ${copiedPlayerSetup?.playerName ?? 'copied player'}'s setup`}
-                      onClick={() => {
-                        if (!copiedPlayerSetup || copiedPlayerSetup.playerId === player.id) return;
-                        updatePlayer(player.id, (target) => pastePlayerSetup(target, copiedPlayerSetup.setup));
-                      }}
-                      className="paste-setup-button flex h-7 w-7 items-center justify-center rounded border border-[#d6b46b] bg-[#d6b46b] text-black transition hover:bg-[#f7e7ba] disabled:cursor-not-allowed disabled:border-yellow-900 disabled:bg-[#29251a] disabled:text-yellow-800"
-                    >
-                      <PasteIcon />
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`Delete ${player.name}`}
-                      title={`Delete ${player.name}`}
-                      onClick={() => setPlayerPendingDeletion({ id: player.id, name: player.name })}
-                      className="inline-flex items-center justify-center rounded-lg border-2 border-dashed border-red-600 bg-[#201010] p-2 font-bold text-red-200 shadow-2xl transition hover:border-red-400 hover:bg-[#331818] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-300"
-                    >
-                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-7 w-7">
-                        <path d="m6 6 12 12M18 6 6 18" />
-                      </svg>
-                    </button>
+                    <PortalTooltip content={<span className="block font-bold text-[#f7e7ba]">Copy {player.name}&apos;s setup</span>}>
+                      <button
+                        type="button"
+                        aria-label={`Copy ${player.name}'s setup`}
+                        onClick={() => setCopiedPlayerSetup({
+                          playerId: player.id,
+                          playerName: player.name,
+                          setup: copyPlayerSetup(player),
+                        })}
+                        className={`flex h-7 w-7 items-center justify-center rounded border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#f8f7f2] ${
+                          copiedPlayerSetup?.playerId === player.id
+                            ? 'border-[#f7e7ba] bg-[#d6b46b] text-black'
+                            : 'border-[#d6b46b] bg-[#1c1c1f] text-white hover:bg-[#333]'
+                        }`}
+                      >
+                        <CopyIcon />
+                      </button>
+                    </PortalTooltip>
+                    <PortalTooltip content={copiedPlayerSetup && copiedPlayerSetup.playerId !== player.id ? <span className="block font-bold text-[#f7e7ba]">Paste {copiedPlayerSetup.playerName}&apos;s setup</span> : null}>
+                      <button
+                        type="button"
+                        disabled={!copiedPlayerSetup || copiedPlayerSetup.playerId === player.id}
+                        aria-label={`Paste ${copiedPlayerSetup?.playerName ?? 'copied player'}'s setup`}
+                        onClick={() => {
+                          if (!copiedPlayerSetup || copiedPlayerSetup.playerId === player.id) return;
+                          updatePlayer(player.id, (target) => pastePlayerSetup(target, copiedPlayerSetup.setup));
+                        }}
+                        className="paste-setup-button flex h-7 w-7 items-center justify-center rounded border border-[#d6b46b] bg-[#d6b46b] text-black transition hover:bg-[#f7e7ba] disabled:cursor-not-allowed disabled:border-yellow-900 disabled:bg-[#29251a] disabled:text-yellow-800"
+                      >
+                        <PasteIcon />
+                      </button>
+                    </PortalTooltip>
+                    <PortalTooltip content={<span className="block font-bold text-[#f7e7ba]">Delete {player.name}</span>}>
+                      <button
+                        type="button"
+                        aria-label={`Delete ${player.name}`}
+                        onClick={() => setPlayerPendingDeletion({ id: player.id, name: player.name })}
+                        className="inline-flex items-center justify-center rounded-lg border-2 border-dashed border-red-600 bg-[#201010] p-2 font-bold text-red-200 shadow-2xl transition hover:border-red-400 hover:bg-[#331818] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-300"
+                      >
+                        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-7 w-7">
+                          <path d="m6 6 12 12M18 6 6 18" />
+                        </svg>
+                      </button>
+                    </PortalTooltip>
                   </div>
                 )}
 
@@ -434,37 +441,35 @@ export default function PlayersPage() {
                       }
 
                       return (
-                        <button
-                          type="button"
-                          disabled={!isEditMode}
-                          key={role}
-                          onClick={() => {
-                            if (isEditMode) updatePlayerRole(player.id, role);
-                          }}
-                          className={`relative group transition disabled:cursor-default ${isEditMode && isSelected ? 'scale-110' : ''}`}
-                        >
-                          <div className={`raid-interactive-tile w-14 h-14 rounded border-2 transition flex items-center justify-center ${isEditMode ? 'cursor-pointer' : 'cursor-default'} ${borderColor} ${
-                            isSelected
-                              ? selectedBg
-                              : `${bgColor} ${isEditMode ? hoverBorder : ''}`
-                          }`}>
-                            <Image
-                              src={ROLE_ICON_MAP[role] || ''}
-                              alt={role}
-                              width={40}
-                              height={40}
-                              className="w-10 h-10"
-                            />
-                          </div>
-                          {isSelected && (
-                            <div className="absolute -top-2 -right-2 bg-yellow-400 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold text-yellow-900">
-                              ✓
+                        <PortalTooltip key={role} content={<span className="block font-bold text-[#f7e7ba]">{role}</span>}>
+                          <button
+                            type="button"
+                            disabled={!isEditMode}
+                            onClick={() => {
+                              if (isEditMode) updatePlayerRole(player.id, role);
+                            }}
+                            className={`relative transition disabled:cursor-default ${isEditMode && isSelected ? 'scale-110' : ''}`}
+                          >
+                            <div className={`raid-interactive-tile w-14 h-14 rounded border-2 transition flex items-center justify-center ${isEditMode ? 'cursor-pointer' : 'cursor-default'} ${borderColor} ${
+                              isSelected
+                                ? selectedBg
+                                : `${bgColor} ${isEditMode ? hoverBorder : ''}`
+                            }`}>
+                              <Image
+                                src={ROLE_ICON_MAP[role] || ''}
+                                alt={role}
+                                width={40}
+                                height={40}
+                                className="w-10 h-10"
+                              />
                             </div>
-                          )}
-                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none z-10">
-                            {role}
-                          </div>
-                        </button>
+                            {isSelected && (
+                              <div className="absolute -top-2 -right-2 bg-yellow-400 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold text-yellow-900">
+                                ✓
+                              </div>
+                            )}
+                          </button>
+                        </PortalTooltip>
                       );
                     })}
                     </div>
@@ -472,23 +477,24 @@ export default function PlayersPage() {
                   <div className="player-card__race shrink-0">
                     <label className="text-xs font-bold text-yellow-400 uppercase block mb-2 text-right">Race</label>
                     <div ref={activeDropdownKey === `${player.id}-race` ? activeDropdownRef : null} className="relative">
-                      <button
-                        type="button"
-                        draggable={isEditMode && player.race !== null}
-                        disabled={!isEditMode}
-                        aria-label={player.race === null ? 'Select race' : `Select race: ${ESO_RACES.find(({ id }) => id === player.race)?.name ?? 'Unknown'}`}
-                        aria-expanded={activeDropdownKey === `${player.id}-race`}
-                        title={ESO_RACES.find(({ id }) => id === player.race)?.name ?? 'Select race'}
-                        onClick={() => toggleRaceDropdown(player.id)}
-                        onDragStart={(event) => startPlayerDrag(event, 'race', player.id)}
-                        onDragOver={allowPlayerDrop}
-                        onDrop={(event) => dropPlayerSetup(event, player.id, 'race')}
-                        className={`raid-interactive-tile h-14 w-14 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition ${isEditMode ? `${player.race !== null ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}` : 'cursor-default'}`}
-                      >
-                        {player.race !== null && RACE_ICON_MAP[player.race] ? (
-                          <Image src={RACE_ICON_MAP[player.race]} alt={ESO_RACES.find(({ id }) => id === player.race)?.name ?? ''} width={52} height={52} className="h-12 w-12 object-contain" />
-                        ) : isEditMode && player.race === null ? <span className="text-lg text-yellow-400 font-bold">+</span> : player.race !== null ? <span className="text-xs font-bold text-yellow-200">{ESO_RACES.find(({ id }) => id === player.race)?.name.slice(0, 2).toUpperCase()}</span> : null}
-                      </button>
+                      <PortalTooltip content={raceName ? <span className="block font-bold text-[#f7e7ba]">{raceName}</span> : null}>
+                        <button
+                          type="button"
+                          draggable={isEditMode && player.race !== null}
+                          disabled={!isEditMode}
+                          aria-label={player.race === null ? 'Select race' : `Select race: ${raceName}`}
+                          aria-expanded={activeDropdownKey === `${player.id}-race`}
+                          onClick={() => toggleRaceDropdown(player.id)}
+                          onDragStart={(event) => startPlayerDrag(event, 'race', player.id)}
+                          onDragOver={allowPlayerDrop}
+                          onDrop={(event) => dropPlayerSetup(event, player.id, 'race')}
+                          className={`raid-interactive-tile h-14 w-14 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition ${isEditMode ? `${player.race !== null ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}` : 'cursor-default'}`}
+                        >
+                          {player.race !== null && RACE_ICON_MAP[player.race] ? (
+                            <Image src={RACE_ICON_MAP[player.race]} alt={raceName ?? ''} width={52} height={52} className="h-12 w-12 object-contain" />
+                          ) : isEditMode && player.race === null ? <span className="text-lg text-yellow-400 font-bold">+</span> : player.race !== null ? <span className="text-xs font-bold text-yellow-200">{raceName?.slice(0, 2).toUpperCase()}</span> : null}
+                        </button>
+                      </PortalTooltip>
                       {isEditMode && activeDropdownKey === `${player.id}-race` && (
                         <div className="player-card__race-menu absolute top-full mt-2 flex bg-gray-800 border-2 border-yellow-500 rounded shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-200">
                           <div className="w-[220px] shrink-0">
@@ -522,36 +528,33 @@ export default function PlayersPage() {
 
                         return (
                           <div ref={isOpen ? activeDropdownRef : null} key={index} className="player-card__skill-option relative">
-                            <button
-                              disabled={!isEditMode}
-                              draggable={isEditMode && !!selectedSkillLine}
-                              onClick={() => toggleDropdown(player.id, index)}
-                              onDragStart={(event) => startPlayerDrag(event, 'skill-line', player.id, index)}
-                              onDragOver={allowPlayerDrop}
-                              onDrop={(event) => dropPlayerSetup(event, player.id, 'skill-line', index)}
-                              className="player-card__skill-trigger relative group disabled:cursor-default"
-                              type="button"
-                            >
-                              <div
-                                className={`player-card__skill-tile raid-interactive-tile w-16 h-16 bg-yellow-950 border-[3px] rounded transition flex items-center justify-center ${isEditMode ? `${selectedSkillLine ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}` : 'cursor-default'} ${
-                                  isPrimarySkillLine ? 'border-white shadow-[0_0_0_3px_rgba(255,255,255,0.35)]' : 'border-yellow-600'
-                                } ${isDuplicate ? 'opacity-60' : ''}`}
-                                style={{
-                                  backgroundImage: selectedSkillLine && skillLineIconMap[selectedSkillLine] ? `url(${skillLineIconMap[selectedSkillLine]})` : 'none',
-                                  backgroundSize: 'cover',
-                                  backgroundPosition: 'center',
-                                }}
+                            <PortalTooltip content={selectedSkillLine ? <span className="block font-bold text-[#f7e7ba]">{selectedSkillLine}</span> : null}>
+                              <button
+                                disabled={!isEditMode}
+                                draggable={isEditMode && !!selectedSkillLine}
+                                onClick={() => toggleDropdown(player.id, index)}
+                                onDragStart={(event) => startPlayerDrag(event, 'skill-line', player.id, index)}
+                                onDragOver={allowPlayerDrop}
+                                onDrop={(event) => dropPlayerSetup(event, player.id, 'skill-line', index)}
+                                className="player-card__skill-trigger relative disabled:cursor-default"
+                                type="button"
                               >
-                                {!selectedSkillLine && isEditMode && (
-                                  <span className="text-lg text-yellow-400 font-bold">+</span>
-                                )}
-                              </div>
-                              {selectedSkillLine && (
-                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none z-50">
-                                  {selectedSkillLine}
+                                <div
+                                  className={`player-card__skill-tile raid-interactive-tile w-16 h-16 bg-yellow-950 border-[3px] rounded transition flex items-center justify-center ${isEditMode ? `${selectedSkillLine ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}` : 'cursor-default'} ${
+                                    isPrimarySkillLine ? 'border-white shadow-[0_0_0_3px_rgba(255,255,255,0.35)]' : 'border-yellow-600'
+                                  } ${isDuplicate ? 'opacity-60' : ''}`}
+                                  style={{
+                                    backgroundImage: selectedSkillLine && skillLineIconMap[selectedSkillLine] ? `url(${skillLineIconMap[selectedSkillLine]})` : 'none',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                  }}
+                                >
+                                  {!selectedSkillLine && isEditMode && (
+                                    <span className="text-lg text-yellow-400 font-bold">+</span>
+                                  )}
                                 </div>
-                              )}
-                            </button>
+                              </button>
+                            </PortalTooltip>
 
                             {isEditMode && isOpen && (
                               <div className="player-card__skill-menu absolute top-full mt-2 left-0 bg-gray-800 border-2 border-yellow-500 rounded shadow-2xl z-50 min-w-max max-h-80 overflow-y-auto animate-in fade-in zoom-in-95 duration-200"
@@ -606,31 +609,32 @@ export default function PlayersPage() {
                   <div className="player-card__class-option">
                     <label className="player-card__section-label text-xs font-bold text-yellow-400 uppercase">Class</label>
                     <div ref={activeDropdownKey === `${player.id}-class` ? activeDropdownRef : null} className="relative">
-                      <button
-                        type="button"
-                        draggable={isEditMode && !!primaryClass}
-                        disabled={!isEditMode}
-                        aria-label={primaryClass ? `Select class: ${primaryClass}` : 'Select class'}
-                        aria-expanded={activeDropdownKey === `${player.id}-class`}
-                        title={primaryClass ?? 'Select class'}
-                        onClick={() => toggleClassDropdown(player.id)}
-                        onDragStart={(event) => startPlayerDrag(event, 'class', player.id)}
-                        onDragOver={allowPlayerDrop}
-                        onDrop={(event) => dropPlayerSetup(event, player.id, 'class')}
-                        className={`player-card__class-tile w-16 h-16 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition ${isEditMode ? `${primaryClass ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} hover:border-yellow-400 hover:scale-110 transform` : 'cursor-default'}`}
-                      >
-                        {primaryClass && classIconMap[primaryClass] ? (
-                          <Image
-                            src={classIconMap[primaryClass]}
-                            alt={primaryClass}
-                            width={56}
-                            height={56}
-                            className="w-14 h-14 object-contain"
-                          />
-                        ) : isEditMode ? (
-                          <span className="text-lg text-yellow-400 font-bold">+</span>
-                        ) : null}
-                      </button>
+                      <PortalTooltip content={primaryClass ? <span className="block font-bold text-[#f7e7ba]">{primaryClass}</span> : null}>
+                        <button
+                          type="button"
+                          draggable={isEditMode && !!primaryClass}
+                          disabled={!isEditMode}
+                          aria-label={primaryClass ? `Select class: ${primaryClass}` : 'Select class'}
+                          aria-expanded={activeDropdownKey === `${player.id}-class`}
+                          onClick={() => toggleClassDropdown(player.id)}
+                          onDragStart={(event) => startPlayerDrag(event, 'class', player.id)}
+                          onDragOver={allowPlayerDrop}
+                          onDrop={(event) => dropPlayerSetup(event, player.id, 'class')}
+                          className={`player-card__class-tile raid-interactive-tile w-16 h-16 rounded-lg border-2 border-yellow-600 bg-yellow-950 flex items-center justify-center overflow-hidden transition ${isEditMode ? `${primaryClass ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} hover:border-yellow-400 hover:scale-110 transform` : 'cursor-default'}`}
+                        >
+                          {primaryClass && classIconMap[primaryClass] ? (
+                            <Image
+                              src={classIconMap[primaryClass]}
+                              alt={primaryClass}
+                              width={56}
+                              height={56}
+                              className="w-14 h-14 object-contain"
+                            />
+                          ) : isEditMode ? (
+                            <span className="text-lg text-yellow-400 font-bold">+</span>
+                          ) : null}
+                        </button>
+                      </PortalTooltip>
 
                       {isEditMode && activeDropdownKey === `${player.id}-class` && (
                         <div className="player-card__class-menu absolute top-full mt-2 left-0 flex bg-gray-800 border-2 border-yellow-500 rounded shadow-2xl z-50">
@@ -714,9 +718,11 @@ export default function PlayersPage() {
                         .map((mastery, index) => (
                           <div key={`${player.id}-mastery-${index}`} className="min-h-7 min-w-0">
                             {mastery && (
-                              <span className="inline-block max-w-full rounded border border-yellow-500 bg-black/30 px-2 py-1 text-sm text-yellow-100">
-                                {mastery}
-                              </span>
+                              <PortalTooltip content={<span className="block font-bold text-[#f7e7ba]">{mastery}</span>}>
+                                <span className="inline-block max-w-full rounded border border-yellow-500 bg-black/30 px-2 py-1 text-sm text-yellow-100">
+                                  {mastery}
+                                </span>
+                              </PortalTooltip>
                             )}
                           </div>
                         ))}
@@ -726,28 +732,30 @@ export default function PlayersPage() {
                     <label className="text-[10px] font-bold uppercase tracking-wide text-yellow-300 block mb-1">Mundus Stone</label>
                     {isEditMode ? (
                       <div ref={activeDropdownKey === `${player.id}-mundus` ? activeDropdownRef : null} className="relative min-h-8">
-                        <button
-                          type="button"
-                          draggable={isEditMode && !!player.mundus}
-                          aria-label={player.mundus ? `Select Mundus stone: ${player.mundus}` : 'Select Mundus stone'}
-                          aria-expanded={activeDropdownKey === `${player.id}-mundus`}
-                          onClick={() => toggleMundusDropdown(player.id)}
-                          onDragStart={(event) => startPlayerDrag(event, 'mundus', player.id)}
-                          onDragOver={allowPlayerDrop}
-                          onDrop={(event) => dropPlayerSetup(event, player.id, 'mundus')}
-                          className={`flex w-full items-center gap-2 rounded border border-yellow-600 bg-yellow-950 px-2 py-1 text-left text-sm text-yellow-100 transition hover:border-yellow-400 ${player.mundus ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}`}
-                        >
-                          {player.mundus && MUNDUS_ICON_MAP[player.mundus] && (
-                            <Image
-                              src={MUNDUS_ICON_MAP[player.mundus]}
-                              alt=""
-                              width={24}
-                              height={24}
-                              className="h-6 w-6 shrink-0 object-contain"
-                            />
-                          )}
-                          <span className="min-w-0 flex-1 truncate">{player.mundus || 'Select'}</span>
-                        </button>
+                        <PortalTooltip content={player.mundus ? <span className="block font-bold text-[#f7e7ba]">{player.mundus}</span> : null}>
+                          <button
+                            type="button"
+                            draggable={isEditMode && !!player.mundus}
+                            aria-label={player.mundus ? `Select Mundus stone: ${player.mundus}` : 'Select Mundus stone'}
+                            aria-expanded={activeDropdownKey === `${player.id}-mundus`}
+                            onClick={() => toggleMundusDropdown(player.id)}
+                            onDragStart={(event) => startPlayerDrag(event, 'mundus', player.id)}
+                            onDragOver={allowPlayerDrop}
+                            onDrop={(event) => dropPlayerSetup(event, player.id, 'mundus')}
+                            className={`flex w-full items-center gap-2 rounded border border-yellow-600 bg-yellow-950 px-2 py-1 text-left text-sm text-yellow-100 transition hover:border-yellow-400 ${player.mundus ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}`}
+                          >
+                            {player.mundus && MUNDUS_ICON_MAP[player.mundus] && (
+                              <Image
+                                src={MUNDUS_ICON_MAP[player.mundus]}
+                                alt=""
+                                width={24}
+                                height={24}
+                                className="h-6 w-6 shrink-0 object-contain"
+                              />
+                            )}
+                            <span className="min-w-0 flex-1 truncate">{player.mundus || 'Select'}</span>
+                          </button>
+                        </PortalTooltip>
                         {activeDropdownKey === `${player.id}-mundus` && (
                           <div
                             className="player-card__mundus-menu absolute top-full mt-2 left-0 bg-gray-800 border-2 border-yellow-500 rounded shadow-2xl z-50 min-w-max max-h-80 overflow-y-auto animate-in fade-in zoom-in-95 duration-200"
@@ -779,8 +787,9 @@ export default function PlayersPage() {
                         )}
                       </div>
                     ) : (
-                      <div className="flex min-h-8 items-center gap-2 text-sm text-yellow-100">
-                        {player.mundus && (
+                      <PortalTooltip content={player.mundus ? <span className="block font-bold text-[#f7e7ba]">{player.mundus}</span> : null}>
+                        <div className="flex min-h-8 items-center gap-2 text-sm text-yellow-100">
+                          {player.mundus && (
                           <>
                             {MUNDUS_ICON_MAP[player.mundus] && (
                               <Image
@@ -793,8 +802,9 @@ export default function PlayersPage() {
                             )}
                             <span>{player.mundus}</span>
                           </>
-                        )}
-                      </div>
+                          )}
+                        </div>
+                      </PortalTooltip>
                     )}
                   </div>
                 </div>

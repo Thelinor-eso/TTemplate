@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type DragEvent, type FormEvent, type ReactNode } from 'react';
 import { useRaid } from '@/features/template/RaidContext';
 import EditModeToggle from '@/components/layout/EditModeToggle';
+import PortalTooltip from '@/components/ui/PortalTooltip';
 import EncounterMechanicsView from '@/features/encounters/EncounterMechanicsView';
 import { CLASS_ICON_MAP, DEFAULT_FOOD_ICON, DEFAULT_POTION_ICON, FOOD_ICON_MAP, POTION_ICON_MAP, MUNDUS_ICON_MAP, ROLE_ICON_MAP, SKILL_LINE_ICON_MAP } from '@/data/iconMaps';
 import { ESO_CLASS_SKILL_LINES, getClassForSkillLine } from '@/data/esoClasses';
@@ -364,34 +365,6 @@ type AbilityPickerGroup = {
   icon: string;
   entries: AbilityPickerEntry[];
 };
-
-function PortalTooltip({ children, content }: { children: ReactNode; content: ReactNode }) {
-  const [position, setPosition] = useState<{ top: number; left: number; above: boolean } | null>(null);
-
-  const show = (element: HTMLElement) => {
-    const trigger = element.firstElementChild instanceof HTMLElement ? element.firstElementChild : element;
-    const bounds = trigger.getBoundingClientRect();
-    const width = 288;
-    const above = bounds.top > 220;
-    setPosition({
-      top: above ? bounds.top - 8 : bounds.bottom + 8,
-      left: Math.max(8, Math.min(window.innerWidth - width - 8, bounds.left + bounds.width / 2 - width / 2)),
-      above,
-    });
-  };
-
-  return (
-    <span className="contents" onMouseEnter={(event) => show(event.currentTarget)} onMouseLeave={() => setPosition(null)} onFocus={(event) => show(event.currentTarget)} onBlur={() => setPosition(null)}>
-      {children}
-      {position && content != null && typeof document !== 'undefined' ? createPortal(
-        <span className={`pointer-events-none fixed z-[99999] w-72 max-h-[min(60vh,28rem)] overflow-y-auto rounded-lg border border-[#d6b46b] bg-[#111111] p-3 text-left text-xs text-white shadow-2xl ${position.above ? '-translate-y-full' : ''}`} style={{ top: position.top, left: position.left }}>
-          {content}
-        </span>,
-        document.body,
-      ) : null}
-    </span>
-  );
-}
 
 function getSetSlotLabel(slot: SetSlot): string {
   const labels: Record<SetSlot, string> = {
