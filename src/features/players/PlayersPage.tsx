@@ -252,7 +252,7 @@ export default function PlayersPage() {
     if (sourcePlayer.mundus) selectPlayerMundus(targetPlayerId, sourcePlayer.mundus);
   };
 
-  const updateClassMastery = (playerId: number, className: string, masteryName: string) => {
+  const updateClassMastery = (playerId: number, masteryName: string) => {
     if (!isEditMode) return;
 
     const player = players.find(p => p.id === playerId);
@@ -271,10 +271,8 @@ export default function PlayersPage() {
     if (selected) {
       if (currentFirst === masteryName) nextMasteries.firstClassMastery = '';
       if (currentSecond === masteryName) nextMasteries.secondClassMastery = '';
-    } else if (!currentFirst || currentFirst === className) {
+    } else if (!currentFirst) {
       nextMasteries.firstClassMastery = masteryName;
-    } else if (!currentSecond || currentSecond === className) {
-      nextMasteries.secondClassMastery = masteryName;
     } else {
       nextMasteries.secondClassMastery = masteryName;
     }
@@ -550,7 +548,7 @@ export default function PlayersPage() {
                                   }}
                                 >
                                   {!selectedSkillLine && isEditMode && (
-                                    <span className="text-lg text-yellow-400 font-bold">+</span>
+                                    <span className="inline-flex h-full w-full items-center justify-center text-lg leading-none text-yellow-400 font-bold">+</span>
                                   )}
                                 </div>
                               </button>
@@ -631,7 +629,7 @@ export default function PlayersPage() {
                               className="w-14 h-14 object-contain"
                             />
                           ) : isEditMode ? (
-                            <span className="text-lg text-yellow-400 font-bold">+</span>
+                            <span className="inline-flex h-full w-full items-center justify-center text-lg leading-none text-yellow-400 font-bold">+</span>
                           ) : null}
                         </button>
                       </PortalTooltip>
@@ -677,21 +675,17 @@ export default function PlayersPage() {
                                   const selected =
                                     player.classMasteries.firstClassMastery === masteryName ||
                                     player.classMasteries.secondClassMastery === masteryName;
-                                  const disabled =
-                                    !selected &&
-                                    !!player.classMasteries.firstClassMastery &&
-                                    !!player.classMasteries.secondClassMastery;
 
                                   return (
                                     <button
                                       key={`${primaryClass}-${masteryName}`}
                                       type="button"
-                                      disabled={disabled || !isEditMode}
+                                      disabled={!isEditMode}
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        updateClassMastery(player.id, primaryClass, masteryName);
+                                        updateClassMastery(player.id, masteryName);
                                       }}
-                                      className={`w-full px-3 py-2 text-left text-sm transition ${selected ? 'relative z-10 border-2 border-yellow-300 bg-yellow-700 font-semibold text-yellow-50 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.45)]' : disabled ? 'border-2 border-transparent text-gray-500 cursor-not-allowed opacity-60' : 'border-2 border-transparent text-yellow-200 hover:bg-yellow-700'}`}
+                                      className={`w-full px-3 py-2 text-left text-sm transition ${selected ? 'relative z-10 border-2 border-yellow-300 bg-yellow-700 font-semibold text-yellow-50 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.45)]' : 'border-2 border-transparent text-yellow-200 hover:bg-yellow-700'}`}
                                     >
                                       <span className="flex items-center justify-between gap-2">
                                         <span>{masteryName}</span>
