@@ -11,6 +11,7 @@ import PortalTooltip from '@/components/ui/PortalTooltip';
 import { ESO_CLASS_SKILL_LINES, getClassForSkillLine } from '@/data/esoClasses';
 import { ESO_RACES } from '@/data/esoRaces';
 import { CLASS_MASTERY_OPTIONS_BY_CLASS, ClassName, MUNDUS_STONE_OPTIONS, ROLE_OPTIONS, SKILL_CLASS_SLOTS, copyPlayerSetup, pastePlayerSetup, type ClassMasteries, type ClassSkillLine, type PlayerSetup } from '@/features/template/raidTemplate';
+import { getESOClassMasteryDescription, getESOClassMasteryImage } from '@/data/esoClassMasteries';
 import useOutsideClick from '@/hooks/useOutsideClick';
 
 const skillLineIconMap = SKILL_LINE_ICON_MAP;
@@ -76,6 +77,7 @@ export default function PlayersPage() {
     updatePlayerMundus,
   } = useRaid();
   const [activeDropdownKey, setActiveDropdownKey] = useState<string | null>(null);
+  const [activeMasteryIndex, setActiveMasteryIndex] = useState<number | null>(null);
   const activeDropdownRef = useRef<HTMLDivElement>(null);
   const [copiedPlayerSetup, setCopiedPlayerSetup] = useState<CopiedPlayerSetup | null>(null);
   const [playerPendingDeletion, setPlayerPendingDeletion] = useState<{ id: number; name: string } | null>(null);
@@ -127,6 +129,38 @@ export default function PlayersPage() {
   const toggleMundusDropdown = (playerId: number) => {
     const key = `${playerId}-mundus`;
     setActiveDropdownKey(current => current === key ? null : key);
+  };
+
+  const toggleMasteryDropdown = (playerId: number, index: number) => {
+    const key = `${playerId}-masteries`;
+    if (activeDropdownKey === key && activeMasteryIndex === index) {
+      setActiveDropdownKey(null);
+      setActiveMasteryIndex(null);
+      return;
+    }
+    setActiveMasteryIndex(index);
+    setActiveDropdownKey(key);
+  };
+
+  const selectPlayerMastery = (playerId: number, masteryName: string) => {
+    if (!isEditMode || activeMasteryIndex === null) return;
+    const player = players.find(({ id }) => id === playerId);
+    if (!player) return;
+
+    const next: ClassMasteries = { ...player.classMasteries };
+    const currentSelection = next[activeMasteryIndex === 0 ? 'firstClassMastery' : 'secondClassMastery'];
+    const otherSelection = next[activeMasteryIndex === 0 ? 'secondClassMastery' : 'firstClassMastery'];
+    if (currentSelection === masteryName) {
+      if (activeMasteryIndex === 0) next.firstClassMastery = '';
+      else next.secondClassMastery = '';
+    } else if (otherSelection !== masteryName) {
+      if (activeMasteryIndex === 0) next.firstClassMastery = masteryName;
+      else next.secondClassMastery = masteryName;
+    }
+
+    updatePlayerClassMasteries(playerId, next);
+    setActiveDropdownKey(null);
+    setActiveMasteryIndex(null);
   };
 
   const selectPlayerMundus = (playerId: number, mundus: string) => {
@@ -252,34 +286,6 @@ export default function PlayersPage() {
     if (sourcePlayer.mundus) selectPlayerMundus(targetPlayerId, sourcePlayer.mundus);
   };
 
-  const updateClassMastery = (playerId: number, masteryName: string) => {
-    if (!isEditMode) return;
-
-    const player = players.find(p => p.id === playerId);
-    if (!player) return;
-
-    const currentFirst = player.classMasteries.firstClassMastery;
-    const currentSecond = player.classMasteries.secondClassMastery;
-
-    const nextMasteries: ClassMasteries = {
-      firstClassMastery: currentFirst,
-      secondClassMastery: currentSecond,
-    };
-
-    const selected = currentFirst === masteryName || currentSecond === masteryName;
-
-    if (selected) {
-      if (currentFirst === masteryName) nextMasteries.firstClassMastery = '';
-      if (currentSecond === masteryName) nextMasteries.secondClassMastery = '';
-    } else if (!currentFirst) {
-      nextMasteries.firstClassMastery = masteryName;
-    } else {
-      nextMasteries.secondClassMastery = masteryName;
-    }
-
-    updatePlayerClassMasteries(playerId, nextMasteries);
-  };
-
   const raidBackground = getRaidBackground(template.raid.selectedRaid);
   const raidTheme = getRaidTheme(template.raid.selectedRaid);
 
@@ -335,6 +341,7 @@ export default function PlayersPage() {
             const sameClassMasteries = !!primaryClass && currentPlayerClasses.filter(Boolean).length === SKILL_CLASS_SLOTS.length && currentPlayerClasses.filter(Boolean).every(skillLine => getClassForSkillLine(skillLine) === primaryClass);
             const hasOpenDropdown = Boolean(
               activeDropdownKey === `${player.id}-class`
+              || activeDropdownKey === `${player.id}-masteries`
               || activeDropdownKey === `${player.id}-race`
               || activeDropdownKey === `${player.id}-mundus`
               || [0, 1, 2].some((index) => activeDropdownKey === `${player.id}-${index}`),
@@ -635,7 +642,7 @@ export default function PlayersPage() {
                       </PortalTooltip>
 
                       {isEditMode && activeDropdownKey === `${player.id}-class` && (
-                        <div className="player-card__class-menu absolute top-full mt-2 left-0 flex bg-gray-800 border-2 border-yellow-500 rounded shadow-2xl z-50">
+                        <div className="player-card__class-menu absolute top-full mt-2 left-0 bg-gray-800 border-2 border-yellow-500 rounded shadow-2xl z-50">
                             <div className="w-[220px] shrink-0 border-r border-yellow-600">
                               <div className="px-3 py-2 text-xs font-semibold text-yellow-300 border-b border-yellow-600 bg-gray-900">
                                 Select class
@@ -664,39 +671,6 @@ export default function PlayersPage() {
                                 ))}
                               </div>
                             </div>
-
-                            {primaryClass && sameClassMasteries && (
-                              <div className="w-[230px] shrink-0">
-                                <div className="px-3 py-2 text-xs font-semibold text-yellow-300 border-b border-yellow-600 bg-gray-900">
-                                  Class Masteries
-                                </div>
-                                <div className="max-h-80 overflow-y-auto">
-                                  {classMasteryOptionsByClass[primaryClass].map((masteryName) => {
-                                  const selected =
-                                    player.classMasteries.firstClassMastery === masteryName ||
-                                    player.classMasteries.secondClassMastery === masteryName;
-
-                                  return (
-                                    <button
-                                      key={`${primaryClass}-${masteryName}`}
-                                      type="button"
-                                      disabled={!isEditMode}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        updateClassMastery(player.id, masteryName);
-                                      }}
-                                      className={`w-full px-3 py-2 text-left text-sm transition ${selected ? 'relative z-10 border-2 border-yellow-300 bg-yellow-700 font-semibold text-yellow-50 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.45)]' : 'border-2 border-transparent text-yellow-200 hover:bg-yellow-700'}`}
-                                    >
-                                      <span className="flex items-center justify-between gap-2">
-                                        <span>{masteryName}</span>
-                                        {selected && <span aria-label="Selected" className="font-bold text-yellow-200">✓</span>}
-                                      </span>
-                                    </button>
-                                  );
-                                  })}
-                                </div>
-                              </div>
-                            )}
                         </div>
                       )}
                     </div>
@@ -707,19 +681,72 @@ export default function PlayersPage() {
                     <label className="text-[10px] font-bold uppercase tracking-wide text-yellow-300 block mb-1">
                       Class Masteries
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div ref={activeDropdownKey === `${player.id}-masteries` ? activeDropdownRef : null} className="relative grid grid-cols-2 gap-2">
                       {[player.classMasteries.firstClassMastery, player.classMasteries.secondClassMastery]
                         .map((mastery, index) => (
-                          <div key={`${player.id}-mastery-${index}`} className="min-h-7 min-w-0">
-                            {mastery && (
-                              <PortalTooltip content={<span className="block font-bold text-[#f7e7ba]">{mastery}</span>}>
-                                <span className="inline-block max-w-full rounded border border-yellow-500 bg-black/30 px-2 py-1 text-sm text-yellow-100">
-                                  {mastery}
-                                </span>
-                              </PortalTooltip>
-                            )}
+                          <div key={`${player.id}-mastery-${index}`} className="flex min-h-12 min-w-0 items-center justify-center">
+                            <PortalTooltip content={mastery ? (
+                              <>
+                                {getESOClassMasteryImage(mastery) && (
+                                  <Image src={getESOClassMasteryImage(mastery)!} alt="" width={56} height={56} className="float-left mr-2 h-14 w-14 object-contain" />
+                                )}
+                                <span className="block font-bold text-[#f7e7ba]">{mastery}</span>
+                                <span className="mt-1 block leading-relaxed">{getESOClassMasteryDescription(mastery)}</span>
+                              </>
+                            ) : null}>
+                              <button
+                                type="button"
+                                disabled={!isEditMode || !sameClassMasteries}
+                                aria-label={mastery ? `Select class mastery ${mastery}` : `Select class mastery ${index + 1}`}
+                                aria-expanded={activeDropdownKey === `${player.id}-masteries` && activeMasteryIndex === index}
+                                onClick={() => toggleMasteryDropdown(player.id, index)}
+                                className="flex h-12 w-12 items-center justify-center rounded border border-yellow-500 bg-black/30 p-1 transition hover:border-yellow-300 hover:bg-yellow-700/40 disabled:cursor-default disabled:opacity-70"
+                              >
+                                {mastery && getESOClassMasteryImage(mastery) ? (
+                                  <Image
+                                    src={getESOClassMasteryImage(mastery)!}
+                                    alt={mastery}
+                                    width={40}
+                                    height={40}
+                                    className="h-10 w-10 object-contain"
+                                  />
+                                ) : null}
+                              </button>
+                            </PortalTooltip>
                           </div>
                         ))}
+                      {activeDropdownKey === `${player.id}-masteries` && sameClassMasteries && primaryClass && (
+                        <div className="absolute left-0 top-full z-50 mt-2 max-h-80 w-full min-w-72 overflow-y-auto rounded border-2 border-yellow-500 bg-gray-800 shadow-2xl">
+                          {classMasteryOptionsByClass[primaryClass].map((masteryName) => {
+                            const selected = player.classMasteries.firstClassMastery === masteryName ||
+                              player.classMasteries.secondClassMastery === masteryName;
+                            const masteryImage = getESOClassMasteryImage(masteryName);
+                            return (
+                              <button
+                                key={`${primaryClass}-${masteryName}`}
+                                type="button"
+                                disabled={selected}
+                                onClick={() => selectPlayerMastery(player.id, masteryName)}
+                                className={`flex w-full items-start gap-2 px-3 py-2 text-left text-xs transition ${selected ? 'cursor-not-allowed bg-gray-700 text-white/40 grayscale' : 'text-yellow-200 hover:bg-yellow-700'}`}
+                              >
+                                <PortalTooltip content={
+                                  <>
+                                    <span className="block font-bold text-[#f7e7ba]">{masteryName}</span>
+                                    <span className="mt-1 block leading-relaxed">{getESOClassMasteryDescription(masteryName)}</span>
+                                  </>
+                                }>
+                                  <span className="flex min-w-0 flex-1 items-center gap-2">
+                                    {masteryImage && (
+                                      <Image src={masteryImage} alt="" width={40} height={40} className="h-10 w-10 shrink-0 object-contain" />
+                                    )}
+                                    <span className="min-w-0 flex-1 font-semibold">{masteryName}</span>
+                                  </span>
+                                </PortalTooltip>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
 
                   <div className="player-card__mundus mt-3">

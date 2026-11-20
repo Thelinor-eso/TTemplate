@@ -75,6 +75,7 @@ import {
   type ChampionPoints,
   type SetSlot,
 } from '@/features/template/raidTemplate';
+import { getESOClassMasteryDescription, getESOClassMasteryImage } from '@/data/esoClassMasteries';
 import { GearIcon, normalizeSetName, SET_ICON_SOURCES } from '@/lib/gearIcons';
 import { withBasePath } from '@/lib/staticAssets';
 import {
@@ -1226,7 +1227,7 @@ export default function EncountersPage() {
     if (!isEditMode) return <span className="font-semibold text-white/50">Class Masteries</span>;
     return <div className="relative">
         <button type="button" disabled={!completeClass} aria-expanded={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery'} onClick={() => toggleMasteryMenu(player.id)} className="font-semibold text-white/50 hover:text-yellow-200 hover:underline disabled:cursor-default">Class Masteries</button>
-        {playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery' && className && completeClass && <div className="absolute left-0 top-full z-50 mt-1 max-h-80 w-56 overflow-y-auto rounded border-2 border-yellow-500 bg-gray-800 shadow-2xl">{CLASS_MASTERY_OPTIONS_BY_CLASS[className].map((mastery) => { const selected = player.classMasteries.firstClassMastery === mastery || player.classMasteries.secondClassMastery === mastery; const full = !!player.classMasteries.firstClassMastery && !!player.classMasteries.secondClassMastery; return <button key={mastery} type="button" disabled={!selected && full} onClick={() => togglePlayerMastery(player.id, className, mastery)} className={`block w-full px-3 py-2 text-left text-xs transition ${selected ? 'bg-yellow-700 font-semibold text-yellow-50' : 'text-yellow-200 hover:bg-yellow-700 disabled:opacity-40'}`}>{selected ? '✓ ' : ''}{mastery}</button>; })}</div>}
+        {playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery' && className && completeClass && <div className="absolute left-0 top-full z-50 mt-1 max-h-80 w-72 overflow-y-auto rounded border-2 border-yellow-500 bg-gray-800 shadow-2xl">{CLASS_MASTERY_OPTIONS_BY_CLASS[className].map((mastery) => { const selected = player.classMasteries.firstClassMastery === mastery || player.classMasteries.secondClassMastery === mastery; const full = !!player.classMasteries.firstClassMastery && !!player.classMasteries.secondClassMastery; const image = getESOClassMasteryImage(mastery); return <button key={mastery} type="button" disabled={!selected && full} onClick={() => togglePlayerMastery(player.id, className, mastery)} className={`flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition ${selected ? 'bg-yellow-700 font-semibold text-yellow-50' : 'text-yellow-200 hover:bg-yellow-700 disabled:opacity-40'}`}><PortalTooltip content={<><span className="block font-bold text-[#f7e7ba]">{mastery}</span><span className="mt-1 block leading-relaxed">{getESOClassMasteryDescription(mastery)}</span></>}><span className="flex min-w-0 flex-1 items-center gap-2">{image && <Image src={image} alt="" width={40} height={40} className="h-10 w-10 shrink-0 object-contain" />}<span className="min-w-0 flex-1 font-semibold">{mastery}</span>{selected && <span className="ml-auto font-bold text-yellow-200">✓</span>}</span></PortalTooltip></button>; })}</div>}
       </div>;
   };
 
@@ -3137,7 +3138,13 @@ export default function EncountersPage() {
                   <div className="mb-3 flex w-full justify-center">
                     {renderActionBar(player.id, playerStuff.competencies, playerStuff.food, playerStuff.potion, true)}
                   </div>
-                  <div ref={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery' ? playerSetupEditorRef : null} className="mb-2 flex flex-col items-center gap-1 text-xs text-yellow-200">{renderPlayerSetupEditors(player)}{classMasteries.map((mastery) => isEditMode ? <button key={mastery} type="button" disabled={!hasCompletePlayerClass(player)} aria-expanded={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery'} onClick={() => toggleMasteryMenu(player.id)} className="w-full rounded border border-yellow-500 bg-black/30 px-2 py-0.5 text-center text-yellow-200 transition hover:border-yellow-300 hover:bg-yellow-700/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">{mastery}</button> : <span key={mastery} className="w-full text-center">{mastery}</span>)}</div>
+                  <div ref={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery' ? playerSetupEditorRef : null} className="mb-2 flex flex-col items-center gap-1 text-xs text-yellow-200">{renderPlayerSetupEditors(player)}<div className="flex items-center justify-center gap-2">{classMasteries.map((mastery) => {
+                    const masteryImage = getESOClassMasteryImage(mastery);
+                    const tooltip = <>{masteryImage && <Image src={masteryImage} alt="" width={56} height={56} className="float-left mr-2 h-14 w-14 object-contain" />}<span className="block font-bold text-[#f7e7ba]">{mastery}</span><span className="mt-1 block leading-relaxed">{getESOClassMasteryDescription(mastery)}</span></>;
+                    return isEditMode
+                      ? <PortalTooltip key={mastery} content={tooltip}><button type="button" disabled={!hasCompletePlayerClass(player)} aria-label={mastery} aria-expanded={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery'} onClick={() => toggleMasteryMenu(player.id)} className="rounded border border-yellow-500 bg-black/30 p-1 text-yellow-200 transition hover:border-yellow-300 hover:bg-yellow-700/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">{masteryImage && <Image src={masteryImage} alt={mastery} width={40} height={40} className="h-10 w-10 object-contain" />}</button></PortalTooltip>
+                      : <PortalTooltip key={mastery} content={tooltip}>{masteryImage ? <Image src={masteryImage} alt={mastery} width={40} height={40} className="h-10 w-10 rounded border border-yellow-500 bg-black/30 object-contain p-1" /> : null}</PortalTooltip>;
+                  })}</div></div>
                   <div className="space-y-1 border-y border-white/10 py-2 text-[11px]">
                     {playerStuff.food ? <PortalTooltip content={foodTooltipContent}>{foodSummary}</PortalTooltip> : foodSummary}
                     {playerStuff.potion ? <PortalTooltip content={potionTooltipContent}>{potionSummary}</PortalTooltip> : potionSummary}
@@ -3228,13 +3235,23 @@ export default function EncountersPage() {
 
                         <div ref={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery' ? playerSetupEditorRef : null} className="flex flex-col items-center gap-1 text-xs text-yellow-200">
                           {renderPlayerSetupEditors(player)}
+                          <div className="flex items-center justify-center gap-2">
                           {classMasteries.map((mastery) => isEditMode ? (
-                            <button key={`${player.id}-${mastery}`} type="button" disabled={!hasCompletePlayerClass(player)} aria-expanded={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery'} onClick={() => toggleMasteryMenu(player.id)} className="rounded border border-yellow-500 bg-black/30 px-2 py-0.5 text-yellow-200 transition hover:border-yellow-300 hover:bg-yellow-700/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">
-                              {mastery}
-                            </button>
+                            <PortalTooltip key={`${player.id}-${mastery}`} content={(() => { const image = getESOClassMasteryImage(mastery); return <>{image && <Image src={image} alt="" width={56} height={56} className="float-left mr-2 h-14 w-14 object-contain" />}<span className="block font-bold text-[#f7e7ba]">{mastery}</span><span className="mt-1 block leading-relaxed">{getESOClassMasteryDescription(mastery)}</span></>; })()}>
+                              <button type="button" disabled={!hasCompletePlayerClass(player)} aria-label={mastery} aria-expanded={playerSetupEditor?.playerId === player.id && playerSetupEditor.type === 'mastery'} onClick={() => toggleMasteryMenu(player.id)} className="rounded border border-yellow-500 bg-black/30 p-1 text-yellow-200 transition hover:border-yellow-300 hover:bg-yellow-700/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">
+                                {getESOClassMasteryImage(mastery) && (
+                                  <Image src={getESOClassMasteryImage(mastery)!} alt={mastery} width={40} height={40} className="h-10 w-10 object-contain" />
+                                )}
+                              </button>
+                            </PortalTooltip>
                           ) : (
-                            <span key={`${player.id}-${mastery}`} className="rounded border border-yellow-500 bg-black/30 px-2 py-0.5">{mastery}</span>
+                            <PortalTooltip key={`${player.id}-${mastery}`} content={(() => { const image = getESOClassMasteryImage(mastery); return <>{image && <Image src={image} alt="" width={56} height={56} className="float-left mr-2 h-14 w-14 object-contain" />}<span className="block font-bold text-[#f7e7ba]">{mastery}</span><span className="mt-1 block leading-relaxed">{getESOClassMasteryDescription(mastery)}</span></>; })()}>
+                              {getESOClassMasteryImage(mastery) ? (
+                                <Image src={getESOClassMasteryImage(mastery)!} alt={mastery} width={40} height={40} className="h-10 w-10 rounded border border-yellow-500 bg-black/30 object-contain p-1" />
+                              ) : null}
+                            </PortalTooltip>
                           ))}
+                          </div>
                           {player.mundus ? (
                             <div className="relative mt-2 flex items-center justify-center gap-1">
                               <Image
