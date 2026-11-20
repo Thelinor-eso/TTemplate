@@ -1920,6 +1920,60 @@ textarea:focus-visible {
   box-shadow: 0 16px 42px rgba(0, 0, 0, 0.33), inset 0 1px rgba(255, 255, 255, 0.055);
 }
 
+@media (min-width: 1536px) {
+  .players-page__roster {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .players-page .player-card {
+    padding: 12px;
+  }
+
+  .players-page .player-card__role-race {
+    gap: 8px;
+  }
+
+  .players-page .player-card__role > div:last-child {
+    gap: 4px;
+  }
+
+  .players-page .player-card__role .raid-interactive-tile {
+    width: 36px;
+    height: 36px;
+  }
+
+  .players-page .player-card__role img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .players-page .player-card__race button[aria-label*="race" i] {
+    width: 40px;
+    height: 40px;
+  }
+
+  .players-page .player-card__race img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .players-page .player-card__skill-grid {
+    gap: 6px;
+  }
+
+  .players-page .player-card__skill-tile,
+  .players-page .player-card__class-tile {
+    width: 48px;
+    height: 48px;
+  }
+
+  .players-page .player-card__class-tile img {
+    width: 42px;
+    height: 42px;
+  }
+}
+
 
 /* Header and navigation refinements. */
 .site-header {
