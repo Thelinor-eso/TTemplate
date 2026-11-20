@@ -33,6 +33,7 @@ import {
   encodeScribingSkillId,
   ESO_SKILLS_BY_ID,
   getScribingOptions,
+  getSkillAbilityDescription,
   getSkillAbilityFamilyId,
 } from '@/lib/esoSkills';
 import {
@@ -790,12 +791,16 @@ const SetEditorSearchResults = memo(function SetEditorSearchResults({
 
 function getAbilityTooltipContent(value: SkillAbilityId | '') {
   const abilityName = getAbilityDisplayName(value);
+  const abilityDescription = getSkillAbilityDescription(value);
   const decoded = decodeScribingSkillId(value);
   const options = decoded ? getScribingOptions(decoded.grimoireAbilityId) : undefined;
 
   return (
     <>
       <span className="mb-1 block font-bold text-[#f7e7ba]">{abilityName}</span>
+      {abilityDescription && (
+        <span className="mb-1 block whitespace-pre-line leading-relaxed">{abilityDescription}</span>
+      )}
       {decoded && options ? (
         <span className="space-y-1">
           {(['focus', 'signature', 'affix'] as const).map((kind) => (
@@ -1069,7 +1074,6 @@ export default function EncountersPage() {
   const [selectedSetupPlayerId, setSelectedSetupPlayerId] = useState<number | null>(null);
   const [skillEditor, setSkillEditor] = useState<SkillEditorState | null>(null);
   const [scribingDraft, setScribingDraft] = useState<ScribingDraft | null>(null);
-  const [viewSkillDetails, setViewSkillDetails] = useState<SkillAbilityId | null>(null);
   const [viewChampionDiscipline, setViewChampionDiscipline] = useState<{ playerId: number; playerName: string; discipline: ChampionPointDiscipline } | null>(null);
   const [overviewSetPlayerId, setOverviewSetPlayerId] = useState<number | null>(null);
   const [mundusEditorPlayerId, setMundusEditorPlayerId] = useState<number | null>(null);
@@ -1143,7 +1147,7 @@ export default function EncountersPage() {
   useOutsideClick(requiredSetSearchRef, isRequiredSetSearchOpen && Boolean(requiredSetSearch.trim()), closeRequiredSetSearch);
 
   const hasOpenSelection = Boolean(
-    isDeleteFightConfirmationOpen || skillEditor || viewSkillDetails || viewChampionDiscipline
+    isDeleteFightConfirmationOpen || skillEditor || viewChampionDiscipline
     || overviewSetPlayerId !== null || mundusEditorPlayerId !== null || setEditor || gearDetails
     || consumableEditor || championPointEditor || playerSetupEditor || isRequiredSetSearchOpen
     || quickGearSetup || bulkEnchantmentPlayerId !== null,
@@ -1269,7 +1273,7 @@ export default function EncountersPage() {
 
   useEffect(() => {
     const hasOpenMenu = Boolean(
-      isDeleteFightConfirmationOpen || skillEditor || viewSkillDetails || viewChampionDiscipline
+      isDeleteFightConfirmationOpen || skillEditor || viewChampionDiscipline
       || overviewSetPlayerId !== null || mundusEditorPlayerId !== null || setEditor || gearDetails
       || consumableEditor || championPointEditor || playerSetupEditor || isRequiredSetSearchOpen || quickGearSetup,
     );
@@ -1282,7 +1286,6 @@ export default function EncountersPage() {
       setIsDeleteFightConfirmationOpen(false);
       setSkillEditor(null);
       setScribingDraft(null);
-      setViewSkillDetails(null);
       setViewChampionDiscipline(null);
       setOverviewSetPlayerId(null);
       setMundusEditorPlayerId(null);
@@ -1298,7 +1301,7 @@ export default function EncountersPage() {
 
     window.addEventListener('keydown', closeMenusOnEscape);
     return () => window.removeEventListener('keydown', closeMenusOnEscape);
-  }, [isDeleteFightConfirmationOpen, skillEditor, viewSkillDetails, viewChampionDiscipline, overviewSetPlayerId, mundusEditorPlayerId, setEditor, gearDetails, consumableEditor, championPointEditor, playerSetupEditor, isRequiredSetSearchOpen, quickGearSetup, isApplyingQuickGear]);
+  }, [isDeleteFightConfirmationOpen, skillEditor, viewChampionDiscipline, overviewSetPlayerId, mundusEditorPlayerId, setEditor, gearDetails, consumableEditor, championPointEditor, playerSetupEditor, isRequiredSetSearchOpen, quickGearSetup, isApplyingQuickGear]);
 
   const draggedAbilitySlot = useRef<{ playerId: number; field: keyof Skills } | null>(null);
   const draggedChampionPointSlot = useRef<{ playerId: number; field: keyof ChampionPoints } | null>(null);
@@ -1888,14 +1891,13 @@ export default function EncountersPage() {
     }
     return (
       <PortalTooltip content={getAbilityTooltipContent(value)}>
-        <button
-          type="button"
-          aria-label={`Show details for ${abilityName}`}
-          onClick={() => setViewSkillDetails(value)}
-          className={`raid-interactive-tile group/skill relative flex ${compact ? 'h-auto max-h-9 w-full max-w-9 aspect-square' : 'h-12 w-12'} shrink-0 cursor-pointer items-center justify-center border-2 border-yellow-600 bg-black/40 p-0.5 transition focus-visible:z-[60] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300`}
+        <div
+          role="img"
+          aria-label={`${abilityName}: ${getSkillAbilityDescription(value)}`}
+          className={`raid-interactive-tile relative flex ${compact ? 'h-auto max-h-9 w-full max-w-9 aspect-square' : 'h-12 w-12'} shrink-0 items-center justify-center border-2 border-yellow-600 bg-black/40 p-0.5 transition`}
         >
           <Image src={getAbilityImagePath(category, abilityName)} alt="" width={40} height={40} className="h-full w-full object-cover" />
-        </button>
+        </div>
       </PortalTooltip>
     );
   };
@@ -3520,54 +3522,6 @@ export default function EncountersPage() {
         </div>
       )}
 
-      {viewSkillDetails && (() => {
-        const skillName = getAbilityDisplayName(viewSkillDetails);
-        const decoded = decodeScribingSkillId(viewSkillDetails);
-        const options = decoded ? getScribingOptions(decoded.grimoireAbilityId) : undefined;
-        const scripts = decoded && options
-          ? [
-            { label: 'Focus', name: options.focus.find((option) => option.id === decoded.focusScriptId)?.name },
-            { label: 'Signature', name: options.signature.find((option) => option.id === decoded.signatureScriptId)?.name },
-            { label: 'Affix', name: options.affix.find((option) => option.id === decoded.affixScriptId)?.name },
-          ]
-          : [];
-
-        return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="view-skill-details-title"
-              className="w-full max-w-md rounded-lg border-2 border-[#d6b46b] bg-[#111111] p-6"
-            >
-              <div className="mb-4 flex items-start justify-between gap-4">
-                <h2 id="view-skill-details-title" className="text-xl font-bold text-[#f8f7f2]">
-                  {skillName}
-                </h2>
-                <button
-                  type="button"
-                  aria-label="Close skill details"
-                  onClick={() => setViewSkillDetails(null)}
-                  className="text-2xl leading-none text-[#d6b46b] hover:text-[#f7e7ba]"
-                >
-                  ×
-                </button>
-              </div>
-              {scripts.length > 0 && (
-                <dl className="space-y-3 text-sm text-[#f8f7f2]">
-                  {scripts.map(({ label, name }) => (
-                    <div key={label}>
-                      <dt className="font-semibold text-[#d6b46b]">{label}</dt>
-                      <dd>{name}</dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
-            </div>
-          </div>
-        );
-      })()}
-
       {viewChampionDiscipline && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={(event) => { if (event.target === event.currentTarget) setViewChampionDiscipline(null); }}>
           <section role="dialog" aria-modal="true" aria-labelledby="overview-cp-title" className="w-full max-w-md rounded-lg border-2 border-[#d6b46b] bg-[#111111] p-6">
@@ -3784,12 +3738,17 @@ export default function EncountersPage() {
                           updateFightPlayerStuff(fight.name, skillEditor.playerId, skillEditor.field, parent.abilityId);
                           setSkillEditor(null);
                         }}
-                        className="group relative flex w-full items-center gap-3 rounded border border-[#d6b46b] bg-[#202020] p-2 text-left transition hover:border-[#f8f7f2] disabled:opacity-40 disabled:hover:border-[#d6b46b]"
+                        className="group relative flex w-full items-start gap-3 rounded border border-[#d6b46b] bg-[#202020] p-2 text-left transition hover:border-[#f8f7f2] disabled:opacity-40 disabled:hover:border-[#d6b46b]"
                       >
-                        <div className="flex h-12 w-12 items-center justify-center">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center">
                           <Image src={getAbilityImagePath(activeSkillCategory, parent.skillName)} alt={parent.skillName} width={40} height={40} className="h-10 w-10 object-cover" />
                         </div>
-                        <span className="text-sm font-bold text-[#f8f7f2]">{parent.skillName}</span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-sm font-bold text-[#f8f7f2]">{parent.skillName}</span>
+                          <span className="mt-1 block whitespace-pre-line text-xs leading-relaxed text-white/70">
+                            {getSkillAbilityDescription(parent.abilityId)}
+                          </span>
+                        </span>
                       </button>
                       {morphs.length > 0 && (
                         <div className="ml-6 mt-2 grid gap-2 border-l border-[#d6b46b] pl-3 sm:grid-cols-2">
@@ -3802,10 +3761,15 @@ export default function EncountersPage() {
                                 updateFightPlayerStuff(fight.name, skillEditor.playerId, skillEditor.field, morph.abilityId);
                                 setSkillEditor(null);
                               }}
-                              className="group relative flex items-center gap-2 rounded border border-[#8c7645] bg-[#111111] p-2 text-left transition hover:border-[#f8f7f2] disabled:opacity-40 disabled:hover:border-[#8c7645]"
+                              className="group relative flex items-start gap-2 rounded border border-[#8c7645] bg-[#111111] p-2 text-left transition hover:border-[#f8f7f2] disabled:opacity-40 disabled:hover:border-[#8c7645]"
                             >
-                              <Image src={getAbilityImagePath(activeSkillCategory, morph.skillName)} alt={morph.skillName} width={36} height={36} className="h-9 w-9 object-cover" />
-                              <span className="text-xs font-semibold text-[#f8f7f2]">{morph.skillName}</span>
+                              <Image src={getAbilityImagePath(activeSkillCategory, morph.skillName)} alt={morph.skillName} width={36} height={36} className="h-9 w-9 shrink-0 object-cover" />
+                              <span className="min-w-0 flex-1">
+                                <span className="block text-xs font-semibold text-[#f8f7f2]">{morph.skillName}</span>
+                                <span className="mt-1 block whitespace-pre-line text-xs leading-relaxed text-white/70">
+                                  {getSkillAbilityDescription(morph.abilityId)}
+                                </span>
+                              </span>
                             </button>
                           ))}
                         </div>

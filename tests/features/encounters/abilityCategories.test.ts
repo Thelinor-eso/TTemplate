@@ -3,7 +3,9 @@ import { getAbilityCategoryForId, getAbilityDisplayName, getAbilitySkillTree, ge
 import {
   decodeScribingSkillId,
   encodeScribingSkillId,
+  ESO_SKILLS,
   getScribingOptions,
+  getSkillAbilityDescription,
   getSkillAbilityFamilyId,
   isSkillAbilityId,
 } from '@/lib/esoSkills';
@@ -37,6 +39,13 @@ describe('ESO skill ability IDs', () => {
       [48971, 'Crushing Shock'],
       [48991, 'Force Pulse'],
     ]);
+  });
+
+  it('provides a description for every base skill and morph', () => {
+    expect(ESO_SKILLS.every(({ abilityId }) => getSkillAbilityDescription(abilityId).trim().length > 0)).toBe(true);
+    expect(getSkillAbilityDescription(48956)).not.toBe(getSkillAbilityDescription(48971));
+    expect(getSkillAbilityDescription(23726)).toContain(`Base skill: ${getSkillAbilityDescription(23716)}`);
+    expect(getSkillAbilityDescription(23726)).toContain('Morph:');
   });
 
   it('resolves a base skill and its morphs to the same family', () => {

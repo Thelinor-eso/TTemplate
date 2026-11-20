@@ -1,5 +1,6 @@
 import skillCatalog from '@data/eso-skill-catalog/skills.json';
 import skillRelations from '@data/eso-skill-catalog/skill-relations.json';
+import skillDescriptions from '@data/eso-skill-catalog/descriptions.json';
 import scribingCatalog from '@data/eso-skill-catalog/scribing.json';
 import type { SkillAbility, SkillAbilityId, ScribingSkillId } from '@/features/template/raidTemplate';
 
@@ -14,6 +15,9 @@ export type ScribingGrimoireOptions = {
 
 const scribingOptionsById = new Map<number, ScribingGrimoireOptions>(
   Object.entries(scribingCatalog).map(([abilityId, options]) => [Number(abilityId), options]),
+);
+const skillDescriptionsByAbilityId = new Map<number, string>(
+  Object.entries(skillDescriptions).map(([abilityId, description]) => [Number(abilityId), description] as const),
 );
 
 for (const relation of skillRelations) {
@@ -95,6 +99,18 @@ export function getSkillAbilityById(abilityId: SkillAbilityId | ''): SkillAbilit
   const decoded = decodeScribingSkillId(abilityId);
   const resolvedId = decoded?.grimoireAbilityId ?? (typeof abilityId === 'number' ? abilityId : undefined);
   return resolvedId === undefined ? undefined : ESO_SKILLS_BY_ID.get(resolvedId);
+}
+
+export function getSkillAbilityDescription(abilityId: SkillAbilityId | ''): string {
+  if (abilityId === '') return '';
+  const decoded = decodeScribingSkillId(abilityId);
+  const resolvedId = decoded?.grimoireAbilityId ?? (typeof abilityId === 'number' ? abilityId : undefined);
+  if (resolvedId === undefined) return '';
+
+  const description = skillDescriptionsByAbilityId.get(resolvedId) ?? '';
+  const parentAbilityId = ESO_SKILLS_BY_ID.get(resolvedId)?.parentAbilityId;
+  const parentDescription = parentAbilityId ? skillDescriptionsByAbilityId.get(parentAbilityId) : undefined;
+  return parentDescription ? `Base skill: ${parentDescription}\n\nMorph: ${description}` : description;
 }
 
 export function getSkillAbilityFamilyId(abilityId: SkillAbilityId | ''): number | undefined {
