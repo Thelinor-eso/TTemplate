@@ -12,6 +12,7 @@ import { CLASS_ICON_MAP, DEFAULT_FOOD_ICON, DEFAULT_POTION_ICON, FOOD_ICON_MAP, 
 import { ESO_CLASS_SKILL_LINES, getClassForSkillLine } from '@/data/esoClasses';
 import { ESO_FOODS } from '@/data/esoFoods';
 import { ESO_POTIONS } from '@/data/esoPotions';
+import { getESOMundusStoneDescription } from '@/data/esoMundusStones';
 import { getRaidBackground, getRaidTheme } from '@/lib/raidDisplay';
 import {
   AbilityCategory,
@@ -3149,13 +3150,15 @@ export default function EncountersPage() {
                     {playerStuff.food ? <PortalTooltip content={foodTooltipContent}>{foodSummary}</PortalTooltip> : foodSummary}
                     {playerStuff.potion ? <PortalTooltip content={potionTooltipContent}>{potionSummary}</PortalTooltip> : potionSummary}
                     {isEditMode ? (
-                      <button type="button" onClick={() => setMundusEditorPlayerId(player.id)} aria-label={`Change ${player.name} Mundus stone`} className="flex w-full min-w-0 cursor-pointer items-center gap-1 truncate text-left hover:text-yellow-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">
-                        <span className="shrink-0 text-white/50">Mundus</span>
-                        {player.mundus && MUNDUS_ICON_MAP[player.mundus] && <Image src={MUNDUS_ICON_MAP[player.mundus]} alt="" width={16} height={16} className="h-4 w-4 shrink-0 rounded" />}
-                        <span className="truncate">{player.mundus || 'None'}</span>
-                      </button>
+                      <PortalTooltip content={player.mundus ? <><span className="block font-bold text-[#f7e7ba]">{player.mundus}</span><span className="mt-1 block leading-relaxed">{getESOMundusStoneDescription(player.mundus)}</span></> : null}>
+                        <button type="button" onClick={() => setMundusEditorPlayerId(player.id)} aria-label={`Change ${player.name} Mundus stone`} className="flex w-full min-w-0 cursor-pointer items-center gap-1 truncate text-left hover:text-yellow-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">
+                          <span className="shrink-0 text-white/50">Mundus</span>
+                          {player.mundus && MUNDUS_ICON_MAP[player.mundus] ? <Image src={MUNDUS_ICON_MAP[player.mundus]} alt={player.mundus} width={24} height={24} className="h-6 w-6 shrink-0 rounded" /> : <span className="h-6 w-6 shrink-0 rounded border border-yellow-500/60" />}
+                          <span className="truncate">{player.mundus || 'None'}</span>
+                        </button>
+                      </PortalTooltip>
                     ) : (
-                      <div className="flex min-w-0 items-center gap-1 truncate"><span className="shrink-0 text-white/50">Mundus</span>{player.mundus && MUNDUS_ICON_MAP[player.mundus] && <Image src={MUNDUS_ICON_MAP[player.mundus]} alt="" width={16} height={16} className="h-4 w-4 shrink-0 rounded" />}<span className="truncate">{player.mundus || 'None'}</span></div>
+                      <div className="flex min-w-0 items-center gap-1 truncate"><span className="shrink-0 text-white/50">Mundus</span>{player.mundus ? <PortalTooltip content={<><span className="block font-bold text-[#f7e7ba]">{player.mundus}</span><span className="mt-1 block leading-relaxed">{getESOMundusStoneDescription(player.mundus)}</span></>}><span className="flex min-w-0 items-center gap-1"><Image src={MUNDUS_ICON_MAP[player.mundus] ?? ''} alt={player.mundus} width={24} height={24} className="h-6 w-6 shrink-0 rounded" /><span className="truncate">{player.mundus}</span></span></PortalTooltip> : <span className="text-white/50">None</span>}</div>
                     )}
                   </div>
                   <div role="button" tabIndex={0} onClick={() => setOverviewSetPlayerId(player.id)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setOverviewSetPlayerId(player.id); } }} aria-label={`Show ${player.name} set slots`} className="mt-2 block w-full cursor-pointer border-t border-white/10 pt-2 text-left text-[11px] hover:bg-white/[0.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">
@@ -3253,16 +3256,18 @@ export default function EncountersPage() {
                           ))}
                           </div>
                           {player.mundus ? (
-                            <div className="relative mt-2 flex items-center justify-center gap-1">
-                              <Image
-                                src={MUNDUS_ICON_MAP[player.mundus] ?? ''}
-                                alt={player.mundus}
-                                width={24}
-                                height={24}
-                                className="h-6 w-6 rounded-full border border-yellow-500 bg-black/30 p-0.5"
-                              />
-                              <span className="text-[11px] text-yellow-200">{player.mundus}</span>
-                            </div>
+                            <PortalTooltip content={<><span className="block font-bold text-[#f7e7ba]">{player.mundus}</span><span className="mt-1 block leading-relaxed">{getESOMundusStoneDescription(player.mundus)}</span></>}>
+                              <span className="relative mt-2 flex items-center gap-1">
+                                <Image
+                                  src={MUNDUS_ICON_MAP[player.mundus] ?? ''}
+                                  alt={player.mundus}
+                                  width={40}
+                                  height={40}
+                                  className="h-10 w-10 rounded-full border border-yellow-500 bg-black/30 p-0.5"
+                                />
+                                <span className="text-[11px] text-yellow-200">{player.mundus}</span>
+                              </span>
+                            </PortalTooltip>
                           ) : null}
                         </div>
 
@@ -3592,9 +3597,13 @@ export default function EncountersPage() {
               </div>
               <div className="max-h-[60vh] space-y-1 overflow-y-auto">
                 {MUNDUS_STONE_OPTIONS.map((stone) => (
-                  <button key={stone} type="button" onClick={() => { updatePlayerMundus(player.id, stone); setMundusEditorPlayerId(null); }} className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition ${player.mundus === stone ? 'bg-white/15 text-white' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
-                    {MUNDUS_ICON_MAP[stone] && <Image src={MUNDUS_ICON_MAP[stone]} alt="" width={24} height={24} className="h-6 w-6 shrink-0 rounded" />}
-                    <span>{stone}</span>
+                  <button key={stone} type="button" disabled={player.mundus === stone} onClick={() => { updatePlayerMundus(player.id, stone); setMundusEditorPlayerId(null); }} className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition ${player.mundus === stone ? 'cursor-not-allowed bg-white/10 text-white/40 grayscale' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
+                    <PortalTooltip content={<><span className="block font-bold text-[#f7e7ba]">{stone}</span><span className="mt-1 block leading-relaxed">{getESOMundusStoneDescription(stone)}</span></>}>
+                      <span className="flex min-w-0 flex-1 items-center gap-3">
+                        {MUNDUS_ICON_MAP[stone] && <Image src={MUNDUS_ICON_MAP[stone]} alt="" width={24} height={24} className="h-6 w-6 shrink-0 rounded" />}
+                        <span>{stone}</span>
+                      </span>
+                    </PortalTooltip>
                   </button>
                 ))}
               </div>

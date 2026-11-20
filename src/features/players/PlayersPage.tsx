@@ -12,6 +12,7 @@ import { ESO_CLASS_SKILL_LINES, getClassForSkillLine } from '@/data/esoClasses';
 import { ESO_RACES } from '@/data/esoRaces';
 import { CLASS_MASTERY_OPTIONS_BY_CLASS, ClassName, MUNDUS_STONE_OPTIONS, ROLE_OPTIONS, SKILL_CLASS_SLOTS, copyPlayerSetup, pastePlayerSetup, type ClassMasteries, type ClassSkillLine, type PlayerSetup } from '@/features/template/raidTemplate';
 import { getESOClassMasteryDescription, getESOClassMasteryImage } from '@/data/esoClassMasteries';
+import { getESOMundusStoneDescription } from '@/data/esoMundusStones';
 import useOutsideClick from '@/hooks/useOutsideClick';
 
 const skillLineIconMap = SKILL_LINE_ICON_MAP;
@@ -753,7 +754,12 @@ export default function PlayersPage() {
                     <label className="text-[10px] font-bold uppercase tracking-wide text-yellow-300 block mb-1">Mundus Stone</label>
                     {isEditMode ? (
                       <div ref={activeDropdownKey === `${player.id}-mundus` ? activeDropdownRef : null} className="relative min-h-8">
-                        <PortalTooltip content={player.mundus ? <span className="block font-bold text-[#f7e7ba]">{player.mundus}</span> : null}>
+                        <PortalTooltip content={player.mundus ? (
+                          <>
+                            <span className="block font-bold text-[#f7e7ba]">{player.mundus}</span>
+                            <span className="mt-1 block leading-relaxed">{getESOMundusStoneDescription(player.mundus)}</span>
+                          </>
+                        ) : null}>
                           <button
                             type="button"
                             draggable={isEditMode && !!player.mundus}
@@ -763,7 +769,7 @@ export default function PlayersPage() {
                             onDragStart={(event) => startPlayerDrag(event, 'mundus', player.id)}
                             onDragOver={allowPlayerDrop}
                             onDrop={(event) => dropPlayerSetup(event, player.id, 'mundus')}
-                            className={`flex w-full items-center gap-2 rounded border border-yellow-600 bg-yellow-950 px-2 py-1 text-left text-sm text-yellow-100 transition hover:border-yellow-400 ${player.mundus ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}`}
+                            className={`flex min-h-12 w-full items-center gap-2 rounded border border-yellow-600 bg-yellow-950 px-2 py-1 text-left text-sm text-yellow-100 transition hover:border-yellow-400 ${player.mundus ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}`}
                           >
                             {player.mundus && MUNDUS_ICON_MAP[player.mundus] && (
                               <Image
@@ -774,57 +780,62 @@ export default function PlayersPage() {
                                 className="h-6 w-6 shrink-0 object-contain"
                               />
                             )}
-                            <span className="min-w-0 flex-1 truncate">{player.mundus || 'Select'}</span>
+                            <span className="truncate">{player.mundus || 'Select'}</span>
                           </button>
                         </PortalTooltip>
                         {activeDropdownKey === `${player.id}-mundus` && (
                           <div
-                            className="player-card__mundus-menu absolute top-full mt-2 left-0 bg-gray-800 border-2 border-yellow-500 rounded shadow-2xl z-50 min-w-max max-h-80 overflow-y-auto animate-in fade-in zoom-in-95 duration-200"
+                            className="player-card__mundus-menu absolute top-full mt-2 left-0 bg-gray-800 border-2 border-yellow-500 rounded shadow-2xl z-50 w-64 max-h-80 overflow-y-auto animate-in fade-in zoom-in-95 duration-200"
                             style={{ animation: 'slideDown 0.2s ease-out' }}
                           >
                             {MUNDUS_STONE_OPTIONS.map((stone) => (
                               <button
                                 key={stone}
                                 type="button"
+                                disabled={player.mundus === stone}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   selectPlayerMundus(player.id, stone);
                                 }}
-                                className={`w-full px-3 py-2 text-sm text-left flex items-center gap-2 transition ${player.mundus === stone ? 'bg-yellow-700 text-yellow-50 hover:bg-yellow-700' : 'text-yellow-200 hover:bg-yellow-700'}`}
+                                className={`w-full px-3 py-2 text-sm text-left flex items-center gap-2 transition ${player.mundus === stone ? 'cursor-not-allowed bg-gray-700 text-white/40 grayscale' : 'text-yellow-200 hover:bg-yellow-700'}`}
                               >
-                                {MUNDUS_ICON_MAP[stone] && (
-                                  <Image
-                                    src={MUNDUS_ICON_MAP[stone]}
-                                    alt=""
-                                    width={24}
-                                    height={24}
-                                    className="w-6 h-6"
-                                  />
-                                )}
-                                <span>{stone}</span>
+                                <PortalTooltip content={
+                                  <>
+                                    <span className="block font-bold text-[#f7e7ba]">{stone}</span>
+                                    <span className="mt-1 block leading-relaxed">{getESOMundusStoneDescription(stone)}</span>
+                                  </>
+                                }>
+                                  <span className="flex min-w-0 flex-1 items-center gap-2">
+                                    {MUNDUS_ICON_MAP[stone] && (
+                                      <Image
+                                        src={MUNDUS_ICON_MAP[stone]}
+                                        alt=""
+                                        width={24}
+                                        height={24}
+                                        className="h-6 w-6 shrink-0"
+                                      />
+                                    )}
+                                    <span className="min-w-0 flex-1 truncate">{stone}</span>
+                                  </span>
+                                </PortalTooltip>
                               </button>
                             ))}
                           </div>
                         )}
                       </div>
                     ) : (
-                      <PortalTooltip content={player.mundus ? <span className="block font-bold text-[#f7e7ba]">{player.mundus}</span> : null}>
-                        <div className="flex min-h-8 items-center gap-2 text-sm text-yellow-100">
-                          {player.mundus && (
-                          <>
-                            {MUNDUS_ICON_MAP[player.mundus] && (
-                              <Image
-                                src={MUNDUS_ICON_MAP[player.mundus]}
-                                alt=""
-                                width={24}
-                                height={24}
-                                className="h-6 w-6 shrink-0 object-contain"
-                              />
-                            )}
+                      <PortalTooltip content={player.mundus ? (
+                        <>
+                          <span className="block font-bold text-[#f7e7ba]">{player.mundus}</span>
+                          <span className="mt-1 block leading-relaxed">{getESOMundusStoneDescription(player.mundus)}</span>
+                        </>
+                      ) : null}>
+                        {player.mundus && MUNDUS_ICON_MAP[player.mundus] ? (
+                          <span className="flex min-h-12 items-center gap-2 rounded border border-yellow-500 bg-black/30 px-2 py-1 text-sm text-yellow-100">
+                            <Image src={MUNDUS_ICON_MAP[player.mundus]} alt={player.mundus} width={40} height={40} className="h-10 w-10 shrink-0 object-contain" />
                             <span>{player.mundus}</span>
-                          </>
-                          )}
-                        </div>
+                          </span>
+                        ) : <span className="block h-12 w-full rounded border border-yellow-500 bg-black/30" />}
                       </PortalTooltip>
                     )}
                   </div>
