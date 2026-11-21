@@ -12,6 +12,8 @@ After importing a template, choose **Open imported template** to continue with t
 
 Importing a template or starting another raid replaces the current template. The app asks before leaving the current template through its home navigation. Export your work first if you want to keep a separate copy.
 
+When an imported template is selected on the home page, you can still choose a trial and select **Start a new template** to leave the imported file and start a fresh template. The new template is stored in this browser and can be exported as a separate copy.
+
 #### Primary workflow: import from a Google Drive link
 
 1. Choose **Import using a Google Drive link** and paste the template's Google Drive link.

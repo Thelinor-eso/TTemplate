@@ -28,15 +28,11 @@ export default function LandingPage() {
 
   const onSelectRaid = (raid: string) => {
     setRaidChoice(raid);
-    setSelectedRaid(raid);
+    if (!importedTemplateFile) setSelectedRaid(raid);
     setStartError(null);
   };
 
   const onStartRaid = async () => {
-    if (importedTemplateFile) {
-      router.push('/players');
-      return;
-    }
     if (!raidChoice) return;
 
     const groupName = template.raid.groupName;
@@ -169,7 +165,6 @@ export default function LandingPage() {
                       <button
                         key={raid}
                         type="button"
-                        disabled={!canEditTemplate || Boolean(importedTemplateFile)}
                         aria-pressed={isSelected}
                         aria-label={`Choose ${raid}`}
                         onClick={() => onSelectRaid(raid)}
@@ -196,17 +191,34 @@ export default function LandingPage() {
             </div>
 
             <div className="grid gap-3">
-              {raidChoice || importedTemplateFile ? (
+              {importedTemplateFile && (
                 <button
+                  type="button"
+                  onClick={() => router.push('/players')}
+                  className="w-full rounded-xl border border-white/15 bg-white/5 px-5 py-3 font-semibold text-slate-200 transition hover:bg-white/10"
+                >
+                  Open imported template
+                </button>
+              )}
+              {raidChoice ? (
+                <button
+                  type="button"
                   onClick={onStartRaid}
                   className="landing-card__primary w-full bg-[#d3b475] px-5 py-3 text-[#10141b] transition hover:bg-[#f0d69c]"
                 >
-                  {importedTemplateFile ? 'Open imported template' : 'Start trial'}
+                  {importedTemplateFile ? 'Start a new template' : 'Start trial'}
                 </button>
-              ) : (
+              ) : !importedTemplateFile ? (
                 <div className="flex min-h-12 w-full items-center justify-center rounded-xl bg-white/6 px-4 py-3 text-center text-sm font-semibold text-slate-500">
                   Choose a trial
                 </div>
+              ) : (
+                null
+              )}
+              {importedTemplateFile && (
+                <p className="text-center text-xs text-slate-300">
+                  Starting a new template leaves the imported file. Your new template is kept in this browser unless you export a copy.
+                </p>
               )}
             </div>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
