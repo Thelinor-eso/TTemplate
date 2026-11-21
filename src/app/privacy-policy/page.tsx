@@ -42,13 +42,15 @@ export default function PrivacyPolicyPage() {
             <p className="mt-3">
               If you choose to use Google Drive import or save, Google will ask you to authorize
               access. TTemplate requests the Google Drive <code className="text-[#f0d69c]">drive.file</code>{' '}
-              permission. This allows the application to access a file you explicitly select with
-              Google Picker and to create files using the application. It does not give TTemplate
-              general access to browse or read all files in your Drive.
+              permission, which limits access to files you explicitly select in Google Picker or
+              create using the application. When importing by link, Google Picker is restricted to
+              the file ID in that link before you confirm the selection.
             </p>
             <p className="mt-3">
               When you import a file, its JSON contents are retrieved from Google Drive into your
-              browser and loaded as the current template. You can export a new copy to Drive or
+              browser and loaded as the current template. Google enforces the access granted to your
+              account by the file owner. If you have view-only access, editing mode and saving back
+              to that file are disabled; you can still export a separate copy. Otherwise, you can
               explicitly save changes to the selected Drive file. In either case, the current
               template JSON is sent from your browser to Google Drive. TTemplate does not operate a
               server that stores these files or the contents of your templates.

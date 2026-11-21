@@ -24,8 +24,8 @@ export default function DriveTemplatePicker({ onImported, className }: DriveTemp
     try {
       const selectedFile = await pickTemplateFile();
       if (!selectedFile) return;
-      const template = await loadTemplateFile(selectedFile.id);
-      onImported(template, selectedFile);
+      const { template, file } = await loadTemplateFile(selectedFile.id);
+      onImported(template, file);
     } catch (importError) {
       if (!isGoogleOAuthPopupClosed(importError)) {
         setError(importError instanceof Error ? importError.message : 'The selected JSON template could not be imported.');
@@ -36,14 +36,14 @@ export default function DriveTemplatePicker({ onImported, className }: DriveTemp
   };
 
   return (
-    <div>
+    <div className="landing-card__import-option">
       <button type="button" onClick={() => void importFromDrive()} disabled={isLoading} className={className}>
         <svg aria-hidden="true" className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
           <path fill="#00832D" d="M8.2 2.5h7.6L7.6 16.7 3.8 10.1z" />
           <path fill="#0066DA" d="m15.8 2.5 8.1 14.2-3.8 6.7L12 9.2z" />
           <path fill="#FFBA00" d="M3.8 10.1 0 16.7l3.8 6.7h16.3l3.8-6.7H7.6z" />
         </svg>
-        {isLoading ? 'Opening Google Drive…' : 'Import JSON from Google Drive'}
+        {isLoading ? 'Opening Google Drive…' : 'Import a template from Google Drive'}
       </button>
       {error && (
         <p role="alert" className="mt-2 text-sm text-red-300">

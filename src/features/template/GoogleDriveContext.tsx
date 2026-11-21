@@ -60,6 +60,7 @@ declare global {
         Action: { PICKED: string; CANCEL: string };
         ViewId: { DOCS: string };
         DocsView: new (viewId: string) => {
+          setFileIds: (fileIds: string) => unknown;
           setMimeTypes: (mimeTypes: string) => unknown;
           setIncludeFolders: (include: boolean) => unknown;
           setSelectFolderEnabled: (enabled: boolean) => unknown;
@@ -84,10 +85,14 @@ declare global {
 interface GoogleDriveContextValue {
   isConnected: boolean;
   googleAccountEmail: string | null;
+  connect: () => Promise<void>;
   disconnect: () => void;
-  pickTemplateFile: () => Promise<GoogleDriveTemplateFile | null>;
+  pickTemplateFile: (fileId?: string) => Promise<GoogleDriveTemplateFile | null>;
   pickDriveFolder: () => Promise<{ id: string; name: string } | null>;
-  loadTemplateFile: (fileId: string) => Promise<RaidTemplateDocument>;
+  loadTemplateFile: (fileId: string) => Promise<{
+    template: RaidTemplateDocument;
+    file: GoogleDriveTemplateFile;
+  }>;
   saveTemplate: (template: RaidTemplateDocument, filename: string, folderId?: string) => Promise<{ id: string; name: string }>;
   updateTemplateFile: (fileId: string, template: RaidTemplateDocument) => Promise<{ id: string; name: string }>;
 }
@@ -96,6 +101,7 @@ export interface GoogleDriveTemplateFile {
   id: string;
   name: string;
   modifiedTime: string;
+  canEdit?: boolean;
 }
 
 const GoogleDriveContext = createContext<GoogleDriveContextValue | undefined>(undefined);
@@ -251,6 +257,10 @@ export function GoogleDriveProvider({ children }: { children: ReactNode }) {
     return requestAccessToken();
   }, [requestAccessToken]);
 
+  const connect = useCallback(async () => {
+    await requestAccessToken();
+  }, [requestAccessToken]);
+
   const disconnect = useCallback(() => {
     if (accessTokenRef.current) window.google?.accounts?.oauth2?.revoke(accessTokenRef.current);
     accessTokenRef.current = null;
@@ -259,7 +269,7 @@ export function GoogleDriveProvider({ children }: { children: ReactNode }) {
     setGoogleAccountEmail(null);
   }, []);
 
-  const pickTemplateFile = useCallback(async () => {
+  const pickTemplateFile = useCallback(async (fileId?: string) => {
     const A = process.env.NEXT_PUBLIC_GOOGLE_A;
     const appId = process.env.NEXT_PUBLIC_GOOGLE_APP_ID;
     if (!A || !appId) {
@@ -273,7 +283,8 @@ export function GoogleDriveProvider({ children }: { children: ReactNode }) {
 
     return new Promise<GoogleDriveTemplateFile | null>((resolve, reject) => {
       const view = new pickerApi.DocsView(pickerApi.ViewId.DOCS);
-      view.setMimeTypes('application/json');
+      if (fileId) view.setFileIds(fileId);
+      else view.setMimeTypes('application/json');
       view.setIncludeFolders(false);
       const builder = new pickerApi.PickerBuilder();
       builder.setAppId(appId);
@@ -348,11 +359,47 @@ export function GoogleDriveProvider({ children }: { children: ReactNode }) {
 
   const loadTemplateFile = useCallback(async (fileId: string) => {
     const token = await getAccessToken();
-    const response = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!response.ok) throw new Error(await getErrorMessage(response));
-    return parseTemplateDocument(await response.text());
+    const metadataResponse = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?supportsAllDrives=true&fields=id,name,mimeType,capabilities(canEdit,canDownload)`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    if (!metadataResponse.ok) throw new Error(await getErrorMessage(metadataResponse));
+
+    const metadata: unknown = await metadataResponse.json();
+    if (typeof metadata !== 'object' || metadata === null
+      || !('id' in metadata) || typeof metadata.id !== 'string'
+      || !('name' in metadata) || typeof metadata.name !== 'string'
+      || !('mimeType' in metadata) || typeof metadata.mimeType !== 'string') {
+      throw new Error('Google Drive returned invalid file information.');
+    }
+    if (metadata.mimeType !== 'application/json' && !metadata.name.toLowerCase().endsWith('.json')) {
+      throw new Error('The Google Drive link must point to a JSON template.');
+    }
+    const capabilities = 'capabilities' in metadata && typeof metadata.capabilities === 'object'
+      && metadata.capabilities !== null
+      ? metadata.capabilities
+      : null;
+    if (capabilities && 'canDownload' in capabilities && capabilities.canDownload === false) {
+      throw new Error('This file cannot be downloaded. Ask its owner to allow viewers to download it.');
+    }
+
+    const fileResponse = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media&supportsAllDrives=true`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    if (!fileResponse.ok) throw new Error(await getErrorMessage(fileResponse));
+
+    return {
+      template: parseTemplateDocument(await fileResponse.text()),
+      file: {
+        id: metadata.id,
+        name: metadata.name,
+        modifiedTime: '',
+        canEdit: capabilities && 'canEdit' in capabilities && typeof capabilities.canEdit === 'boolean'
+          ? capabilities.canEdit
+          : false,
+      },
+    };
   }, [getAccessToken]);
 
   const saveTemplate = useCallback(async (template: RaidTemplateDocument, requestedFilename: string, folderId?: string) => {
@@ -420,13 +467,14 @@ export function GoogleDriveProvider({ children }: { children: ReactNode }) {
   const value = useMemo(() => ({
     isConnected: Boolean(accessToken),
     googleAccountEmail,
+    connect,
     disconnect,
     pickTemplateFile,
     pickDriveFolder,
     loadTemplateFile,
     saveTemplate,
     updateTemplateFile,
-  }), [accessToken, googleAccountEmail, disconnect, pickTemplateFile, pickDriveFolder, loadTemplateFile, saveTemplate, updateTemplateFile]);
+  }), [accessToken, googleAccountEmail, connect, disconnect, pickTemplateFile, pickDriveFolder, loadTemplateFile, saveTemplate, updateTemplateFile]);
 
   return <GoogleDriveContext.Provider value={value}>{children}</GoogleDriveContext.Provider>;
 }

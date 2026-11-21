@@ -9,6 +9,8 @@ import { createEmptyTemplateDocument } from '@/features/template/raidTemplate';
 import DriveTemplatePicker from '@/features/template/DriveTemplatePicker';
 import { triggerJsonImport, type ImportedTemplateFile } from '@/features/template/templateFileIO';
 import { useTemplateImport } from '@/features/template/useTemplateImport';
+import DriveTemplateLinkImporter from '@/features/template/DriveTemplateLinkImporter';
+import type { GoogleDriveTemplateFile } from '@/features/template/GoogleDriveContext';
 import { getRaidBackground, getRaidTheme } from '@/lib/raidDisplay';
 import { withBasePath } from '@/lib/staticAssets';
 
@@ -17,7 +19,7 @@ const groupMenuIcon = withBasePath('/game-assets/storage/menu/gp_tutorial_idexic
 
 export default function LandingPage() {
   const router = useRouter();
-  const { setSelectedRaid, setGroupName, loadTemplate, template } = useRaid();
+  const { setSelectedRaid, setGroupName, loadTemplate, template, importedTemplateFile, canEditTemplate } = useRaid();
   const importTemplate = useTemplateImport();
 
   const [raidChoice, setRaidChoice] = useState(template.raid.selectedRaid ?? '');
@@ -31,6 +33,10 @@ export default function LandingPage() {
   };
 
   const onStartRaid = async () => {
+    if (importedTemplateFile) {
+      router.push('/players');
+      return;
+    }
     if (!raidChoice) return;
 
     const groupName = template.raid.groupName;
@@ -85,9 +91,14 @@ export default function LandingPage() {
 
   const onDriveTemplateImported = (
     importedTemplate: string | object,
-    file: { id: string; name: string },
+    file: GoogleDriveTemplateFile,
   ) => {
-    onTemplateImported(importedTemplate, { mode: 'drive', id: file.id, name: file.name });
+    onTemplateImported(importedTemplate, {
+      mode: 'drive',
+      id: file.id,
+      name: file.name,
+      canEdit: file.canEdit,
+    });
   };
 
   const raidTheme = getRaidTheme(raidChoice);
@@ -133,6 +144,7 @@ export default function LandingPage() {
                   id="group-name"
                   type="text"
                   value={template.raid.groupName}
+                  disabled={!canEditTemplate}
                   onChange={(event) => setGroupName(event.target.value)}
                   className="w-full px-4 py-3"
                 />
@@ -157,6 +169,7 @@ export default function LandingPage() {
                       <button
                         key={raid}
                         type="button"
+                        disabled={!canEditTemplate || Boolean(importedTemplateFile)}
                         aria-pressed={isSelected}
                         aria-label={`Choose ${raid}`}
                         onClick={() => onSelectRaid(raid)}
@@ -183,12 +196,12 @@ export default function LandingPage() {
             </div>
 
             <div className="grid gap-3">
-              {raidChoice ? (
+              {raidChoice || importedTemplateFile ? (
                 <button
                   onClick={onStartRaid}
                   className="landing-card__primary w-full bg-[#d3b475] px-5 py-3 text-[#10141b] transition hover:bg-[#f0d69c]"
                 >
-                  Start trial
+                  {importedTemplateFile ? 'Open imported template' : 'Start trial'}
                 </button>
               ) : (
                 <div className="flex min-h-12 w-full items-center justify-center rounded-xl bg-white/6 px-4 py-3 text-center text-sm font-semibold text-slate-500">
@@ -197,6 +210,12 @@ export default function LandingPage() {
               )}
             </div>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <div className="landing-card__import-option md:col-span-2">
+                <DriveTemplateLinkImporter
+                  onImported={onDriveTemplateImported}
+                  className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-white/10 bg-white/4 px-5 py-3 text-slate-200 transition hover:bg-white/8 hover:text-white"
+                />
+              </div>
               <button
                 type="button"
                 onClick={onImportJson}
@@ -207,7 +226,7 @@ export default function LandingPage() {
                   <path d="m7 10 5 5 5-5" />
                   <path d="M5 17v4h14v-4" />
                 </svg>
-                Import JSON from this device
+                Import a template from this device
               </button>
               <DriveTemplatePicker
                 onImported={onDriveTemplateImported}

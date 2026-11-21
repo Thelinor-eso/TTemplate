@@ -12,7 +12,7 @@ export interface LocalJsonFileHandle {
 }
 
 export type ImportedTemplateFile =
-  | { mode: 'drive'; id: string; name: string }
+  | { mode: 'drive'; id: string; name: string; canEdit?: boolean }
   | { mode: 'local'; name: string; handle?: LocalJsonFileHandle };
 
 declare global {

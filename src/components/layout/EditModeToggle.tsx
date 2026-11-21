@@ -5,16 +5,18 @@ import { useRaid } from '@/features/template/RaidContext';
 type EditModeToggleProps = { className?: string };
 
 export default function EditModeToggle({ className = '' }: EditModeToggleProps) {
-  const { isEditMode, toggleEditMode } = useRaid();
+  const { isEditMode, canEditTemplate, toggleEditMode } = useRaid();
 
   return (
     <button
       type="button"
       role="switch"
       aria-checked={isEditMode}
-      aria-label="Edit mode"
+      aria-label={canEditTemplate ? 'Edit mode' : 'Edit mode unavailable: this shared Google Drive file is view-only'}
+      title={canEditTemplate ? undefined : 'View-only access. Edit mode is disabled.'}
+      disabled={!canEditTemplate}
       onClick={toggleEditMode}
-      className={`inline-flex items-center gap-3 rounded-xl border border-white/20 bg-[#1c1c1f] px-4 py-2.5 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-[#242424] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f8f7f2] ${className}`}
+      className={`inline-flex items-center gap-3 rounded-xl border border-white/20 bg-[#1c1c1f] px-4 py-2.5 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-[#242424] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f8f7f2] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-white/20 disabled:hover:bg-[#1c1c1f] ${className}`}
     >
       <span>Edit</span>
       <span

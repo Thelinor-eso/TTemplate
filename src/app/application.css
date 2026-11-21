@@ -1364,7 +1364,7 @@ textarea:focus-visible {
   font-weight: 700;
 }
 
-.landing-card > .grid > div {
+.landing-card > .grid > div:not(.landing-card__import-option) {
   min-height: 56px;
   font-size: 16px;
 }
@@ -1866,7 +1866,7 @@ textarea:focus-visible {
   letter-spacing: 0.01em;
 }
 
-.landing-card > .grid > div {
+.landing-card > .grid > div:not(.landing-card__import-option) {
   min-height: 52px;
   border: 1px dashed rgba(174, 187, 204, 0.16);
   border-radius: 13px;

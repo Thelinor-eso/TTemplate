@@ -6,9 +6,18 @@ TTemplate is a browser-based planner for *The Elder Scrolls Online* (ESO) raid g
 
 ### Start or load a template
 
-On the home page, set the group name and choose a raid. Starting a raid loads its bundled template, which can include a preconfigured roster and encounter setups. Choose **Neutral** to start with four blank players and one blank encounter. You can also import a JSON template from your device or choose one from Google Drive.
+On the home page, set the group name and choose a raid. Starting a raid loads its bundled template, which can include a preconfigured roster and encounter setups. Choose **Neutral** to start with four blank players and one blank encounter. To load a shared template, the recommended workflow is to import it using its Google Drive link. You can also import a JSON template from your device or choose one from Google Drive.
+
+After importing a template, choose **Open imported template** to continue with that file instead of loading a bundled trial template.
 
 Importing a template or starting another raid replaces the current template. The app asks before leaving the current template through its home navigation. Export your work first if you want to keep a separate copy.
+
+#### Primary workflow: import from a Google Drive link
+
+1. Choose **Import using a Google Drive link** and paste the template's Google Drive link.
+2. Submit the link. If prompted, sign in to Google Drive and connect your account.
+3. Google Picker opens showing only the file from the link. Click it to authorize the app to access that file.
+4. On the home page, choose **Open imported template**. Once it is open, check the access status shown in the top bar. With **Edit access**, you can edit the template and save changes to the shared file. With **View-only access**, editing and saving over the owner's file are disabled; export a copy to make changes.
 
 ### Work with the player roster
 
@@ -42,9 +51,9 @@ Use **Back to Players** to return to the roster. The **Edit Mode** control enabl
 
 The current template is automatically persisted in the browser's local storage and restored when you reload the app in the same browser profile. This browser save is not a downloadable backup and does not synchronize across browsers or devices.
 
-Export a JSON file to keep a portable copy. You can also create a new copy in Google Drive. When a template was imported from a local file or Google Drive, the app tracks that source and shows whether the imported file has unsaved changes; use the matching save action to update it. Saving directly to an imported local file requires browser support for the File System Access API. You can always export a separate JSON copy instead.
+Export a JSON file to keep a portable copy. You can also create a new copy in Google Drive. When a template was imported from a local file or Google Drive, the app tracks that source and shows whether the imported file has unsaved changes. Templates shared with view-only access cannot be edited or saved back to the shared file; export a separate copy to make changes. Saving directly to an imported local file requires browser support for the File System Access API.
 
-Google Drive features are optional and require the app's Google configuration. Google authorization uses the `drive.file` scope; see the developer setup below.
+Google Drive features are optional and require the app's Google configuration. Google authorization uses the `drive.file` scope. When importing by link, Google Picker is filtered to the exact file ID in the link, so only that document can be selected to authorize the app.
 
 ## Part 2 — Local development and checks
 

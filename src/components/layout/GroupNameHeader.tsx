@@ -29,6 +29,9 @@ export default function GroupNameHeader() {
   } = useRaid();
   const groupName = template.raid.groupName.trim();
   const raidName = template.raid.selectedRaid;
+  const driveAccessLabel = importedTemplateFile?.mode === 'drive'
+    ? importedTemplateFile.canEdit === false ? 'View-only access' : 'Edit access'
+    : null;
   const [markersCopied, setMarkersCopied] = useState(false);
   const [isMarkersEditorOpen, setIsMarkersEditorOpen] = useState(false);
   const [markersDraft, setMarkersDraft] = useState('');
@@ -160,7 +163,7 @@ export default function GroupNameHeader() {
             <p
               className={`site-context__file-status${hasUnsavedChanges ? ' is-dirty' : ''}${importedTemplateFile ? '' : ' is-unsaved'}`}
               title={importedTemplateFile
-                ? `${importedTemplateFile.mode === 'drive' ? 'Google Drive' : 'Local file'}: ${importedTemplateFile.name}${hasUnsavedChanges ? ' — unsaved changes' : ' — saved'}`
+                ? `${importedTemplateFile.mode === 'drive' ? 'Google Drive' : 'Local file'}: ${importedTemplateFile.name}${driveAccessLabel ? ` — ${driveAccessLabel}` : ''}${hasUnsavedChanges ? ' — unsaved changes' : ' — saved'}`
                 : 'No saved file yet'}
             >
               <span className="site-context__file-status-copy">
@@ -185,10 +188,24 @@ export default function GroupNameHeader() {
                   <strong>{importedTemplateFile?.name ?? 'No saved file yet'}</strong>
                 </span>
                 <span className="site-context__file-status-detail">
-                  {hasUnsavedChanges || !importedTemplateFile ? '⚠️' : '✅'}
-                  {importedTemplateFile
-                    ? (hasUnsavedChanges ? 'Unsaved changes' : 'Saved')
-                    : 'Not saved'}
+                  {driveAccessLabel
+                    ? <>
+                      {importedTemplateFile?.mode === 'drive' && importedTemplateFile.canEdit === false ? (
+                        <svg aria-hidden="true" className="site-context__file-status-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      ) : (
+                        <svg aria-hidden="true" className="site-context__file-status-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="m16 4 4 4" />
+                          <path d="M4 20h4L19 9a2.83 2.83 0 0 0-4-4L4 16v4Z" />
+                        </svg>
+                      )}
+                      {driveAccessLabel} · {hasUnsavedChanges ? 'Unsaved changes' : 'Saved'}
+                    </>
+                    : <>{hasUnsavedChanges || !importedTemplateFile ? '⚠️' : '✅'}{importedTemplateFile
+                      ? (hasUnsavedChanges ? 'Unsaved changes' : 'Saved')
+                      : 'Not saved'}</>}
                 </span>
               </span>
             </p>

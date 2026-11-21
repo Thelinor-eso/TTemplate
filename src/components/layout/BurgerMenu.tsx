@@ -8,6 +8,7 @@ import { useRaid } from '@/features/template/RaidContext';
 import { isGoogleOAuthPopupClosed, useGoogleDrive } from '@/features/template/GoogleDriveContext';
 import useOutsideClick from '@/hooks/useOutsideClick';
 import { useTemplateImport } from '@/features/template/useTemplateImport';
+import DriveTemplateLinkImporter from '@/features/template/DriveTemplateLinkImporter';
 import {
   createTemplateFilename,
   ensureJsonFilename,
@@ -48,9 +49,12 @@ function SaveIcon() {
 
 export default function BurgerMenu() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isOtherMethodsOpen, setIsOtherMethodsOpen] = useState(false);
+  const [isDriveLinkDialogOpen, setIsDriveLinkDialogOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [driveMessage, setDriveMessage] = useState<string | null>(null);
   const [isNewFileBusy, setIsNewFileBusy] = useState(false);
+  const [isGoogleAuthBusy, setIsGoogleAuthBusy] = useState(false);
   const [isLocalSaveBusy, setIsLocalSaveBusy] = useState(false);
   const [isNewFileDialogOpen, setIsNewFileDialogOpen] = useState(false);
   const [selectedDriveFolder, setSelectedDriveFolder] = useState<{ id: string; name: string } | null>(null);
@@ -63,18 +67,19 @@ export default function BurgerMenu() {
   const [groupNameDraft, setGroupNameDraft] = useState('');
   const [raidNameDraft, setRaidNameDraft] = useState('');
   const pathname = usePathname();
-  const { template, importedTemplateFile, markTemplateSaved, requestHomeNavigation, setGroupName, setSelectedRaid } = useRaid();
+  const { template, importedTemplateFile, canEditTemplate, markTemplateSaved, requestHomeNavigation, setGroupName, setSelectedRaid } = useRaid();
   const importTemplate = useTemplateImport();
-  const { isConnected, disconnect, pickDriveFolder, saveTemplate, updateTemplateFile } = useGoogleDrive();
+  const { isConnected, connect, disconnect, pickDriveFolder, saveTemplate, updateTemplateFile } = useGoogleDrive();
 
   const closeMenu = useCallback(() => setIsOpen(false), []);
-  useOutsideClick(menuRef, isOpen, closeMenu);
+  useOutsideClick(menuRef, isOpen && !isDriveLinkDialogOpen, closeMenu);
 
   useEffect(() => {
     if (!isOpen && !isNewFileDialogOpen && !isGroupNameDialogOpen && !isRaidNameDialogOpen && !isSaveDestinationDialogOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
       if (isNewFileBusy) return;
+      if (isDriveLinkDialogOpen) return;
       event.preventDefault();
       setIsNewFileDialogOpen(false);
       setIsGroupNameDialogOpen(false);
@@ -84,7 +89,7 @@ export default function BurgerMenu() {
     };
     window.addEventListener('keydown', closeOnEscape);
     return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [isOpen, isNewFileDialogOpen, isGroupNameDialogOpen, isRaidNameDialogOpen, isSaveDestinationDialogOpen, isNewFileBusy]);
+  }, [isOpen, isNewFileDialogOpen, isGroupNameDialogOpen, isRaidNameDialogOpen, isSaveDestinationDialogOpen, isNewFileBusy, isDriveLinkDialogOpen]);
 
   const openNewDriveFileDialog = () => {
     setDriveMessage(null);
@@ -98,6 +103,27 @@ export default function BurgerMenu() {
   const handleImport = () => {
     setIsOpen(false);
     triggerJsonImport(importTemplate);
+  };
+
+  const handleGoogleAuth = async () => {
+    setDriveMessage(null);
+    if (isConnected) {
+      disconnect();
+      setDriveMessage('Google Drive disconnected.');
+      return;
+    }
+
+    setIsGoogleAuthBusy(true);
+    try {
+      await connect();
+      setDriveMessage('Google Drive connected.');
+    } catch (error) {
+      if (!isGoogleOAuthPopupClosed(error)) {
+        setDriveMessage(error instanceof Error ? error.message : 'Google sign-in failed.');
+      }
+    } finally {
+      setIsGoogleAuthBusy(false);
+    }
   };
 
   const handleSaveNewFile = async (event: FormEvent<HTMLFormElement>) => {
@@ -159,6 +185,10 @@ export default function BurgerMenu() {
 
   const handleSaveImportedFile = async () => {
     if (!importedTemplateFile) return;
+    if (importedTemplateFile.mode === 'drive' && importedTemplateFile.canEdit === false) {
+      setDriveMessage('This shared template is read-only. Export a copy to save changes.');
+      return;
+    }
     setIsImportedSaveBusy(true);
     setDriveMessage(null);
     try {
@@ -172,7 +202,7 @@ export default function BurgerMenu() {
         filename = await saveTemplateToLocalFile(template, importedTemplateFile.handle);
         savedSource = { ...importedTemplateFile, name: filename };
       } else {
-        throw new Error('Direct saving is not supported for this local file in the current browser. Export the template to a local file instead.');
+        throw new Error('Direct saving is not supported for this local file in the current browser. Export a copy to a local file instead.');
       }
       markTemplateSaved(savedSource, template);
       setDriveMessage(`Saved changes to ${filename}.`);
@@ -188,6 +218,10 @@ export default function BurgerMenu() {
   const handleSaveAction = async () => {
     if (isNewFileBusy || isLocalSaveBusy || isImportedSaveBusy) return;
     if (importedTemplateFile?.mode === 'drive') {
+      if (importedTemplateFile.canEdit === false) {
+        setDriveMessage('This shared template is read-only. Export a copy to save changes.');
+        return;
+      }
       await handleSaveImportedFile();
       return;
     }
@@ -271,12 +305,14 @@ export default function BurgerMenu() {
           <div className="p-2">
             <button
               type="button"
+              disabled={!canEditTemplate}
+              title={canEditTemplate ? undefined : 'This shared Google Drive file is view-only. Renaming is disabled.'}
               onClick={() => {
                 setGroupNameDraft(template.raid.groupName);
                 setIsGroupNameDialogOpen(true);
                 setIsOpen(false);
               }}
-              className="mb-2 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white"
+              className="mb-2 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               <svg aria-hidden="true" className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m16 5 3 3" />
@@ -287,12 +323,14 @@ export default function BurgerMenu() {
 
             <button
               type="button"
+              disabled={!canEditTemplate}
+              title={canEditTemplate ? undefined : 'This shared Google Drive file is view-only. Renaming is disabled.'}
               onClick={() => {
                 setRaidNameDraft(template.raid.selectedRaid ?? '');
                 setIsRaidNameDialogOpen(true);
                 setIsOpen(false);
               }}
-              className="mb-2 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white"
+              className="mb-2 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               <svg aria-hidden="true" className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m16 5 3 3" />
@@ -303,8 +341,12 @@ export default function BurgerMenu() {
 
             <button
               type="button"
-              disabled={isNewFileBusy || isLocalSaveBusy || isImportedSaveBusy}
+              disabled={isNewFileBusy || isLocalSaveBusy || isImportedSaveBusy
+                || (importedTemplateFile?.mode === 'drive' && importedTemplateFile.canEdit === false)}
               onClick={() => void handleSaveAction()}
+              title={importedTemplateFile?.mode === 'drive' && importedTemplateFile.canEdit === false
+                ? 'This shared template is read-only. Export a copy to save changes.'
+                : undefined}
               className="mb-2 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white disabled:cursor-wait disabled:opacity-60"
             >
               <SaveIcon />
@@ -314,60 +356,88 @@ export default function BurgerMenu() {
                   ? `Save changes to ${importedTemplateFile.mode === 'drive' ? 'Google Drive' : 'local file'}`
                   : 'Save template'}
             </button>
+            {importedTemplateFile?.mode === 'drive' && importedTemplateFile.canEdit === false && (
+              <p className="mb-2 px-3 text-xs text-amber-200">
+                Editing and saving over the owner’s file are disabled. Use Other methods to export a copy.
+              </p>
+            )}
 
-            <DriveTemplatePicker
+            <DriveTemplateLinkImporter
               onImported={(importedTemplate, file) => {
-                importTemplate(importedTemplate, { mode: 'drive', id: file.id, name: file.name });
+                importTemplate(importedTemplate, { mode: 'drive', id: file.id, name: file.name, canEdit: file.canEdit });
                 setIsOpen(false);
               }}
+              onDialogOpenChange={setIsDriveLinkDialogOpen}
               className="mb-2 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white"
             />
 
             <button
               type="button"
-              disabled={isNewFileBusy || isLocalSaveBusy}
-              onClick={openNewDriveFileDialog}
-              className="mb-4 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white disabled:cursor-wait disabled:opacity-60"
+              aria-expanded={isOtherMethodsOpen}
+              aria-controls="burger-other-template-methods"
+              onClick={() => setIsOtherMethodsOpen((open) => !open)}
+              className="mb-2 flex w-full items-center justify-between rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white"
+            >
+              Other methods
+              <svg aria-hidden="true" className={`h-4 w-4 transition-transform${isOtherMethodsOpen ? ' rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+
+            {isOtherMethodsOpen && (
+              <div id="burger-other-template-methods" className="mb-2">
+                <DriveTemplatePicker
+                  onImported={(importedTemplate, file) => {
+                    importTemplate(importedTemplate, { mode: 'drive', id: file.id, name: file.name, canEdit: file.canEdit });
+                    setIsOpen(false);
+                  }}
+                  className="mb-2 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white"
+                />
+
+                <button
+                  type="button"
+                  disabled={isNewFileBusy || isLocalSaveBusy}
+                  onClick={openNewDriveFileDialog}
+                  className="mb-2 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white disabled:cursor-wait disabled:opacity-60"
+                >
+                  <TemplateSourceIcon mode="drive" />
+                  Export a copy to Google Drive
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleImport}
+                  className="mb-2 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white"
+                >
+                  <TemplateSourceIcon mode="local" />
+                  Import a template from this device
+                </button>
+
+                <button
+                  type="button"
+                  disabled={isLocalSaveBusy || isNewFileBusy}
+                  onClick={() => void handleSaveNewLocalFile()}
+                  className="flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white"
+                >
+                  <TemplateSourceIcon mode="local" />
+                  {isLocalSaveBusy ? 'Exporting local copy…' : 'Export a copy to this device'}
+                </button>
+                {importedTemplateFile?.mode === 'local' && !importedTemplateFile.handle && (
+                  <p className="px-3 pt-2 text-xs text-slate-400">
+                    Direct save is not supported by this browser. Export a copy to a local file instead.
+                  </p>
+                )}
+              </div>
+            )}
+            <button
+              type="button"
+              disabled={isGoogleAuthBusy}
+              onClick={() => void handleGoogleAuth()}
+              className="mt-2 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white disabled:cursor-wait disabled:opacity-60"
             >
               <TemplateSourceIcon mode="drive" />
-              Export the template to Google Drive
+              {isGoogleAuthBusy ? 'Connecting to Google…' : isConnected ? 'Disconnect Google Drive' : 'Connect Google Drive'}
             </button>
-
-            <button
-              type="button"
-              onClick={handleImport}
-              className="mb-2 flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white"
-            >
-              <TemplateSourceIcon mode="local" />
-              Import JSON from this device
-            </button>
-
-            <button
-              type="button"
-              disabled={isLocalSaveBusy || isNewFileBusy}
-              onClick={() => void handleSaveNewLocalFile()}
-              className="flex w-full items-center gap-2 rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-left text-sm font-semibold text-slate-200 transition hover:bg-white/7 hover:text-white"
-            >
-              <TemplateSourceIcon mode="local" />
-              {isLocalSaveBusy ? 'Exporting local file…' : 'Export the template to a local file'}
-            </button>
-            {importedTemplateFile?.mode === 'local' && !importedTemplateFile.handle && (
-              <p className="px-3 pt-2 text-xs text-slate-400">
-                Direct save is not supported by this browser. Export the template to a local file instead.
-              </p>
-            )}
-            {isConnected && (
-              <button
-                type="button"
-                onClick={() => {
-                  disconnect();
-                  setDriveMessage('Google Drive disconnected.');
-                }}
-                className="mt-2 flex w-full items-center rounded-lg px-3 py-2 text-left text-xs text-slate-400 transition hover:bg-white/5 hover:text-white"
-              >
-                Disconnect Google Drive
-              </button>
-            )}
             {driveMessage && (
               <p role="status" aria-live="polite" className="px-3 pt-2 text-xs text-slate-300">
                 {driveMessage}
@@ -440,7 +510,7 @@ export default function BurgerMenu() {
             onSubmit={(event) => void handleSaveNewFile(event)}
           >
             <h2 id="new-template-title" className="text-lg font-bold text-white">
-              Export the template to Google Drive
+              Export a copy to Google Drive
             </h2>
             <label htmlFor="new-template-filename" className="mt-4 block text-sm font-medium text-slate-300">
               File name

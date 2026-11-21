@@ -36,6 +36,7 @@ interface RaidContextType {
   players: RaidPlayer[];
   selectedRaid: string | null;
   isEditMode: boolean;
+  canEditTemplate: boolean;
   isHomeNavigationConfirmationOpen: boolean;
   importedTemplateFile: ImportedTemplateFile | null;
   hasUnsavedChanges: boolean;
@@ -135,9 +136,12 @@ export function RaidProvider({ children }: { children: ReactNode }) {
     setIsHomeNavigationConfirmationOpen(false);
   }, []);
 
+  const canEditTemplate = importedTemplateFile?.mode !== 'drive' || importedTemplateFile.canEdit !== false;
+
   const toggleEditMode = useCallback(() => {
+    if (importedTemplateFile?.mode === 'drive' && importedTemplateFile.canEdit === false) return;
     setIsEditMode((current) => !current);
-  }, []);
+  }, [importedTemplateFile]);
 
   const setTemplate = useCallback((nextTemplate: RaidTemplateDocument) => {
     setTemplateState(normalizeTemplateDocument(nextTemplate));
@@ -149,6 +153,7 @@ export function RaidProvider({ children }: { children: ReactNode }) {
     setTemplateState(normalized);
     setImportedTemplateFile(source);
     setSavedTemplateSnapshot(source ? exportTemplateDocument(normalized) : null);
+    if (source?.mode === 'drive' && source.canEdit === false) setIsEditMode(false);
     return normalized;
   }, []);
 
@@ -553,6 +558,7 @@ export function RaidProvider({ children }: { children: ReactNode }) {
       players,
       selectedRaid,
       isEditMode,
+      canEditTemplate,
       isHomeNavigationConfirmationOpen,
       importedTemplateFile,
       hasUnsavedChanges,
