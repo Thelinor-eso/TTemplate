@@ -74,7 +74,8 @@ textarea:focus-visible {
 }
 
 .site-header {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 40;
   border-bottom: 1px solid rgba(174, 187, 204, 0.11);
   background: rgba(9, 12, 17, 0.82);
