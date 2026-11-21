@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useRaid } from '@/features/template/RaidContext';
 import { useGoogleDrive } from '@/features/template/GoogleDriveContext';
@@ -14,6 +14,7 @@ const raidMenuIcon = withBasePath('/game-assets/storage/menu/gp_reconstruction_t
 const groupMenuIcon = withBasePath('/game-assets/storage/menu/gp_tutorial_idexicon_groups.png');
 
 export default function GroupNameHeader() {
+  const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const router = useRouter();
   const { isConnected, googleAccountEmail } = useGoogleDrive();
@@ -35,6 +36,26 @@ export default function GroupNameHeader() {
   const [markersCopied, setMarkersCopied] = useState(false);
   const [isMarkersEditorOpen, setIsMarkersEditorOpen] = useState(false);
   const [markersDraft, setMarkersDraft] = useState('');
+
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+
+    const updateHeaderHeight = () => {
+      document.documentElement.style.setProperty(
+        '--site-header-height',
+        `${header.getBoundingClientRect().height}px`,
+      );
+    };
+
+    updateHeaderHeight();
+    const observer = new ResizeObserver(updateHeaderHeight);
+    observer.observe(header);
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty('--site-header-height');
+    };
+  }, []);
 
   const copyMarkers = async () => {
     try {
@@ -99,7 +120,7 @@ export default function GroupNameHeader() {
 
   return (
     <>
-      <header className="site-header" data-raid-theme={getRaidTheme(raidName) || undefined}>
+      <header ref={headerRef} className="site-header" data-raid-theme={getRaidTheme(raidName) || undefined}>
         <div className="site-header__inner">
           <Link
             href="/"

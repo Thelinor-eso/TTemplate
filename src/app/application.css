@@ -724,7 +724,7 @@ textarea:focus-visible {
 
 .app-page__actions.is-fixed {
   position: fixed;
-  top: 82px;
+  top: var(--site-header-height, 76px);
   right: max(24px, calc((100vw - 96rem) / 2));
 }
 
@@ -741,7 +741,7 @@ textarea:focus-visible {
 }
 
 .app-page__sticky-toolbar {
-  top: 76px;
+  top: var(--site-header-height, 76px);
   margin-bottom: 18px;
 }
 
@@ -863,7 +863,7 @@ textarea:focus-visible {
   }
 
   .app-page__actions.is-fixed {
-    top: 72px;
+    top: var(--site-header-height, 64px);
     right: 16px;
   }
 }
@@ -895,7 +895,7 @@ textarea:focus-visible {
   .app-page__actions,
   .app-page__actions.is-fixed {
     position: sticky;
-    top: 68px;
+    top: var(--site-header-height, 64px);
     right: auto;
     justify-content: stretch;
     align-self: stretch;
@@ -1073,14 +1073,14 @@ textarea:focus-visible {
 
 .app-page__actions.is-fixed {
   position: fixed;
-  top: 8px;
+  top: var(--site-header-height, 76px);
   right: max(32px, calc((100vw - 96rem) / 2));
 }
 
 .app-page__sticky-toolbar {
   position: sticky;
   z-index: 30;
-  top: 68px;
+  top: var(--site-header-height, 76px);
   width: 100%;
   margin-bottom: 20px;
 }
@@ -1577,7 +1577,7 @@ textarea:focus-visible {
   }
 
   .app-page__sticky-toolbar {
-    top: 60px;
+    top: var(--site-header-height, 64px);
     margin-bottom: 14px;
   }
 
@@ -2288,7 +2288,7 @@ textarea:focus-visible {
 }
 
 .encounters-page__sticky-toolbar {
-  top: 8px;
+  top: var(--site-header-height, 76px);
   z-index: 60;
   isolation: isolate;
 }
