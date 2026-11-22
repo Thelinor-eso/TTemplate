@@ -701,7 +701,7 @@ export default function PlayersPage() {
                                 aria-label={mastery ? `Select class mastery ${mastery}` : `Select class mastery ${index + 1}`}
                                 aria-expanded={activeDropdownKey === `${player.id}-masteries` && activeMasteryIndex === index}
                                 onClick={() => toggleMasteryDropdown(player.id, index)}
-                                className="flex h-12 w-12 items-center justify-center rounded border border-yellow-500 bg-black/30 p-1 transition hover:border-yellow-300 hover:bg-yellow-700/40 disabled:cursor-default disabled:opacity-70"
+                                className="flex h-12 w-12 items-center justify-center rounded border border-yellow-500 bg-black/30 p-1 transition hover:border-yellow-300 hover:bg-yellow-700/40 disabled:cursor-default"
                               >
                                 {mastery && getESOClassMasteryImage(mastery) ? (
                                   <Image
