@@ -1430,8 +1430,6 @@ export const SET_ICON_SOURCES: Record<string, string> = {
   "Markyn Ring of Majesty": "/storage/icons/gear_imperial_heavy_head_d.png",
   "Belharza's Band": "/storage/icons/gear_breton_heavy_head_d.png",
   "Oakensoul Ring": "/storage/icons/gear_breton_light_head_d.png",
-  "Sea-Serpent's Coil": "/storage/icons/gear_amenossea_med_head_a.png",
-  "Velothi Ur-Mage's Amulet": "/storage/icons/gear_dunmer_staff_e.png",
   "Esoteric Environment Greaves Set": "/storage/icons/gear_dwemerharshconditions_legs_a.png",
   "Perfected Test of Resolve Set": "/storage/icons/gear_clandreamcarver_heavy_head_a.png",
   "Test of Resolve Set": "/storage/icons/gear_clandreamcarver_heavy_head_a.png",

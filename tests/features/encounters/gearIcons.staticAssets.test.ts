@@ -63,6 +63,23 @@ describe('local static game assets', () => {
       .toEqual([withBasePath('/game-assets/storage/icons/gear_breton_neck_a.webp')]);
   });
 
+  it.each([
+    {
+      setId: 657,
+      setName: "Sea-Serpent's Coil",
+      icon: '/game-assets/storage/icons/u34_mythic_sea-serpents_coil.webp',
+    },
+    {
+      setId: 694,
+      setName: "Velothi Ur-Mage's Amulet",
+      icon: '/game-assets/storage/icons/u38_antiquities_goldandblueshalknecklace.webp',
+    },
+  ])('uses the catalog jewelry image for $setName', async ({ setId, setName, icon }) => {
+    const set = await fetchSetById(setId);
+    expect(set?.setName).toBe(setName);
+    expect(getGearIconCandidatesForItem(set!.items[0], 'head')).toEqual([withBasePath(icon)]);
+  });
+
   it('has a local icon for every unique set-item image', async () => {
     const catalog = await fetchSetCatalogIndex();
     const iconStems = new Set<string>();

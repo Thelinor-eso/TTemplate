@@ -78,7 +78,7 @@ import {
   type SetSlot,
 } from '@/features/template/raidTemplate';
 import { getESOClassMasteryDescription, getESOClassMasteryImage } from '@/data/esoClassMasteries';
-import { GearIcon, normalizeSetName, SET_ICON_SOURCES } from '@/lib/gearIcons';
+import { GearIcon } from '@/lib/gearIcons';
 import { withBasePath } from '@/lib/staticAssets';
 import {
   CHAMPION_CATEGORY_FRAME,
@@ -196,10 +196,6 @@ const QUICK_GEAR_SLOT_ORDER: readonly SetSlot[] = [
   ...QUICK_GEAR_JEWEL_SLOTS,
   'head', 'shoulders',
 ];
-const NORMALIZED_SET_ICON_SOURCES = new Map(
-  Object.entries(SET_ICON_SOURCES).map(([setName, source]) => [normalizeSetName(setName), source]),
-);
-
 function getDefaultSetItemSelection(
   choice: ReturnType<typeof groupCatalogItems>[number] | undefined,
   slot: SetSlot,
@@ -530,7 +526,7 @@ const QuickGearSetResults = memo(function QuickGearSetResults({
                       : 'border border-[#d6b46b] bg-[#171717] hover:border-[#f8f7f2] hover:bg-[#242424]'
                   }`}
                 >
-                  <SetHeadIcon
+                  <SetIcon
                     setId={set.id}
                     setName={set.setName}
                     className="flex h-12 w-12 shrink-0 items-center justify-center border border-[#d6b46b]/70 bg-black/40 p-1"
@@ -834,7 +830,7 @@ function CritDamageValue({ breakdown, children }: { breakdown: CritDamageBreakdo
   );
 }
 
-function SetHeadIcon({
+function SetIcon({
   setId,
   setName,
   className = 'mb-2 flex h-12 w-12 items-center justify-center border border-[#d6b46b] bg-black/40 p-1',
@@ -843,32 +839,22 @@ function SetHeadIcon({
   setName: string;
   className?: string;
 }) {
-  const [headItem, setHeadItem] = useState<CatalogSetItem | null>(null);
-  const staticIcon = SET_ICON_SOURCES[setName]
-    ?? NORMALIZED_SET_ICON_SOURCES.get(normalizeSetName(setName));
+  const [setItem, setSetItem] = useState<CatalogSetItem | null>(null);
 
   useEffect(() => {
-    if (staticIcon) return;
     let active = true;
     void fetchSetById(setId).then((set) => {
-      if (active) setHeadItem(set?.items.find((item) => item.equipType === 'Head') ?? set?.items[0] ?? null);
+      if (active) setSetItem(set?.items.find((item) => item.equipType === 'Head') ?? set?.items[0] ?? null);
     }).catch(() => {
-      if (active) setHeadItem(null);
+      if (active) setSetItem(null);
     });
     return () => { active = false; };
-  }, [setId, staticIcon]);
+  }, [setId]);
 
-  if (staticIcon) {
-    return (
-      <span className={className}>
-        <Image src={staticIcon} alt={`${setName} icon`} width={40} height={40} className="h-full w-full object-cover" />
-      </span>
-    );
-  }
-  if (!headItem) return null;
+  if (!setItem) return null;
   return (
     <span className={className}>
-      <GearIcon gear={{ itemId: headItem.id, enchantment: '', trait: headItem.trait }} slot="head" fallbackSrc={SET_SLOT_PLACEHOLDER_IMAGES.head} alt={`${setName} head`} className="h-full w-full object-cover" />
+      <GearIcon gear={{ itemId: setItem.id, enchantment: '', trait: setItem.trait }} slot="head" fallbackSrc={SET_SLOT_PLACEHOLDER_IMAGES.head} alt={`${setName} item`} className="h-full w-full object-cover" />
     </span>
   );
 }
@@ -2595,9 +2581,9 @@ export default function EncountersPage() {
             const isComplete = requiredPieces !== null && pieceCount >= requiredPieces;
             return (
               <li key={id} className="min-w-0">
-                <PortalTooltip content={<><SetHeadIcon setId={id} setName={setName} /><span className="mb-1 block font-bold text-[#f7e7ba]">{setName}</span>{set?.effects.map((effect) => <span key={`${effect.numberOfPiecesRequired}-${effect.description}`} className="mt-1 block">{effect.description.replace(/\|c[0-9a-fA-F]{6}|\|r/g, '')}</span>)}</>}>
+                <PortalTooltip content={<><SetIcon setId={id} setName={setName} /><span className="mb-1 block font-bold text-[#f7e7ba]">{setName}</span>{set?.effects.map((effect) => <span key={`${effect.numberOfPiecesRequired}-${effect.description}`} className="mt-1 block">{effect.description.replace(/\|c[0-9a-fA-F]{6}|\|r/g, '')}</span>)}</>}>
                   <span className="flex min-w-0 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-2 py-1.5 text-left transition hover:border-[#d6b46b]/60 hover:bg-[#d6b46b]/[0.07]">
-                    <SetHeadIcon setId={id} setName={setName} className="h-7 w-7 shrink-0 rounded border border-[#d6b46b]/40 bg-black/40 p-0.5" />
+                    <SetIcon setId={id} setName={setName} className="h-7 w-7 shrink-0 rounded border border-[#d6b46b]/40 bg-black/40 p-0.5" />
                     <span className="min-w-0 flex-1 whitespace-normal break-words [overflow-wrap:anywhere] text-xs font-medium leading-snug text-[#f8f7f2]">{setName}</span>
                     <span className={`shrink-0 rounded-md border px-2 py-1 text-[11px] font-bold tabular-nums ${
                       isComplete
@@ -3165,7 +3151,7 @@ export default function EncountersPage() {
                   </div>
                   <div role="button" tabIndex={0} onClick={() => setOverviewSetPlayerId(player.id)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setOverviewSetPlayerId(player.id); } }} aria-label={`Show ${player.name} set slots`} className="mt-2 block w-full cursor-pointer border-t border-white/10 pt-2 text-left text-[11px] hover:bg-white/[0.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">
                     <div className="mb-1 flex justify-between text-white/50"><span>Sets</span><span>Pcs</span></div>
-                    <ul className="space-y-1">{sets.length ? sets.map(({ id, setName, pieceCount }) => { const set = catalogSets.find((entry) => entry.id === id); return <li key={id} className="flex justify-between gap-2"><PortalTooltip content={<><SetHeadIcon setId={id} setName={setName} /><span className="mb-1 block font-bold text-[#f7e7ba]">{setName}</span>{set?.effects.map((effect) => <span key={`${effect.numberOfPiecesRequired}-${effect.description}`} className="mt-1 block">{effect.description.replace(/\|c[0-9a-fA-F]{6}|\|r/g, '')}</span>)}</>}><span>{setName}</span></PortalTooltip><span>{pieceCount}</span></li>; }) : <li className="text-white/50">No sets selected</li>}</ul>
+                    <ul className="space-y-1">{sets.length ? sets.map(({ id, setName, pieceCount }) => { const set = catalogSets.find((entry) => entry.id === id); return <li key={id} className="flex justify-between gap-2"><PortalTooltip content={<><SetIcon setId={id} setName={setName} /><span className="mb-1 block font-bold text-[#f7e7ba]">{setName}</span>{set?.effects.map((effect) => <span key={`${effect.numberOfPiecesRequired}-${effect.description}`} className="mt-1 block">{effect.description.replace(/\|c[0-9a-fA-F]{6}|\|r/g, '')}</span>)}</>}><span>{setName}</span></PortalTooltip><span>{pieceCount}</span></li>; }) : <li className="text-white/50">No sets selected</li>}</ul>
                   </div>
                   <div className="mt-2 flex justify-center gap-3 border-t border-white/10 pt-2">
                     {CHAMPION_DISCIPLINE_GROUPS.map((group) => (
@@ -4414,7 +4400,7 @@ export default function EncountersPage() {
                                       : 'border-[#d6b46b]/70 bg-black/30 text-[#f8f7f2] hover:border-[#f8f7f2]'
                                   }`}
                                 >
-                                  <SetHeadIcon
+                                  <SetIcon
                                     setId={set.id}
                                     setName={set.setName}
                                     className="flex h-10 w-10 shrink-0 items-center justify-center border border-[#d6b46b]/70 bg-black/40 p-1"
