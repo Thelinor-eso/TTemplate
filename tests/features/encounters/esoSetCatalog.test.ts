@@ -39,6 +39,17 @@ describe('local ESO set catalog', () => {
     expect(await getSlotItemOptions('waist', crushingWall!.id)).toEqual([]);
   });
 
+  it('matches set names without requiring the same spaces or punctuation', async () => {
+    const catalog = await fetchSetCatalogIndex();
+    const seaSerpentCoil = catalog.sets.find((set) => set.setName === "Sea-Serpent's Coil");
+
+    expect(seaSerpentCoil).toBeDefined();
+    expect(matchesCatalogSetSearch(seaSerpentCoil!, 'sea serpent')).toBe(true);
+    expect(matchesCatalogSetSearch(seaSerpentCoil!, "sea-serpent's coil")).toBe(true);
+    expect(getMatchingCatalogItemNames(seaSerpentCoil!, 'sea serpent')).toContain("Sea-Serpent's Coil");
+    expect(matchesCatalogSetSearch(seaSerpentCoil!, '---')).toBe(false);
+  });
+
   it('keeps Mantle of Siroria items, traits, slot compatibility, and ordered text bonuses', async () => {
     const catalog = await fetchSetCatalogIndex();
     const siroria = catalog.sets.find((set) => set.setName === 'Mantle of Siroria');

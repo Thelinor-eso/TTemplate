@@ -11,17 +11,27 @@ export type CatalogSetSummary = {
   }>;
 };
 
+function normalizeCatalogSearchText(text: string): string {
+  return text.normalize('NFKD')
+    .toLocaleLowerCase()
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '');
+}
+
 export function matchesCatalogSetSearch(set: CatalogSetSummary, search: string): boolean {
-  const query = search.trim().toLocaleLowerCase();
-  return !query || set.setName.toLocaleLowerCase().includes(query)
+  const trimmedSearch = search.trim();
+  if (!trimmedSearch) return true;
+  const query = normalizeCatalogSearchText(trimmedSearch);
+  if (!query) return false;
+  return normalizeCatalogSearchText(set.setName).includes(query)
     || getMatchingCatalogItemNames(set, query).length > 0;
 }
 
 export function getMatchingCatalogItemNames(set: CatalogSetSummary, search: string): string[] {
-  const query = search.trim().toLocaleLowerCase();
+  const query = normalizeCatalogSearchText(search);
   if (!query) return [];
   return (set.itemSearchText ?? '').split('\n')
-    .filter((itemName) => itemName.toLocaleLowerCase().includes(query));
+    .filter((itemName) => normalizeCatalogSearchText(itemName).includes(query));
 }
 
 export function getSetMaxPiecesRequired(effects: CatalogSetSummary['effects']): number | null {
